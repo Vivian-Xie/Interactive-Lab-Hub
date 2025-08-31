@@ -67,7 +67,7 @@ We set up a wizarding system allowing remote control of the device while one tea
 We used the device to interact with a cat, using two color signals: blue for "rest" and yellow for "feeding."
 
 ### Updated Interaction After Paper Prototyping
-![Photo for dog](Lab%201/photo-for-dog.png)
+![Photo for dog](Lab 1/photo-for-dog.png)
 
 See Section F for the video.
 
