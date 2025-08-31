@@ -69,7 +69,7 @@ We used the device to interact with a cat, using two color signals: blue for "re
 ### Updated Interaction After Paper Prototyping
 *[Updated Attempt](https://youtu.be/2MFH3JHRcug)*
 
-After refining the storyboard, we applied the interaction to a dog with three colors.
+After refining the storyboard, we applied the interaction to a dog with 4 colors.
 - The sensor light responds with lighting changes:
   - Blue → Rest
   - Green → Normal  
