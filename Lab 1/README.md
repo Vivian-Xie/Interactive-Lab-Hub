@@ -97,6 +97,5 @@ We developed three conceptual costumes to use the phone as the device, consideri
 
 ## Part F. Record
 
-### Updated Interaction After Paper Prototyping
-*[Updated Attempt](https://youtu.be/2MFH3JHRcug)*
+### [Updated Interaction After Paper Prototyping](https://youtu.be/2MFH3JHRcug)
 
