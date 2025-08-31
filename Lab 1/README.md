@@ -59,7 +59,7 @@ We set up a wizarding system allowing remote control of the device while one tea
 
 
 ### Setup the Device
-*[Setup the Device](https://youtu.be/2MFH3JHRcug)*
+*[Setup the Device](https://www.youtube.com/watch?v=D4cC2wBMVeg)*
 
 ### First Recording Attempts
 *[First Attempt](https://www.youtube.com/shorts/a3TpJAGhahQ)*
