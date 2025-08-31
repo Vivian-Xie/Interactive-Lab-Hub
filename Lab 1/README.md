@@ -67,8 +67,7 @@ We set up a wizarding system allowing remote control of the device while one tea
 We used the device to interact with a cat, using two color signals: blue for "rest" and yellow for "feeding."
 
 ### Updated Interaction After Paper Prototyping
-*[Updated Attempt](https://youtu.be/2MFH3JHRcug)*
-
+See Section F for the video.
 After refining the storyboard, we applied the interaction to a dog with 4 colors.
 - The sensor light responds with lighting changes:
   - Blue → Rest
@@ -90,4 +89,11 @@ We developed three conceptual costumes to use the phone as the device, consideri
 - **Light transitions**: Should be gradual (fade-in/fade-out) for a calming effect.
 - **Environmental factors**: The device should be safe from overheating and water exposure, especially in a living room setting.
 - **Visibility**: Colors should be bright enough to be noticeable but not overwhelming.
+
+
+
+## Part F. Record
+
+### Updated Interaction After Paper Prototyping
+*[Updated Attempt](https://youtu.be/2MFH3JHRcug)*
 
