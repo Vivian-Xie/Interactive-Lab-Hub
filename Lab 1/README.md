@@ -1,6 +1,6 @@
 # Tinkerbell Light: Smart Pet Mood Lamp
 
-## Name: *Maggie Liang(ml2927) Xueer Zhang(xz946) Xinwei Xie(xx2185)
+## Name: Maggie Liang(ml2927) Xueer Zhang(xz946) Xinwei Xie(xx2185)
 
 ## Part A. Plan
 
@@ -32,7 +32,6 @@ The interaction takes place in the living room in the evening, with the owner pr
 ### Feedback Summary
 We received feedback from another group suggesting we clarify how the pet's mood is monitored. After research, we found that similar to how an Apple Watch monitors blood pressure and heart rate, we can implement a collar for the pet to wear to track these metrics.
 
----
 
 ## Part B. Act Out the Interaction
 
@@ -44,7 +43,7 @@ Yes. On paper, mapping the dog’s emotional states directly to light colors (e.
 ### Did new ideas emerge during the acting?
 We discovered that adding auditory alerts could further help remind the owner about the pet’s current state.
 
----
+
 
 ## Part C. Prototype the Device
 
@@ -53,7 +52,6 @@ We used a smartphone as a stand-in for the device, with its browser acting as a 
 ### Feedback on the Tinkerbelle Tool
 We successfully built the system and set up remote control. One piece of feedback is that Tinkerbelle does not support entering color codes directly, which makes re-selecting the same color on the palette difficult unless using the default provided colors.
 
----
 
 ## Part D. Wizard the Device
 
@@ -65,10 +63,18 @@ We set up a wizarding system allowing remote control of the device while one tea
 
 ### First Recording Attempts
 *[First Attempt](https://www.youtube.com/shorts/a3TpJAGhahQ)*
-We use the device to interact with cat player with two signals of blue and yellow.
+
+We used the device to interact with a cat, using two color signals: blue for "rest" and yellow for "feeding."
 
 ### Updated Interaction After Paper Prototyping
-*[Updated Attempt]*(https://youtu.be/2MFH3JHRcug)
+*[Updated Attempt](https://youtu.be/2MFH3JHRcug)*
+
+After refining the storyboard, we applied the interaction to a dog with three colors.
+- The sensor light responds with lighting changes:
+  - Blue → Rest
+  - Green → Normal  
+  - Yellow → Exciting
+  - Red → Anxiety
 
 
 
@@ -85,6 +91,3 @@ We developed three conceptual costumes to use the phone as the device, consideri
 - **Environmental factors**: The device should be safe from overheating and water exposure, especially in a living room setting.
 - **Visibility**: Colors should be bright enough to be noticeable but not overwhelming.
 
----
-
-**Note**: Some sections are placeholders for content to be added as instructed.
