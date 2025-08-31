@@ -59,13 +59,18 @@ We successfully built the system and set up remote control. One piece of feedbac
 
 We set up a wizarding system allowing remote control of the device while one team member acted with it. Zoom was used to record videos, and we pinned the relevant video feed to capture the scene.
 
+
+### Setup the Device
+*[Setup the Device](https://youtu.be/2MFH3JHRcug)*
+
 ### First Recording Attempts
-*[Include your first attempts at recording the setup video here.]*
+*[First Attempt](https://www.youtube.com/shorts/a3TpJAGhahQ)*
+We use the device to interact with cat player with two signals of blue and yellow.
 
 ### Updated Interaction After Paper Prototyping
-*[Show the follow-up work here.]*
+*[Updated Attempt]*(https://youtu.be/2MFH3JHRcug)
 
----
+
 
 ## Part E. Costume the Device
 
