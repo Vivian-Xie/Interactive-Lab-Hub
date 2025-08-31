@@ -82,6 +82,9 @@ Storyboards are a tool for visually exploring a users interaction with a device.
 Present your ideas to the other people in your breakout room (or in small groups). You can just get feedback from one another or you can work together on the other parts of the lab.
 
 \*\***Summarize feedback you got here.**\*\*
+We received feedback from the other group that:
+We need to figure out exactly how to monitor the mood of the pets. 
+After researching, we found that similar to how an Apple Watch monitors blood pressure and heart rate, we can implement a collar for the pet to wear and monitor their blood pressure and heart rate.
 
 
 ## Part B. Act out the Interaction
@@ -110,6 +113,7 @@ If you run into technical issues with this tool, you can also use a light switch
 Take a little time to set up the wizarding set-up that allows for someone to remotely control the device while someone acts with it. Hint: You can use Zoom to record videos, and you can pin someone’s video feed if that is the scene which you want to record. 
 
 \*\***Include your first attempts at recording the set-up video here.**\*\*
+https://www.youtube.com/watch?v=D4cC2wBMVeg
 
 Now, change the goal within the same setting, and update the interaction with the paper prototype. 
 
