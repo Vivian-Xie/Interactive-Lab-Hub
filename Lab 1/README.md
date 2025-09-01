@@ -119,7 +119,7 @@ Only now should you start worrying about what the device should look like. Devel
 Think about the setting of the device: is the environment a place where the device could overheat? Is water a danger? Does it need to have bright colors in an emergency setting?
 
 \*\***Include sketches of what your devices might look like here.**\*\*
-<img src="./IMG_7980.JPG" alt="My Photo" width="300"/>
+![Costume 1](costume1.png)
 ![Costume 2&3](./costume2&3.png)
 
 
