@@ -53,8 +53,8 @@ The interaction takes place in the living room in the evening, with the owner pr
 
 
 \*\***Include pictures of your storyboards here**\*\*
+![My Photo](./Frame3.JPG)
 
-Present your ideas to the other people in your breakout room (or in small groups). You can just get feedback from one another or you can work together on the other parts of the lab.
 
 \*\***Summarize feedback you got here.**\*\*
 We received feedback from another group suggesting we clarify how the pet's mood is monitored. After research, we found that similar to how an Apple Watch monitors blood pressure and heart rate, we can implement a collar for the pet to wear to track these metrics.
