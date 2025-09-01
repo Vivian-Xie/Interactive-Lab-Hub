@@ -53,7 +53,7 @@ The interaction takes place in the living room in the evening, with the owner pr
 
 
 \*\***Include pictures of your storyboards here**\*\*
-![Storyboard](storyboard.png)
+![Storyboard](Storyboard.png)
 
 
 \*\***Summarize feedback you got here.**\*\*
