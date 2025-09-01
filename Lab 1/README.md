@@ -2,16 +2,8 @@
 
 # Staging Interaction
 
-\*\***NAME OF COLLABORATOR HERE**\*\*
+
 ## Name: Maggie Liang(ml2927) Xueer Zhang(xz946) Xinwei Xie(xx2185)
-
-In the original stage production of Peter Pan, Tinker Bell was represented by a darting light created by a small handheld mirror off-stage, reflecting a little circle of light from a powerful lamp. Tinkerbell communicates her presence through this light to the other characters. See more info [here](https://en.wikipedia.org/wiki/Tinker_Bell). 
-
-There is no actor that plays Tinkerbell--her existence in the play comes from the interactions that the other characters have with her.
-
-For lab this week, we draw on this and other inspirations from theatre to stage interactions with a device where the main mode of display/output for the interactive device you are designing is lighting. You will plot the interaction with a storyboard, and use your computer and a smartphone to experiment with what the interactions will look and feel like. 
-
-_Make sure you read all the instructions and understand the whole of the laboratory activity before starting!_
 
 ## Lab Overview
 For this assignment, you are going to:
@@ -32,19 +24,8 @@ Labs are due on Mondays. Make sure this page is linked to on your main class hub
 
 ## Part A. Plan 
 
-To stage an interaction with your interactive device, think about:
-
-_Setting:_ Where is this interaction happening? (e.g., a jungle, the kitchen) When is it happening?
-
-_Players:_ Who is involved in the interaction? Who else is there? If you reflect on the design of current day interactive devices like the Amazon Alexa, it’s clear they didn’t take into account people who had roommates, or the presence of children. Think through all the people who are in the setting.
-
-_Activity:_ What is happening between the actors?
-
-_Goals:_ What are the goals of each player? (e.g., jumping to a tree, opening the fridge). 
-
-The interactive device can be anything *except* a computer, a tablet computer or a smart phone, but the main way it interacts needs to be using light.
-
 \*\***Describe your setting, players, activity and goals here.**\*\*
+
 ### Topic
 Our design for the "Tinkerbell Light" is a smart pet lamp. The lamp features an LED light and sensors that monitor the pet's activity and heart rate, changing the light color according to the pet’s mood.
 
@@ -70,8 +51,6 @@ The interaction takes place in the living room in the evening, with the owner pr
 - The owner wants to understand the pet without guesswork.
 - The lamp acts as a “translator” between them using only light.
 
-
-Storyboards are a tool for visually exploring a users interaction with a device. They are a fast and cheap method to understand user flow, and iterate on a design before attempting to build on it. Take some time to read through this explanation of [storyboarding in UX design](https://www.smashingmagazine.com/2017/10/storyboarding-ux-design/). Sketch seven storyboards of the interactions you are planning. **It does not need to be perfect**, but must get across the behavior of the interactive device and the other characters in the scene. 
 
 \*\***Include pictures of your storyboards here**\*\*
 
