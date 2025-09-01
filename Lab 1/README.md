@@ -72,14 +72,6 @@ We discovered that adding auditory alerts could further help remind the owner ab
 
 ## Part C. Prototype the device
 
-You will be using your smartphone as a stand-in for the device you are prototyping. You will use the browser of your smart phone to act as a “light” and use a remote control interface to remotely change the light on that device. 
-
-Code for the "Tinkerbelle" tool, and instructions for setting up the server and your phone are [here](https://github.com/IRL-CT/tinkerbelle).
-
-We invented this tool for this lab! 
-
-If you run into technical issues with this tool, you can also use a light switch, dimmer, etc. that you can can manually or remotely control.
-
 \*\***Give us feedback on Tinkerbelle.**\*\*
 We used a smartphone as a stand-in for the device, with its browser acting as a “light” and a remote control interface to change the light color.
 
@@ -87,12 +79,9 @@ We successfully built the system and set up remote control. One piece of feedbac
 
 
 ## Part D. Wizard the device
-Take a little time to set up the wizarding set-up that allows for someone to remotely control the device while someone acts with it. Hint: You can use Zoom to record videos, and you can pin someone’s video feed if that is the scene which you want to record. 
 
 \*\***Include your first attempts at recording the set-up video here.**\*\*
 *[First Attempt](https://www.youtube.com/shorts/a3TpJAGhahQ)*
-
-Now, change the goal within the same setting, and update the interaction with the paper prototype. 
 
 \*\***Show the follow-up work here.**\*\*
 
@@ -113,10 +102,6 @@ After refining the storyboard, we applied the interaction to a dog with 4 colors
 
 
 ## Part E. Costume the device
-
-Only now should you start worrying about what the device should look like. Develop three costumes so that you can use your phone as this device.
-
-Think about the setting of the device: is the environment a place where the device could overheat? Is water a danger? Does it need to have bright colors in an emergency setting?
 
 \*\***Include sketches of what your devices might look like here.**\*\*
 ![Costume 1](costume1.png)
