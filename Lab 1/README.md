@@ -85,13 +85,11 @@ After refining the storyboard, we applied the interaction to a dog with 4 colors
 
 ## Part E. Costume the Device
 
-![Costume 1](costume.png)
-![Costume 2&3](./costume-device.png)
-
 We developed three conceptual costumes to use the phone as the device, considering the environment and usability.
 
 ### Sketches
-*[Include sketches of what your devices might look like here.]*
+*![Costume 1](costume.png)
+![Costume 2&3](./costume-device.png)*
 
 ### Design Considerations
 - **Dog’s comfort**: Lights should be soft, not harsh or strobing, to avoid frightening or stressing the dog.
