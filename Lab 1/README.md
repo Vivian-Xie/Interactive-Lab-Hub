@@ -120,6 +120,7 @@ Think about the setting of the device: is the environment a place where the devi
 
 \*\***Include sketches of what your devices might look like here.**\*\*
 <img src="./IMG_7980.JPG" alt="My Photo" width="300"/>
+![Costume 2&3](./costume2&3.png)
 
 
 \*\***What concerns or opportunitities are influencing the way you've designed the device to look?**\*\*
