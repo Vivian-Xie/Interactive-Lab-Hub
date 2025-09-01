@@ -120,6 +120,24 @@ Now, change the goal within the same setting, and update the interaction with th
 \*\***Show the follow-up work here.**\*\*
 
 
+### Setup the Device
+*[Setup the Device](https://www.youtube.com/watch?v=D4cC2wBMVeg)*
+
+### First Recording Attempts
+*[First Attempt](https://www.youtube.com/shorts/a3TpJAGhahQ)*
+
+We used the device to interact with a cat, using two color signals: blue for "rest" and yellow for "feeding."
+
+### Updated Interaction After Paper Prototyping
+*[Updated Attempt](https://youtu.be/2MFH3JHRcug)*
+
+After refining the storyboard, we applied the interaction to a dog with three colors.
+- The sensor light responds with lighting changes:
+  - Blue → Rest
+  - Green → Normal  
+  - Yellow → Exciting
+  - Red → Anxiety
+
 ## Part E. Costume the device
 
 Only now should you start worrying about what the device should look like. Develop three costumes so that you can use your phone as this device.
