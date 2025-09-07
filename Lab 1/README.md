@@ -134,7 +134,12 @@ This describes the second week's work for this lab activity.
 You will be assigned three partners from other groups. Go to their github pages, view their videos, and provide them with reactions, suggestions & feedback: explain to them what you saw happening in their video. Guess the scene and the goals of the character. Ask them about anything that wasn’t clear. 
 
 \*\***Summarize feedback from your partners here.**\*\*
-
+Positive Feedback
+Novelty of idea: Both reviewers praised the uniqueness and creativity of the idea. 
+Testing with users: Reviewers found the real-animal testing very effective. 
+Areas for Improvement
+Technical Execution: One reviewer raised questions about how mood detection works. They wanted more details on the metrics and threshold values (e.g., specific heart rate indicating excitement) used to define moods.
+Communication & Documentation: Both noted that the main idea was clear, but one reviewer commented that the development process documentation was not as strong. More detail on process would make the project clearer.
 ## Make it your own
 
 Do last week’s assignment again, but this time: 
