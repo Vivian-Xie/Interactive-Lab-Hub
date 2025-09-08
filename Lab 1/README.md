@@ -227,7 +227,9 @@ Take a little time to set up the wizarding set-up that allows for someone to rem
 Now, change the goal within the same setting, and update the interaction with the paper prototype.
 
 **Show the follow-up work here.**
+*[Attempt1](https://youtube.com/shorts/0_CyzgyUoyM)*
 
+*[Attempt2](https://youtube.com/shorts/0_CyzgyUoyM)*
 ## Part E. Costume the device
 Only now should you start worrying about what the device should look like. Develop three costumes so that you can use your phone as this device.
 
@@ -242,6 +244,6 @@ And we are thinking of adding a customization function: users could select diffe
 
 ## Part F. Record
 **Take a video of your prototyped interaction.**
-
+*[Updated Attempt](https://youtube.com/shorts/kmoWNzW3fow)*
 **Please indicate who you collaborated with on this Lab.** Be generous in acknowledging their contributions! And also recognizing any other influences (e.g. from YouTube, Github, Twitter) that informed your design.
 
