@@ -188,10 +188,9 @@ Secondary User Goals:
 Parents want to motivate children to drink more water.
 Office coworkers prefer the device to remain non-intrusive and not disruptive.
 
+\*\***Include pictures of your storyboards here**\*\*
 ![Section 1-2](./Section%201-2.png)
 ![Section 3](./Section%203.png)
-![Section 4](./Section%204.png)
-
 
 
 **Summarize feedback you got here.**
@@ -235,6 +234,7 @@ Only now should you start worrying about what the device should look like. Devel
 Think about the setting of the device: is the environment a place where the device could overheat? Is water a danger? Does it need to have bright colors in an emergency setting?
 
 **Include sketches of what your devices might look like here.**
+![Section 4](./Section%204.png)
 
 **What concerns or opportunitities are influencing the way you've designed the device to look?**
 The main concerns in designing the coaster’s look are water safety, heat resistance, and clear lighting. Since it will often be near water, the materials must be waterproof and durable, and it must handle hot drinks without warping. The lights need to be bright enough to show the green–yellow–red cycle, but soft on the eyes. 
