@@ -198,7 +198,6 @@ We get feedback on people like the combination of gentle reminders and a fun but
 They felt the light-based progression was clear and intuitive, especially the gradual green → yellow → red transition.
 
 ## Part B. Act out the Interaction
-Try physically acting out the interaction you planned. For now, you can just pretend the device is doing the things you’ve scripted for it.
 
 **Are there things that seemed better on paper than acted out?**
 Yes, when we acted out the interaction, the most notable issue was the flipping mechanism. While it sounded fun and motivating in theory, acting it out showed that spilling water could create a huge mess, especially on desks with laptops, papers, or other electronics. It also raised safety concerns if the cup contained hot drinks like tea or coffee, making the feature disruptive rather than helpful.
@@ -208,32 +207,20 @@ New ideas could be that we decided to integrate a magnetic attachment system int
 
 
 ## Part C. Prototype the device
-You will be using your smartphone as a stand-in for the device you are prototyping. You will use the browser of your smart phone to act as a “light” and use a remote control interface to remotely change the light on that device.
-
-Code for the "Tinkerbelle" tool, and instructions for setting up the server and your phone are here.
-
-We invented this tool for this lab!
-
-If you run into technical issues with this tool, you can also use a light switch, dimmer, etc. that you can can manually or remotely control.
 
 **Give us feedback on Tinkerbelle.**
 We smoothly built up the system and set up a remote control. One feedback would be that Tinkerbelle doesn’t support entering color codes, so re-selecting the same color on the palette is a problem unless you use the default color given.
 
 ## Part D. Wizard the device
-Take a little time to set up the wizarding set-up that allows for someone to remotely control the device while someone acts with it. Hint: You can use Zoom to record videos, and you can pin someone’s video feed if that is the scene which you want to record.
 
 **Include your first attempts at recording the set-up video here.**
 
-Now, change the goal within the same setting, and update the interaction with the paper prototype.
+*[Attempt1](https://youtube.com/shorts/0_CyzgyUoyM)*
 
 **Show the follow-up work here.**
-*[Attempt1](https://youtube.com/shorts/0_CyzgyUoyM)*
 
 *[Attempt2](https://youtube.com/shorts/0_CyzgyUoyM)*
 ## Part E. Costume the device
-Only now should you start worrying about what the device should look like. Develop three costumes so that you can use your phone as this device.
-
-Think about the setting of the device: is the environment a place where the device could overheat? Is water a danger? Does it need to have bright colors in an emergency setting?
 
 **Include sketches of what your devices might look like here.**
 ![Section 4](./Section%204.png)
@@ -244,6 +231,6 @@ And we are thinking of adding a customization function: users could select diffe
 
 ## Part F. Record
 **Take a video of your prototyped interaction.**
-*[Updated Attempt](https://youtube.com/shorts/kmoWNzW3fow)*
+*[Prototype_video](https://youtube.com/shorts/kmoWNzW3fow)*
 **Please indicate who you collaborated with on this Lab.** Be generous in acknowledging their contributions! And also recognizing any other influences (e.g. from YouTube, Github, Twitter) that informed your design.
 
