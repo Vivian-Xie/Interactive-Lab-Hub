@@ -188,9 +188,10 @@ Secondary User Goals:
 Parents want to motivate children to drink more water.
 Office coworkers prefer the device to remain non-intrusive and not disruptive.
 
-![Section 1-2](./Section 1-2.png)
-![Section 3](./Section 3.png)
-![Section 4](./Section 4.png)
+![Section 1-2](./Section%201-2.png)
+![Section 3](./Section%203.png)
+![Section 4](./Section%204.png)
+
 
 
 **Summarize feedback you got here.**
