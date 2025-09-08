@@ -188,8 +188,10 @@ Secondary User Goals:
 Parents want to motivate children to drink more water.
 Office coworkers prefer the device to remain non-intrusive and not disruptive.
 
-![Storyboard2](Storyboard2.png)
-![Storyboard2-2](Storyboard2-2.png)
+![Section 1-2](./Section 1-2.png)
+![Section 3](./Section 3.png)
+![Section 4](./Section 4.png)
+
 
 **Summarize feedback you got here.**
 We get feedback on people like the combination of gentle reminders and a fun but firm consequence (flipping the cup) to encourage regular water intake.
