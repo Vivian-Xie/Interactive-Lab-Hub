@@ -235,7 +235,10 @@ Users can watch the sand move to understand how time passes. The buttons allow u
 
 Below is our Verplank digram.
 
-[Verplank digram](Verplank digram.jpg)
+[Verplank digram](Verplank_digram.jpg)
+
+And the link to our video of our PiClock.
+[PiClock Youtube Link](https://youtube.com/shorts/gtvHuZM5ic4)
 
 Modify the code from last week's lab to make a new visual interface for your new clock. We have [extended the Pi](Extending%20the%20Pi.md) by adding a button.
 
