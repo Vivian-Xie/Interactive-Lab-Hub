@@ -217,6 +217,7 @@ Please sketch/diagram your clock idea. (Try using a [Verplank digram](http://www
 ![Verplank_diagram](Verplank_diagram.jpg)
 
 \*\*\***A copy of your code should be in your Lab 2 Github repo.**\*\*\*
+[screen_clock_part2.py](https://github.com/xz946-maker/Interactive-Lab-Hub/blob/Fall2025/Lab%202/screen_clock_part2.py)
 
 
 ## Assignment that was formerly Part F. 
