@@ -235,7 +235,7 @@ Users can watch the sand move to understand how time passes. The buttons allow u
 
 Below is our Verplank digram.
 
-！[Verplank digram](Verplank_digram.jpg)
+![Verplank digram](Verplank_digram.jpg)
 
 And the link to our video of our PiClock.
 [PiClock Youtube Link](https://youtube.com/shorts/gtvHuZM5ic4)
