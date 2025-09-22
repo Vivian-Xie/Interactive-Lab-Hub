@@ -190,7 +190,9 @@ Pro Tip: Using tools like [code-server](https://coder.com/docs/code-server/lates
 
 ## Part G. 
 ## Sketch and brainstorm further interactions and features you would like for your clock for Part 2.
+Our Piclock idea uses the metaphor of time flowing like sand in an hourglass. Instead of showing digital numbers, we display time through three hourglasses on the screen - one for hours, one for minutes, and one for seconds. When each time unit fills up, it triggers the next level, just like sand flowing from top to bottom. 
 
+Users can watch the sand move to understand how time passes. The buttons allow users to switch between timer mode and regular clock display.
 
 # Prep for Part 2
 
@@ -221,6 +223,10 @@ Please sketch/diagram your clock idea. (Try using a [Verplank digram](http://www
 ## Make a short video of your modified barebones PiClock
 
 \*\*\***Take a video of your PiClock.**\*\*\*
+
+[PiClock Youtube Link](https://youtube.com/shorts/gtvHuZM5ic4)
+
+The code is updated at [`screen_clock.py`](screen_clock.py). We have [extended the Pi](Extending%20the%20Pi.md) by adding a button.
 
 After you edit and work on the scripts for Lab 2, the files should be upload back to your own GitHub repo! You can push to your personal github repo by adding the files here, commiting and pushing.
 
