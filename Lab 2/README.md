@@ -162,6 +162,8 @@ You can look in `image.py` for an example of how to display an image on the scre
 
 ## Part D. 
 ### Set up the Display Clock Demo ✅️
+
+The code is separately named as `screen_clock_part1.py`
 Work on `screen_clock.py`, try to show the time by filling in the while loop (at the bottom of the script where we noted "TODO" for you). You can use the code in `cli_clock.py` and `stats.py` to figure this out.
 
 ### How to Edit Scripts on Pi
@@ -237,10 +239,14 @@ Below is our Verplank digram.
 
 ![Verplank digram](Verplank_digram.jpg)
 
+## Make a short video of your modified barebones PiClock 
+
 And the link to our video of our PiClock.
 [PiClock Youtube Link](https://youtube.com/shorts/gtvHuZM5ic4)
 
-Modify the code from last week's lab to make a new visual interface for your new clock. We have [extended the Pi](Extending%20the%20Pi.md) by adding a button.
+### Modify the barebones clock code
 
-The code is updated at [screen_clock.py](screen_clock.py].
+The code is updated at [screen_clock.py](screen_clock.py]. We have [extended the Pi](Extending%20the%20Pi.md) by adding a button.
+
+
 
