@@ -14,7 +14,7 @@ Be generous in acknowledging their contributions! And also recognizing any other
 
 Lab Prep is extra long this week. Make sure to start this early for lab on Thursday.
 
-1. ### Set up your Lab 2 Github
+1. ### Set up your Lab 2 Github ✅️
 
 Before the start of lab Thursday, ensure you have the latest lab content by updating your forked repository. 
 
@@ -23,12 +23,12 @@ Before the start of lab Thursday, ensure you have the latest lab content by upda
 This guide covers how to pull updates without overwriting your completed work, handle merge conflicts, and recover if something goes wrong.
 
 
-2. ### Get Kit and Inventory Parts
+2. ### Get Kit and Inventory Parts ✅️
 Prior to the lab session on Thursday, taken inventory of the kit parts that you have, and note anything that is missing:
 
 ***Update your [parts list inventory](partslist.md)***
 
-3. ### Prepare your Pi for lab this week
+3. ### Prepare your Pi for lab this week ✅️
 [Follow these instructions](prep.md) to download and burn the image for your Raspberry Pi before lab Thursday.
 
 
@@ -57,7 +57,7 @@ This readme.md page in your own repository should be edited to include the work 
 Labs are due on Mondays. Make sure this page is linked to on your main class hub page.
 
 ## Part A. 
-### Connect to your Pi
+### Connect to your Pi ✅️
 Just like you did in the lab prep, ssh on to your pi. Once you get there, create a Python environment (named venv) by typing the following commands.
 
 ```
@@ -81,7 +81,7 @@ Following the steps listed [here](https://docs.github.com/en/authentication/keep
 
 
 ## Part B. 
-### Try out the Command Line Clock
+### Try out the Command Line Clock ✅️
 Clone your own lab-hub repo for this assignment to your Pi and change the directory to Lab 2 folder (remember to replace the following command line with your own GitHub ID):
 
 ```
@@ -113,7 +113,7 @@ If you are unfamiliar with the Python code in `cli_clock.py`, have a look at [th
 
 
 ## Part C. 
-### Set up your RGB Display
+### Set up your RGB Display ✅️
 We have asked you to equip the [Adafruit MiniPiTFT](https://www.adafruit.com/product/4393) on your Pi in the Lab 2 prep already. Here, we will introduce you to the MiniPiTFT and Python scripts on the Pi with more details.
 
 <img src="https://cdn-learn.adafruit.com/assets/assets/000/082/842/large1024/adafruit_products_4393_iso_ORIG_2019_10.jpg" height="200" />
@@ -135,7 +135,7 @@ Line up the screen and press it on the headers. The hole in the screen should ma
 <img src="https://cdn-learn.adafruit.com/assets/assets/000/082/861/original/adafruit_products_image.png" height="200">
 </p>
 
-### Testing your Screen
+### Testing your Screen ✅
 
 The display uses a communication protocol called [SPI](https://www.circuitbasics.com/basics-of-the-spi-communication-protocol/) to speak with the raspberry pi. We won't go in depth in this course over how SPI works. The port on the bottom of the display connects to the SDA and SCL pins used for the I2C communication protocol which we will cover later. GPIO (General Purpose Input/Output) pins 23 and 24 are connected to the two buttons on the left. GPIO 22 controls the display backlight.
 
@@ -161,7 +161,7 @@ You can look in `image.py` for an example of how to display an image on the scre
 
 
 ## Part D. 
-### Set up the Display Clock Demo
+### Set up the Display Clock Demo ✅️
 Work on `screen_clock.py`, try to show the time by filling in the while loop (at the bottom of the script where we noted "TODO" for you). You can use the code in `cli_clock.py` and `stats.py` to figure this out.
 
 ### How to Edit Scripts on Pi
@@ -180,12 +180,12 @@ Option 2. Another way for you to edit scripts is to use VNC on your laptop to re
 
 Now you should be able to edit python scripts with Thonny on your Pi.
 
-Option 3. A nowadays often preferred method is to use Microsoft [VS code to remote connect to the Pi](https://www.raspberrypi.com/news/coding-on-raspberry-pi-remotely-with-visual-studio-code/). This gives you access to a fullly equipped and responsive code editor with terminal and file browser.  
+Option 3. ✅️ A nowadays often preferred method is to use Microsoft [VS code to remote connect to the Pi](https://www.raspberrypi.com/news/coding-on-raspberry-pi-remotely-with-visual-studio-code/). This gives you access to a fullly equipped and responsive code editor with terminal and file browser.  
 
 Pro Tip: Using tools like [code-server](https://coder.com/docs/code-server/latest) you can even setup a VS Code coding environment hosted on your raspberry pi and code through a web browser on your tablet or smartphone! 
 
 ## Part E.
-### Modify the barebones clock to make it your own
+### Modify the barebones clock to make it your own ✅️
 
 Does time have to be linear?  How do you measure a year? [In daylights? In midnights? In cups of coffee?](https://www.youtube.com/watch?v=wsj15wPpjLY)
 
@@ -210,29 +210,34 @@ After that, Git will ask you to login to your GitHub account to push the updates
 
 
 ## Part F. 
-## Make a short video of your modified barebones PiClock
+## Make a short video of your modified barebones PiClock 
 
 \*\*\***Take a video of your PiClock.**\*\*\*
 
 ## Part G. 
-## Sketch and brainstorm further interactions and features you would like for your clock for Part 2.
+## Sketch and brainstorm further interactions and features you would like for your clock for Part 2. 
 
 
 # Prep for Part 2
 
 1. Pick up remaining parts for kit on Thursday lab class. Check the updated [parts list inventory](partslist.md) and let the TA know if there is any part missing.
   
+Our Piclock idea uses the metaphor of time flowing like sand in an hourglass. Instead of showing digital numbers, we display time through three hourglasses on the screen - one for hours, one for minutes, and one for seconds. When each time unit fills up, it triggers the next level, just like sand flowing from top to bottom. 
 
+Users can watch the sand move to understand how time passes. The buttons allow users to switch between timer mode and regular clock display.
 2. Look at and give feedback on the Part G. for at least 2 other people in the class (and get 2 people to comment on your Part G!)
 
-# Lab 2 Part 2
+# Lab 2 Part 2 
 
-[Update your Lab Hub](pull_updates/README.md) to get the latest content and requirements for Part 2.
+Our Piclock idea uses the metaphor of time flowing like sand in an hourglass. Instead of showing digital numbers, we display time through three hourglasses on the screen - one for hours, one for minutes, and one for seconds. When each time unit fills up, it triggers the next level, just like sand flowing from top to bottom. 
 
-Modify the code from last week's lab to make a new visual interface for your new clock. You may [extend the Pi](Extending%20the%20Pi.md) by adding sensors or buttons, but this is not required.
+Users can watch the sand move to understand how time passes. The buttons allow users to switch between timer mode and regular clock display.
 
-As always, make sure you document contributions and ideas from others explicitly in your writeup.
+Below is our Verplank digram.
 
-You are permitted (but not required) to work in groups and share a turn in; you are expected to make equal contribution on any group work you do, and N people's group project should look like N times the work of a single person's lab. What each person did should be explicitly documented. Make sure the page for the group turn in is linked to your Interactive Lab Hub page. 
+[Verplank digram](Verplank digram.jpg)
 
+Modify the code from last week's lab to make a new visual interface for your new clock. We have [extended the Pi](Extending%20the%20Pi.md) by adding a button.
+
+The code is updated at [screen_clock.py](screen_clock.py].
 
