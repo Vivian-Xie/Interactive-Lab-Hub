@@ -146,6 +146,7 @@ and
 python faster_whisper_try.py
 ```
 \*\***Write your own shell file that verbally asks for a numerical based input (such as a phone number, zipcode, number of pets, etc) and records the answer the respondent provides.**\*\*
+[greet_me.sh](Lab%203/speech-scripts/greet_me.sh)
 
 ### 🤖 NEW: AI-Powered Conversations with Ollama
 
@@ -314,6 +315,7 @@ Answer the following:
 ### How could you use your system to create a dataset of interaction? What other sensing modalities would make sense to capture?
 
 \*\**your answer here*\*\*
+
 
 
 
