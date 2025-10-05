@@ -1,18 +1,30 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
-import os, re, time, json, traceback, subprocess, queue
+import os, re, time, json, traceback, subprocess, queue, sys
+from threading import Thread
 from difflib import SequenceMatcher
 from flask import Flask, request, redirect, Response
-import pygame
 
-# ============ Audio / Paths ============
-# If music is silent, change "alsa" -> "pulse" and restart.
+# ==================== STDOUT/ERR 编码兜底（防 UnicodeEncodeError） ====================
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
+
+# ==================== 音频驱动与路径 ====================
+# 如播放没声音，可将 "alsa" 改为 "pulse" 再启动：SDL_AUDIODRIVER=pulse python3 app.py
 os.environ.setdefault("SDL_AUDIODRIVER", "alsa")
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 SONGS_DIR = os.path.join(BASE, "songs")
 
-# ============ Mixer ============
+# ==================== Pygame mixer ====================
+import pygame
+
 def init_mixer():
     try:
         pygame.mixer.quit()
@@ -24,19 +36,23 @@ def init_mixer():
 
 init_mixer()
 
-# ============ TTS (force espeak-ng, synchronous by default) ============
-def speak_sync(text: str):
-    if not text: 
-        return
+def mixer_busy_safe():
     try:
-        # -a volume, -s speed, -v voice language
+        return bool(pygame.mixer.get_init()) and pygame.mixer.music.get_busy()
+    except Exception as e:
+        print("[AUDIO][BUSY ERROR]", e)
+        return False
+
+# ==================== TTS（espeak-ng） ====================
+def speak_sync(text: str):
+    if not text: return
+    try:
         subprocess.run(["espeak-ng", "-a", "200", "-s", "165", "-v", "en", text], check=False)
     except Exception as e:
         print("[TTS ERROR]", e)
 
 def speak_async(text: str):
-    if not text:
-        return
+    if not text: return
     try:
         subprocess.Popen(["espeak-ng", "-a", "200", "-s", "165", "-v", "en", text])
     except Exception as e:
@@ -44,12 +60,10 @@ def speak_async(text: str):
 
 START_LINE = "Hello! Let's start the music guessing game!"
 PROMPT_LINE = "Can you guess the song?"
-NEXT_LINE = "Next song. Can you guess the title?"
-PREV_LINE = "Previous song. Can you guess the title?"
 RESET_LINE = "Game reset. Starting over."
 WRONG_LINE = "Oops! That's not right. Try again!"
 
-# ============ Helpers ============
+# ==================== Helpers ====================
 def normalize(s: str) -> str:
     if not s: return ""
     return re.sub(r"[^a-z0-9]+", "", s.lower())
@@ -57,7 +71,7 @@ def normalize(s: str) -> str:
 def similar(a: str, b: str) -> float:
     return SequenceMatcher(None, normalize(a), normalize(b)).ratio()
 
-# ============ Fixed playlist (your three songs) ============
+# ==================== 固定播放列表（三首歌） ====================
 PLAYLIST = [
     os.path.join(SONGS_DIR, "bad_guy.wav"),
     os.path.join(SONGS_DIR, "love_me_like_you_do.wav"),
@@ -77,6 +91,7 @@ ACCEPT = {
 current_idx = 0
 score = 0
 last_guess = ""
+round_token = 0  # 防止并发串台：每播放一首自增
 
 def current_song_path():
     global current_idx
@@ -84,24 +99,35 @@ def current_song_path():
     return PLAYLIST[current_idx]
 
 def play_path(path):
+    """播放歌曲，并启动自动“播完-提问-录音-判断”线程"""
+    global round_token
     if not os.path.exists(path):
         raise FileNotFoundError(path)
     pygame.mixer.music.load(path)
     pygame.mixer.music.set_volume(1.0)
     pygame.mixer.music.play()
-    print("[PLAY]", path, "busy:", pygame.mixer.music.get_busy())
-    # prompt after song starts (non-blocking)
-    speak_async(PROMPT_LINE)
+    print("[PLAY]", path, "busy:", mixer_busy_safe())
+
+    round_token += 1
+    token = round_token
+    Thread(target=auto_after_play, args=(token,), daemon=True).start()
 
 def pause(): pygame.mixer.music.pause()
 def unpause(): pygame.mixer.music.unpause()
 def stop(): pygame.mixer.music.stop()
 
-# ============ STT (Vosk, 4s capture) ============
+# ==================== STT（Vosk） ====================
 USE_STT = True
 try:
     import sounddevice as sd
     from vosk import Model, KaldiRecognizer
+
+    # 可通过环境变量指定麦克风设备索引，例如：MIC_DEVICE_INDEX=0 python3 app.py
+    mic_env = os.environ.get("MIC_DEVICE_INDEX")
+    if mic_env and mic_env.strip().isdigit():
+        sd.default.device = (int(mic_env), None)
+        print("[STT] default input set to", sd.default.device)
+
 except Exception as e:
     USE_STT = False
     print("[STT] unavailable:", e)
@@ -112,7 +138,7 @@ def transcribe_once(seconds: int = 4, samplerate: int = 16000, device=None) -> s
     try:
         _ = _vosk_model
     except NameError:
-        print("[STT] loading vosk model…")
+        print("[STT] loading vosk model...")
         _vosk_model = Model(model_name="vosk-model-small-en-us-0.15")
     recog = KaldiRecognizer(_vosk_model, samplerate)
     q = queue.Queue()
@@ -121,22 +147,85 @@ def transcribe_once(seconds: int = 4, samplerate: int = 16000, device=None) -> s
         if status: print("[STT][status]", status)
         q.put(bytes(indata))
 
-    print(f"[STT] recording {seconds}s…")
+    print(f"[STT] recording {seconds}s… device={device}")
     text = ""
-    with sd.RawInputStream(samplerate=samplerate, blocksize=8000, dtype="int16",
-                           channels=1, callback=cb, device=device):
-        start = time.time()
-        while time.time() - start < seconds:
-            data = q.get()
-            if recog.AcceptWaveform(data):
-                res = json.loads(recog.Result()).get("text", "")
-                if res: text = res
-        final = json.loads(recog.FinalResult()).get("text", "")
-        if final: text = final
+    try:
+        import sounddevice as sd  # lazy import for safety
+        with sd.RawInputStream(samplerate=samplerate, blocksize=8000, dtype="int16",
+                               channels=1, callback=cb, device=device):
+            start = time.time()
+            while time.time() - start < seconds:
+                data = q.get()
+                if recog.AcceptWaveform(data):
+                    res = json.loads(recog.Result()).get("text", "")
+                    if res: text = res
+            final = json.loads(recog.FinalResult()).get("text", "")
+            if final: text = final
+    except Exception as e:
+        print("[STT][STREAM ERROR]", e)
+        traceback.print_exc()
     print("[STT] transcript:", text)
     return text.strip()
 
-# ============ Flask ============
+# ==================== 自动流程：歌播完 -> 问 -> 录音 -> 判断 ====================
+def auto_after_play(token):
+    global last_guess, score, current_idx, USE_STT, round_token
+
+    try:
+        # 等当前歌曲播放结束或被新一轮打断
+        while True:
+            if token != round_token:
+                print("[AUTO] token changed, abort this round.")
+                return
+            if not mixer_busy_safe():
+                break
+            time.sleep(0.1)
+
+        # 提示音（同步 TTS，确保听见）
+        speak_sync(PROMPT_LINE)
+
+        # 录音识别（异常不让崩）
+        text = ""
+        if USE_STT:
+            try:
+                # 如需强制设备索引，设置 device=你的设备号（例如 0）
+                text = transcribe_once(seconds=4, samplerate=16000, device=None) or ""
+            except Exception as e:
+                print("[STT][ERROR][auto]", e)
+                traceback.print_exc()
+                USE_STT = False
+                text = ""
+        last_guess = text or "(empty)"
+
+        # 目标与可接受集合
+        path = current_song_path()
+        target = TITLE.get(path)
+        accepted = ACCEPT.get(target, set())
+
+        # 判定
+        ok = False
+        if text and target:
+            n = normalize(text)
+            for v in accepted:
+                if normalize(v) in n:
+                    ok = True
+                    break
+            if not ok and similar(text, target) >= 0.72:
+                ok = True
+
+        if ok:
+            score += 1
+            speak_async(f"Yes! You got it right! The song is {target}.")
+            current_idx = (current_idx + 1) % len(PLAYLIST)
+            play_path(current_song_path())  # 播放下一首；新一轮会自增 token
+        else:
+            speak_async(WRONG_LINE)
+            # 停留在当前歌；可手动点 Next/Prev/Play 重播或换歌
+    except Exception as e:
+        print("[AUTO][ERROR]", e)
+        traceback.print_exc()
+
+# ==================== Flask ====================
 app = Flask(__name__)
 
 @app.route("/")
@@ -145,22 +234,34 @@ def home():
 
 @app.route("/controller")
 def controller():
-    busy = pygame.mixer.music.get_busy()
-    song = os.path.basename(current_song_path())
+    # 安全读取 busy 与当前歌曲名，避免 500
+    try:
+        busy = mixer_busy_safe()
+    except Exception as e:
+        print("[CONTROLLER][busy ERROR]", e)
+        busy = False
+
+    try:
+        song = os.path.basename(current_song_path())
+    except Exception as e:
+        print("[CONTROLLER][song ERROR]", e)
+        song = "(unknown)"
+
     html = f"""
     <!doctype html><meta charset="utf-8"><title>Music Guessing</title>
     <style>
       body{{font-family:system-ui,sans-serif;padding:24px}}
       .row{{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}}
-      button{{padding:8px 16px;font-size:16px}}
+      button{{padding:8px 16px;font-size:16px;cursor:pointer}}
       .badge{{padding:2px 6px;border-radius:6px;background:#eef}}
       .mono{{font-family:monospace}}
     </style>
-    <h1>Music Guessing Controller</h1>
+    <h1>Music Guessing Controller (Auto-guess Mode)</h1>
     <div>Status: <span class="badge">{'Playing' if busy else 'Idle'}</span></div>
     <div>Song: <span class="mono">{song}</span></div>
     <div>Score: <span class="badge">{score}</span></div>
     <div>Last guess: <span class="mono">{last_guess}</span></div>
+
     <form class="row" action="/action" method="post">
       <button type="submit" name="cmd" value="start">▶ Start</button>
       <button type="submit" name="cmd" value="play">▶ Play</button>
@@ -170,9 +271,10 @@ def controller():
       <button type="submit" name="cmd" value="prev">⏮ Prev</button>
       <button type="submit" name="cmd" value="next">⏭ Next</button>
       <button type="submit" name="cmd" value="reset">🔁 Reset</button>
-      <button type="submit" formaction="/guess" formmethod="post">🎤 Guess (4s)</button>
     </form>
-    <p>If robot voice is silent, install espeak-ng and/or change SDL_AUDIODRIVER to "pulse" and restart.</p>
+
+    <p>After each song finishes, the robot will ask: <b>"Can you guess the song?"</b> and listen for 4 seconds automatically.</p>
+    <p>If TTS is silent, ensure <code>espeak-ng</code> is installed. If playback is silent, try <code>SDL_AUDIODRIVER=pulse</code>.</p>
     """
     return Response(html, mimetype="text/html")
 
@@ -183,7 +285,6 @@ def action():
     print("[ACTION]", cmd)
     try:
         if cmd in ("start", "play"):
-            # speak BEFORE playing (blocking so you hear it for sure)
             speak_sync(START_LINE)
             play_path(current_song_path())
         elif cmd == "pause": pause()
@@ -204,45 +305,32 @@ def action():
         print("[ACTION ERROR]", e); traceback.print_exc()
     return redirect("/controller")
 
-@app.route("/guess", methods=["POST"])
-def guess():
-    global last_guess, score, current_idx
-    text = transcribe_once(seconds=4) if USE_STT else ""
-    last_guess = text or "(empty)"
-    target = TITLE[current_song_path()]
-    ok = False
-
-    if text:
-        ntext = normalize(text)
-        for variant in ACCEPT[target]:
-            if normalize(variant) in ntext:
-                ok = True; break
-        if not ok and similar(text, target) >= 0.72:
-            ok = True
-
-    if ok:
-        score += 1
-        speak_async(f"Yes! You got it right! The song is {target}.")
-        current_idx = (current_idx + 1) % len(PLAYLIST)
-        play_path(current_song_path())
-    else:
-        speak_async(WRONG_LINE)
-    return redirect("/controller")
-
 @app.route("/debug")
 def debug():
     info = {
         "driver": os.environ.get("SDL_AUDIODRIVER"),
         "mixer": str(pygame.mixer.get_init()),
-        "busy": pygame.mixer.music.get_busy(),
+        "busy": mixer_busy_safe(),
         "current_idx": current_idx,
         "current_song": current_song_path(),
         "score": score,
         "last_guess": last_guess,
+        "USE_STT": USE_STT,
     }
     return info, 200
 
+# 可选：本地 STT 自测端点
+@app.route("/stt_test", methods=["POST"])
+def stt_test():
+    try:
+        text = transcribe_once(seconds=4) if USE_STT else ""
+        return {"ok": True, "text": text}, 200
+    except Exception as e:
+        traceback.print_exc()
+        return {"ok": False, "error": str(e)}, 500
+
 if __name__ == "__main__":
-    # Small boot cue so you know TTS path works
     speak_async("Controller ready.")
+    # 若你需要固定输入设备，可通过环境变量 MIC_DEVICE_INDEX=0 传入；
+    # 或者直接在上面把 device=None 改成 device=0。
     app.run(host="0.0.0.0", port=5000, debug=False)
