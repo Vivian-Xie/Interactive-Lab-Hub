@@ -6,7 +6,7 @@ from threading import Thread
 from difflib import SequenceMatcher
 from flask import Flask, request, redirect, Response
 
-# ==================== STDOUT/ERR 编码兜底（防 UnicodeEncodeError） ====================
+# ==================== STDOUT/ERR （防 UnicodeEncodeError） ====================
 try:
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
@@ -63,6 +63,15 @@ PROMPT_LINE = "Can you guess the song?"
 RESET_LINE = "Game reset. Starting over."
 WRONG_LINE = "Oops! That's not right. Try again!"
 
+# ==================== QUIT ====================
+QUIT_PATTERNS = {
+    "i want to quit", "i want to stop", "i want to exit", "quit", "stop", "exit"
+}
+
+def said_quit(text: str) -> bool:
+    n = normalize(text)
+    return any(normalize(p) in n for p in QUIT_PATTERNS)
+
 # ==================== Helpers ====================
 def normalize(s: str) -> str:
     if not s: return ""
@@ -71,7 +80,7 @@ def normalize(s: str) -> str:
 def similar(a: str, b: str) -> float:
     return SequenceMatcher(None, normalize(a), normalize(b)).ratio()
 
-# ==================== 固定播放列表（三首歌） ====================
+# ==================== Playlist） ====================
 PLAYLIST = [
     os.path.join(SONGS_DIR, "bad_guy.wav"),
     os.path.join(SONGS_DIR, "love_me_like_you_do.wav"),
@@ -91,7 +100,7 @@ ACCEPT = {
 current_idx = 0
 score = 0
 last_guess = ""
-round_token = 0  # 防止并发串台：每播放一首自增
+round_token = 0  
 
 def current_song_path():
     global current_idx
@@ -99,7 +108,7 @@ def current_song_path():
     return PLAYLIST[current_idx]
 
 def play_path(path):
-    """播放歌曲，并启动自动“播完-提问-录音-判断”线程"""
+
     global round_token
     if not os.path.exists(path):
         raise FileNotFoundError(path)
@@ -115,6 +124,17 @@ def play_path(path):
 def pause(): pygame.mixer.music.pause()
 def unpause(): pygame.mixer.music.unpause()
 def stop(): pygame.mixer.music.stop()
+
+
+def replay_current_song_once():
+    path = current_song_path()
+    if not os.path.exists(path):
+        raise FileNotFoundError(path)
+    pygame.mixer.music.stop()
+    pygame.mixer.music.load(path)
+    pygame.mixer.music.set_volume(1.0)
+    pygame.mixer.music.play()
+    print("[REPLAY]", path)
 
 # ==================== STT（Vosk） ====================
 USE_STT = True
@@ -319,7 +339,6 @@ def debug():
     }
     return info, 200
 
-# 可选：本地 STT 自测端点
 @app.route("/stt_test", methods=["POST"])
 def stt_test():
     try:
@@ -331,6 +350,4 @@ def stt_test():
 
 if __name__ == "__main__":
     speak_async("Controller ready.")
-    # 若你需要固定输入设备，可通过环境变量 MIC_DEVICE_INDEX=0 传入；
-    # 或者直接在上面把 device=None 改成 device=0。
     app.run(host="0.0.0.0", port=5000, debug=False)
