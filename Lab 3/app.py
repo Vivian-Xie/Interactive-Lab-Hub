@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
-import os, glob, traceback, threading, queue, subprocess
+import os, re, glob, time, json, traceback, threading, queue, subprocess
+from difflib import SequenceMatcher
 from flask import Flask, request, redirect, Response
 import pygame
 
 # ---------- Audio driver ----------
-# If no sound, change "alsa" to "pulse" and restart Flask.
+# If you get no sound, change "alsa" to "pulse" and restart.
 os.environ.setdefault("SDL_AUDIODRIVER", "alsa")
 
 # ---------- Paths ----------
 BASE = os.path.dirname(os.path.abspath(__file__))
 SONGS_DIR = os.path.join(BASE, "songs")
 
-# ---------- Mixer initialization ----------
+# ---------- Mixer init ----------
 def init_mixer():
     try:
         pygame.mixer.quit()
@@ -31,7 +31,7 @@ try:
     import pyttsx3
 except Exception:
     USE_PYTTSX3 = False
-    print("[TTS] pyttsx3 not available, will use espeak-ng fallback if present.")
+    print("[TTS] pyttsx3 not available, using espeak-ng fallback if present.")
 
 _tts_q = queue.Queue()
 
@@ -40,7 +40,6 @@ def _tts_worker():
         eng = pyttsx3.init()
         try:
             eng.setProperty("rate", 165)
-            # choose an English voice if available
             for v in eng.getProperty("voices"):
                 if "en" in (v.id or "").lower():
                     eng.setProperty("voice", v.id)
@@ -49,21 +48,17 @@ def _tts_worker():
             pass
         while True:
             text = _tts_q.get()
-            if text is None:
-                break
+            if text is None: break
             try:
-                eng.say(text)
-                eng.runAndWait()
+                eng.say(text); eng.runAndWait()
             except Exception:
                 traceback.print_exc()
     else:
-        # fallback: espeak-ng
         while True:
             text = _tts_q.get()
-            if text is None:
-                break
+            if text is None: break
             try:
-                subprocess.run(["espeak-ng", text], check=False)
+                subprocess.run(["espeak-ng", "-a", "200", "-s", "165", "-v", "en", text], check=False)
             except Exception:
                 traceback.print_exc()
 
@@ -73,77 +68,101 @@ def speak(text: str):
     if text:
         _tts_q.put(text)
 
-# ---------- Script lines ----------
-HOST_INTRO = (
-    "Hi everyone! Meet our new interactive chatterbox. "
-    "This box plays music and lets you guess songs while you wait in line. "
-    "Let me show you how it works!"
-)
-ROBOT_INTRO = (
-    "Hello! I am your chatterbox. I will play songs for you to guess. "
-    "I will play the music until you guess it right or want to quit. "
-    "Ready to start? Here we go!"
-)
-ROBOT_PROMPT = "Can you guess the song?"
-CORRECT_TEMPLATE = "Yes! You got it right! The song is {title}. Here comes the next song!"
-WRONG_TEMPLATE = "Oops! That's not right. Try again!"
+# ---------- Helpers ----------
+def normalize(s: str) -> str:
+    if not s: return ""
+    return re.sub(r"[^a-z0-9]+", "", s.lower())
 
-# ---------- Playlist ----------
-def scan_songs():
-    patterns = [os.path.join(SONGS_DIR, "*.wav"), os.path.join(SONGS_DIR, "*.mp3")]
-    files = []
-    for p in patterns:
-        files.extend(glob.glob(p))
-    files = sorted(files)
-    # prioritize bad_guy.wav if present
-    bg = os.path.join(SONGS_DIR, "bad_guy.wav")
-    if bg in files:
-        files.remove(bg)
-        files.insert(0, bg)
-    return files
+def similar(a: str, b: str) -> float:
+    return SequenceMatcher(None, normalize(a), normalize(b)).ratio()
 
-playlist = scan_songs()
+# ---------- Song list (fixed to your 3 files) ----------
+PLAYLIST = [
+    os.path.join(SONGS_DIR, "bad_guy.wav"),
+    os.path.join(SONGS_DIR, "love_me_like_you_do.wav"),
+    os.path.join(SONGS_DIR, "shape_of_you.wav"),
+]
+
+# Pretty titles for speech and matching
+TITLE_BY_PATH = {
+    PLAYLIST[0]: "bad guy",
+    PLAYLIST[1]: "love me like you do",
+    PLAYLIST[2]: "shape of you",
+}
+
+# Accept common variants per song
+ACCEPT = {
+    "bad guy": {"bad guy", "billie eilish bad guy", "badguy"},
+    "love me like you do": {"love me like you do", "love me like u do"},
+    "shape of you": {"shape of you", "ed sheeran shape of you", "shapeofyou"},
+}
+
+# ---------- Playback ----------
 current_idx = 0
+score = 0
+last_guess = ""
 
-def current_song():
+def current_song_path():
     global current_idx
-    if not playlist:
-        return None
-    current_idx = max(0, min(current_idx, len(playlist) - 1))
-    return playlist[current_idx]
+    current_idx = max(0, min(current_idx, len(PLAYLIST) - 1))
+    return PLAYLIST[current_idx]
 
-def reload_playlist_if_needed():
-    global playlist, current_idx
-    new_list = scan_songs()
-    if new_list != playlist:
-        playlist = new_list
-        current_idx = 0
-        print(f"[PLAYLIST] reloaded: {len(playlist)} file(s)")
-
-# ---------- Playback control ----------
 def play_path(path):
-    if not path or not os.path.exists(path):
+    if not os.path.exists(path):
         raise FileNotFoundError(path)
-    print("[PLAY]", path)
     pygame.mixer.music.load(path)
     pygame.mixer.music.set_volume(1.0)
     pygame.mixer.music.play()
-    print("[PLAY] started; busy:", pygame.mixer.music.get_busy())
+    print("[PLAY]", path, "busy:", pygame.mixer.music.get_busy())
 
-def pause():
-    pygame.mixer.music.pause()
+def pause(): pygame.mixer.music.pause()
+def unpause(): pygame.mixer.music.unpause()
+def stop(): pygame.mixer.music.stop()
 
-def unpause():
-    pygame.mixer.music.unpause()
+# ---------- STT (Vosk 4s capture) ----------
+USE_STT = True
+try:
+    import sounddevice as sd
+    from vosk import Model, KaldiRecognizer
+except Exception as e:
+    USE_STT = False
+    print("[STT] sounddevice/vosk unavailable:", e)
 
-def stop():
-    pygame.mixer.music.stop()
+def transcribe_once(seconds: int = 4, samplerate: int = 16000, device=None) -> str:
+    if not USE_STT:
+        return ""
+    global _vosk_model
+    try:
+        _ = _vosk_model
+    except NameError:
+        print("[STT] loading vosk model…")
+        _vosk_model = Model(model_name="vosk-model-small-en-us-0.15")
+    recog = KaldiRecognizer(_vosk_model, samplerate)
+    q = queue.Queue()
 
-# ---------- Flask ----------
+    def cb(indata, frames, t, status):
+        if status: print("[STT][status]", status)
+        q.put(bytes(indata))
+
+    print(f"[STT] recording {seconds}s…")
+    text = ""
+    with sd.RawInputStream(samplerate=samplerate, blocksize=8000, dtype="int16",
+                           channels=1, callback=cb, device=device):
+        start = time.time()
+        while time.time() - start < seconds:
+            data = q.get()
+            if recog.AcceptWaveform(data):
+                res = json.loads(recog.Result()).get("text", "")
+                if res: text = res
+        final = json.loads(recog.FinalResult()).get("text", "")
+        if final: text = final
+    print("[STT] transcript:", text)
+    return text.strip()
+
+# ---------- Flask app ----------
 app = Flask(__name__)
 
-# Speak host intro once at startup
-speak(HOST_INTRO)
+ROBOT_START = "Hello! Let's start the music guessing game!"
 
 @app.route("/")
 def home():
@@ -151,105 +170,89 @@ def home():
 
 @app.route("/controller")
 def controller():
-    reload_playlist_if_needed()
     busy = pygame.mixer.music.get_busy()
-    vol = pygame.mixer.music.get_volume()
-    song = current_song()
-    song_name = os.path.basename(song) if song else "(no audio)"
+    song = os.path.basename(current_song_path())
     html = f"""
-    <!doctype html><meta charset="utf-8"><title>Music Controller</title>
+    <!doctype html><meta charset="utf-8"><title>Music Guessing</title>
     <style>
-      body {{ font-family: system-ui, sans-serif; padding: 24px; }}
-      h1 {{ margin: 0 0 12px; }}
-      .row {{ display:flex; gap:8px; margin:12px 0; flex-wrap: wrap; }}
-      button {{ padding:8px 16px; font-size:16px; }}
-      .info {{ margin-top:12px; color:#555; }}
-      .badge {{ padding:2px 6px; border-radius:6px; background:#eef; }}
-      .mono {{ font-family: monospace; }}
+      body{{font-family:system-ui,sans-serif;padding:24px}} .row{{display:flex;gap:8px;flex-wrap:wrap}}
+      button{{padding:8px 16px;font-size:16px}} .badge{{padding:2px 6px;border-radius:6px;background:#eef}}
+      .mono{{font-family:monospace}}
     </style>
     <h1>Music Guessing Controller</h1>
-    <div class="info">
-      <div>Driver: <span class="badge">{os.environ.get("SDL_AUDIODRIVER")}</span></div>
-      <div>Mixer: <span class="badge">{pygame.mixer.get_init()}</span></div>
-      <div>Status: <span class="badge">{'Playing' if busy else 'Idle'}</span></div>
-      <div>Volume: <span class="badge">{vol:.2f}</span></div>
-      <div>Song: <span class="mono">{song_name}</span></div>
-      <div>Files in songs/: {len(playlist)}</div>
-    </div>
-
-    <form class="row" action="/action" method="post">
-      <button type="submit" name="cmd" value="play">▶ Play</button>
+    <div>Now: <span class="badge">{'Playing' if busy else 'Idle'}</span></div>
+    <div>Song file: <span class="mono">{song}</span></div>
+    <div>Score: <span class="badge">{score}</span></div>
+    <div>Last guess: <span class="mono">{last_guess}</span></div>
+    <form class="row" action="/action" method="post" style="margin:12px 0">
+      <button type="submit" name="cmd" value="start">▶ Start</button>
       <button type="submit" name="cmd" value="pause">⏸ Pause</button>
       <button type="submit" name="cmd" value="unpause">⏯ Continue</button>
       <button type="submit" name="cmd" value="stop">⏹ Stop</button>
+      <button type="submit" name="cmd" value="prev">⏮ Prev</button>
+      <button type="submit" name="cmd" value="next">⏭ Next</button>
       <button type="submit" name="cmd" value="reset">🔁 Reset</button>
-      <button type="submit" name="cmd" value="correct">✅ Correct</button>
-      <button type="submit" name="cmd" value="wrong">❌ Wrong</button>
+      <button type="submit" formaction="/guess" formmethod="post">🎤 Guess (4s)</button>
     </form>
-
-    <p class="info">Tip: If you have no sound, edit app.py and change SDL_AUDIODRIVER to "pulse", then restart Flask.</p>
+    <p>If robot voice is silent, switch SDL_AUDIODRIVER at top of app.py to "pulse" and restart.</p>
     """
     return Response(html, mimetype="text/html")
 
 @app.route("/action", methods=["POST"])
 def action():
-    global current_idx
-    cmd = (request.form.get("cmd") or "").lower().strip()
+    global current_idx, score
+    cmd = (request.form.get("cmd") or "").lower()
     print("[ACTION]", cmd)
     try:
-        if cmd == "play":
-            path = current_song()
-            if path:
-                speak(ROBOT_INTRO)
-                play_path(path)
-                speak(ROBOT_PROMPT)
-            else:
-                print("[ACTION] No audio found in", SONGS_DIR)
-
-        elif cmd == "pause":
-            pause()
-
-        elif cmd == "unpause":
-            unpause()
-
-        elif cmd == "stop":
-            stop()
-
-        elif cmd == "reset":
-            stop()
-            current_idx = 0
-            speak("Game reset. Starting over.")
-            print("[RESET] current_idx=0")
-
+        if cmd == "start":
+            speak(ROBOT_START)
+            time.sleep(0.3)  # let TTS begin
+            play_path(current_song_path())
+            speak("Can you guess the song?")
+        elif cmd == "pause": pause()
+        elif cmd == "unpause": unpause()
+        elif cmd == "stop": stop()
         elif cmd == "next":
-            if playlist:
-                current_idx = (current_idx + 1) % len(playlist)
-                play_path(current_song())
-                speak("Next song. Can you guess the title?")
-
+            current_idx = (current_idx + 1) % len(PLAYLIST)
+            play_path(current_song_path()); speak("Next song. Guess the title.")
         elif cmd == "prev":
-            if playlist:
-                current_idx = (current_idx - 1) % len(playlist)
-                play_path(current_song())
-                speak("Previous song. Can you guess the title?")
-
-        elif cmd == "correct":
-            title = os.path.basename(current_song()) if current_song() else "the song"
-            speak(CORRECT_TEMPLATE.format(title=title))
-            if playlist:
-                current_idx = (current_idx + 1) % len(playlist)
-                play_path(current_song())
-                speak(ROBOT_PROMPT)
-
-        elif cmd == "wrong":
-            speak(WRONG_TEMPLATE)
-
+            current_idx = (current_idx - 1) % len(PLAYLIST)
+            play_path(current_song_path()); speak("Previous song. Guess the title.")
+        elif cmd == "reset":
+            stop(); current_idx = 0; score = 0
+            speak("Game reset. Starting over.")
         else:
-            print("[ACTION] unknown cmd:", cmd)
-
+            print("[ACTION] unknown:", cmd)
     except Exception as e:
-        print("[ACTION ERROR]", e)
-        traceback.print_exc()
+        print("[ACTION ERROR]", e); traceback.print_exc()
+    return redirect("/controller")
+
+@app.route("/guess", methods=["POST"])
+def guess():
+    global last_guess, score, current_idx
+    text = transcribe_once(seconds=4) if USE_STT else ""
+    last_guess = text or "(empty)"
+    target = TITLE_BY_PATH[current_song_path()]
+    ok = False
+
+    if text:
+        ntext = normalize(text)
+        # direct hit by any accepted variant
+        for var in ACCEPT[target]:
+            if normalize(var) in ntext:
+                ok = True; break
+        # fuzzy fallback
+        if not ok and similar(text, target) >= 0.72:
+            ok = True
+
+    if ok:
+        score += 1
+        speak(f"Yes! You got it right! The song is {target}.")
+        current_idx = (current_idx + 1) % len(PLAYLIST)
+        play_path(current_song_path())
+        speak("Next song. Can you guess the title?")
+    else:
+        speak("Oops! That's not right. Try again.")
     return redirect("/controller")
 
 @app.route("/debug")
@@ -258,14 +261,15 @@ def debug():
         "driver": os.environ.get("SDL_AUDIODRIVER"),
         "mixer": str(pygame.mixer.get_init()),
         "busy": pygame.mixer.music.get_busy(),
-        "volume": pygame.mixer.music.get_volume(),
-        "songs_dir": SONGS_DIR,
-        "playlist_len": len(playlist),
         "current_idx": current_idx,
-        "current_song": current_song(),
+        "current_song": current_song_path(),
+        "score": score,
+        "last_guess": last_guess,
     }
     return info, 200
 
 if __name__ == "__main__":
+    # Optional: speak on boot so you know TTS works
+    speak("Controller ready.")
     app.run(host="0.0.0.0", port=5000, debug=False)
 
