@@ -1,193 +1,179 @@
-import os, threading, time, queue, json
-from flask import Flask, render_template, request, redirect, jsonify
-import sounddevice as sd
-from vosk import Model, KaldiRecognizer
-import pyttsx3
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import os, glob, traceback
+from flask import Flask, request, redirect, Response
 import pygame
 
-# ==================== CONFIG ====================
-AUDIO_SR = 16000
-LISTEN_SECONDS = 5
-CLIP_SECONDS = 8
-LED_PIN = 22
-BUTTON_PIN = 23
-VOSK_MODEL_PATH = "/home/pi/vosk-model-small-en-us-0.15"  # 若无则用内置小模型
-SONGS = [
-    {"file": "songs/bad_guy.wav", "answers": ["bad guy", "billie eilish"]},
-]
-# ================================================
+# ---------- Audio driver ----------
+# If no sound, change "alsa" to "pulse" and restart Flask.
+os.environ.setdefault("SDL_AUDIODRIVER", "alsa")
 
-# -------- GPIO（可选）--------
-try:
-    import RPi.GPIO as GPIO
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(LED_PIN, GPIO.OUT)
-    GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-    def led_on(): GPIO.output(LED_PIN, 1)
-    def led_off(): GPIO.output(LED_PIN, 0)
-    def read_btn(): return GPIO.input(BUTTON_PIN)
-except Exception as e:
-    print("[WARN] GPIO not available:", e)
-    def led_on(): pass
-    def led_off(): pass
-    def read_btn(): return 1
+# ---------- Paths ----------
+BASE = os.path.dirname(os.path.abspath(__file__))
+SONGS_DIR = os.path.join(BASE, "songs")
 
-# -------- TTS --------
-tts = pyttsx3.init()
-def speak(text):
+# ---------- Mixer initialization ----------
+def init_mixer():
     try:
-        print("[TTS]", text)
-        tts.say(text); tts.runAndWait()
+        pygame.mixer.quit()
+        pygame.mixer.init(frequency=44100, channels=2, buffer=512)
+        print(f"[AUDIO] mixer={pygame.mixer.get_init()} driver={os.environ.get('SDL_AUDIODRIVER')}")
     except Exception as e:
-        print("[TTS ERROR]", e)
+        print("[AUDIO][INIT ERROR]", e)
+        traceback.print_exc()
 
-# -------- 播放器（pygame）--------
-pygame.mixer.init(frequency=AUDIO_SR, channels=1)
-def play_clip(path, seconds=CLIP_SECONDS):
-    try:
-        if not os.path.exists(path):
-            print("[AUDIO] missing:", path); return
-        pygame.mixer.music.load(path)
-        pygame.mixer.music.play()
-        t0 = time.time()
-        while pygame.mixer.music.get_busy() and time.time()-t0 < seconds:
-            time.sleep(0.05)
-        pygame.mixer.music.stop()
-    except Exception as e:
-        print("[AUDIO ERROR]", e)
+init_mixer()
 
-# -------- Vosk 识别 --------
-def load_recognizer():
-    print("[VOSK] Loading model...")
-    if os.path.exists(VOSK_MODEL_PATH):
-        model = Model(VOSK_MODEL_PATH)
-    else:
-        model = Model(lang="en-us")  # 首次联网会自动下载小模型
-    return KaldiRecognizer(model, AUDIO_SR)
+# ---------- Playlist ----------
+def scan_songs():
+    patterns = [os.path.join(SONGS_DIR, "*.wav"), os.path.join(SONGS_DIR, "*.mp3")]
+    files = []
+    for p in patterns:
+        files.extend(glob.glob(p))
+    files = sorted(files)
+    # prioritize bad_guy.wav if present
+    bg = os.path.join(SONGS_DIR, "bad_guy.wav")
+    if bg in files:
+        files.remove(bg)
+        files.insert(0, bg)
+    return files
 
-recognizer = load_recognizer()
+playlist = scan_songs()
+current_idx = 0
 
-def listen_once(sec=LISTEN_SECONDS):
-    q = queue.Queue()
-    def cb(indata, frames, t, status):
-        if status: print(status)
-        q.put(bytes(indata))
-    text_final = ""
-    recognizer.Reset()
-    try:
-        with sd.RawInputStream(samplerate=AUDIO_SR, blocksize=8000, dtype='int16',
-                               channels=1, callback=cb):
-            led_on()
-            start = time.time()
-            while time.time() - start < sec:
-                data = q.get()
-                if recognizer.AcceptWaveform(data):
-                    res = json.loads(recognizer.Result())
-                    chunk = res.get("text","").strip()
-                    if chunk: text_final += " " + chunk
-            res = json.loads(recognizer.FinalResult())
-            fin = res.get("text","").strip()
-            if fin: text_final += " " + fin
-    except Exception as e:
-        print("[LISTEN ERROR]", e)
-    finally:
-        led_off()
-    return (text_final or "").strip().lower()
+def current_song():
+    global current_idx
+    if not playlist:
+        return None
+    current_idx = max(0, min(current_idx, len(playlist) - 1))
+    return playlist[current_idx]
 
-# -------- 游戏状态 --------
-state = {"idx":0, "running":False, "last_heard":"", "last_result":"", "score":0}
-state_lock = threading.Lock()
+def reload_playlist_if_needed():
+    global playlist, current_idx
+    new_list = scan_songs()
+    if new_list != playlist:
+        playlist = new_list
+        current_idx = 0
+        print(f"[PLAYLIST] reloaded: {len(playlist)} file(s)")
 
-def button_thread():
-    last = 1
-    while True:
-        try:
-            cur = read_btn()
-            if last == 1 and cur == 0:           # 按下沿
-                with state_lock:
-                    if not state["running"]:
-                        state["running"] = True
-                        speak("Game start")
-                    else:
-                        state["idx"] = (state["idx"] + 1) % max(1, len(SONGS))
-                        speak("Next song")
-            last = cur
-            time.sleep(0.05)
-        except Exception as e:
-            print("[BUTTON ERROR]", e); time.sleep(0.5)
+# ---------- Playback control ----------
+def play_path(path):
+    if not path or not os.path.exists(path):
+        raise FileNotFoundError(path)
+    print("[PLAY]", path)
+    pygame.mixer.music.load(path)
+    pygame.mixer.music.set_volume(1.0)
+    pygame.mixer.music.play()
+    print("[PLAY] started; busy:", pygame.mixer.music.get_busy())
 
-def game_loop():
-    while True:
-        with state_lock:
-            running = state["running"]
-            idx = state["idx"]
-        if not running or not SONGS:
-            time.sleep(0.2); continue
+def pause():
+    pygame.mixer.music.pause()
 
-        song = SONGS[idx]
-        speak("Listen")
-        play_clip(song["file"])
-        speak("Your guess?")
-        heard = listen_once()
-        print("[HEARD]", heard)
-        with state_lock: state["last_heard"] = heard
+def unpause():
+    pygame.mixer.music.unpause()
 
-        if not heard:
-            speak("I didn't catch that")
-            with state_lock: state["last_result"] = "no_input"
-            continue
+def stop():
+    pygame.mixer.music.stop()
 
-        ok = any(k in heard for k in song["answers"])
-        if ok:
-            speak("You got it")
-            with state_lock:
-                state["score"] += 1
-                state["last_result"] = "correct"
-                state["idx"] = (state["idx"] + 1) % max(1,len(SONGS))
-        else:
-            speak("Not quite, try again")
-            with state_lock: state["last_result"] = "incorrect"
-        time.sleep(0.3)
-
-# -------- Flask 控制器 --------
+# ---------- Flask ----------
 app = Flask(__name__)
 
 @app.route("/")
-def home(): return redirect("/controller")
+def home():
+    return redirect("/controller")
 
 @app.route("/controller")
 def controller():
-    with state_lock:
-        s = dict(state)
-        if SONGS:
-            s["current_file"] = SONGS[state["idx"]]["file"]
-            s["answers"] = ", ".join(SONGS[state["idx"]]["answers"])
-        else:
-            s["current_file"] = "(no songs)"
-            s["answers"] = ""
-    return render_template("controller.html", s=s)
+    reload_playlist_if_needed()
+    busy = pygame.mixer.music.get_busy()
+    vol = pygame.mixer.music.get_volume()
+    song = current_song()
+    song_name = os.path.basename(song) if song else "(no audio)"
+    html = f"""
+    <!doctype html><meta charset="utf-8"><title>Music Controller</title>
+    <style>
+      body {{ font-family: system-ui, sans-serif; padding: 24px; }}
+      h1 {{ margin: 0 0 12px; }}
+      .row {{ display:flex; gap:8px; margin:12px 0; }}
+      button {{ padding:8px 16px; font-size:16px; }}
+      .info {{ margin-top:12px; color:#555; }}
+      .badge {{ padding:2px 6px; border-radius:6px; background:#eef; }}
+      .mono {{ font-family: monospace; }}
+    </style>
+    <h1>Music Guessing Controller</h1>
+    <div class="info">
+      <div>Driver: <span class="badge">{os.environ.get("SDL_AUDIODRIVER")}</span></div>
+      <div>Mixer: <span class="badge">{pygame.mixer.get_init()}</span></div>
+      <div>Status: <span class="badge">{'Playing' if busy else 'Idle'}</span></div>
+      <div>Volume: <span class="badge">{vol:.2f}</span></div>
+      <div>Song: <span class="mono">{song_name}</span></div>
+      <div>Files in songs/: {len(playlist)}</div>
+    </div>
+
+    <form class="row" action="/action" method="post">
+      <button type="submit" name="cmd" value="play">▶ Play</button>
+      <button type="submit" name="cmd" value="pause">⏸ Pause</button>
+      <button type="submit" name="cmd" value="unpause">⏯ Continue</button>
+      <button type="submit" name="cmd" value="stop">⏹ Stop</button>
+      <button type="submit" name="cmd" value="reset">🔁 Reset</button>
+    </form>
+
+    <form class="row" action="/action" method="post">
+      <button type="submit" name="cmd" value="prev">⏮ Prev</button>
+      <button type="submit" name="cmd" value="next">⏭ Next</button>
+    </form>
+
+    <p class="info">Tip: If you have no sound, edit app.py and change SDL_AUDIODRIVER to "pulse", then restart Flask.</p>
+    """
+    return Response(html, mimetype="text/html")
 
 @app.route("/action", methods=["POST"])
 def action():
-    act = request.form.get("act","")
-    with state_lock:
-        if act == "start": state["running"] = True
-        elif act == "pause": state["running"] = False
-        elif act == "next": state["idx"] = (state["idx"] + 1) % max(1,len(SONGS))
-        elif act == "reset": state.update({"idx":0,"running":False,"last_heard":"","last_result":"","score":0})
+    global current_idx
+    cmd = (request.form.get("cmd") or "").lower().strip()
+    print("[ACTION]", cmd)
+    try:
+        if cmd == "play":
+            path = current_song()
+            if path: play_path(path)
+            else: print("[ACTION] No audio found in", SONGS_DIR)
+        elif cmd == "pause":
+            pause()
+        elif cmd == "unpause":
+            unpause()
+        elif cmd == "stop":
+            stop()
+        elif cmd == "reset":
+            stop(); current_idx = 0; print("[RESET] current_idx=0")
+        elif cmd == "next":
+            if playlist:
+                current_idx = (current_idx + 1) % len(playlist)
+                play_path(current_song())
+        elif cmd == "prev":
+            if playlist:
+                current_idx = (current_idx - 1) % len(playlist)
+                play_path(current_song())
+        else:
+            print("[ACTION] unknown cmd:", cmd)
+    except Exception as e:
+        print("[ACTION ERROR]", e)
+        traceback.print_exc()
     return redirect("/controller")
 
-@app.route("/state")
-def api_state():
-    with state_lock:
-        s = dict(state)
-        s["current_file"] = SONGS[state["idx"]]["file"] if SONGS else "(no songs)"
-    return jsonify(s)
-
-def start_threads():
-    threading.Thread(target=button_thread, daemon=True).start()
-    threading.Thread(target=game_loop, daemon=True).start()
+@app.route("/debug")
+def debug():
+    info = {
+        "driver": os.environ.get("SDL_AUDIODRIVER"),
+        "mixer": str(pygame.mixer.get_init()),
+        "busy": pygame.mixer.music.get_busy(),
+        "volume": pygame.mixer.music.get_volume(),
+        "songs_dir": SONGS_DIR,
+        "playlist_len": len(playlist),
+        "current_idx": current_idx,
+        "current_song": current_song(),
+    }
+    return info, 200
 
 if __name__ == "__main__":
-    start_threads()
     app.run(host="0.0.0.0", port=5000, debug=False)
