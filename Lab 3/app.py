@@ -1,19 +1,18 @@
 #!/usr/bin/env python3
 
-import os, re, glob, time, json, traceback, threading, queue, subprocess
+import os, re, time, json, traceback, subprocess, queue
 from difflib import SequenceMatcher
 from flask import Flask, request, redirect, Response
 import pygame
 
-# ---------- Audio driver ----------
-# If you get no sound, change "alsa" to "pulse" and restart.
+# ============ Audio / Paths ============
+# If music is silent, change "alsa" -> "pulse" and restart.
 os.environ.setdefault("SDL_AUDIODRIVER", "alsa")
 
-# ---------- Paths ----------
 BASE = os.path.dirname(os.path.abspath(__file__))
 SONGS_DIR = os.path.join(BASE, "songs")
 
-# ---------- Mixer init ----------
+# ============ Mixer ============
 def init_mixer():
     try:
         pygame.mixer.quit()
@@ -25,50 +24,32 @@ def init_mixer():
 
 init_mixer()
 
-# ---------- TTS (pyttsx3 -> espeak-ng fallback) ----------
-USE_PYTTSX3 = True
-try:
-    import pyttsx3
-except Exception:
-    USE_PYTTSX3 = False
-    print("[TTS] pyttsx3 not available, using espeak-ng fallback if present.")
+# ============ TTS (force espeak-ng, synchronous by default) ============
+def speak_sync(text: str):
+    if not text: 
+        return
+    try:
+        # -a volume, -s speed, -v voice language
+        subprocess.run(["espeak-ng", "-a", "200", "-s", "165", "-v", "en", text], check=False)
+    except Exception as e:
+        print("[TTS ERROR]", e)
 
-_tts_q = queue.Queue()
+def speak_async(text: str):
+    if not text:
+        return
+    try:
+        subprocess.Popen(["espeak-ng", "-a", "200", "-s", "165", "-v", "en", text])
+    except Exception as e:
+        print("[TTS ASYNC ERROR]", e)
 
-def _tts_worker():
-    if USE_PYTTSX3:
-        eng = pyttsx3.init()
-        try:
-            eng.setProperty("rate", 165)
-            for v in eng.getProperty("voices"):
-                if "en" in (v.id or "").lower():
-                    eng.setProperty("voice", v.id)
-                    break
-        except Exception:
-            pass
-        while True:
-            text = _tts_q.get()
-            if text is None: break
-            try:
-                eng.say(text); eng.runAndWait()
-            except Exception:
-                traceback.print_exc()
-    else:
-        while True:
-            text = _tts_q.get()
-            if text is None: break
-            try:
-                subprocess.run(["espeak-ng", "-a", "200", "-s", "165", "-v", "en", text], check=False)
-            except Exception:
-                traceback.print_exc()
+START_LINE = "Hello! Let's start the music guessing game!"
+PROMPT_LINE = "Can you guess the song?"
+NEXT_LINE = "Next song. Can you guess the title?"
+PREV_LINE = "Previous song. Can you guess the title?"
+RESET_LINE = "Game reset. Starting over."
+WRONG_LINE = "Oops! That's not right. Try again!"
 
-threading.Thread(target=_tts_worker, daemon=True).start()
-
-def speak(text: str):
-    if text:
-        _tts_q.put(text)
-
-# ---------- Helpers ----------
+# ============ Helpers ============
 def normalize(s: str) -> str:
     if not s: return ""
     return re.sub(r"[^a-z0-9]+", "", s.lower())
@@ -76,28 +57,23 @@ def normalize(s: str) -> str:
 def similar(a: str, b: str) -> float:
     return SequenceMatcher(None, normalize(a), normalize(b)).ratio()
 
-# ---------- Song list (fixed to your 3 files) ----------
+# ============ Fixed playlist (your three songs) ============
 PLAYLIST = [
     os.path.join(SONGS_DIR, "bad_guy.wav"),
     os.path.join(SONGS_DIR, "love_me_like_you_do.wav"),
     os.path.join(SONGS_DIR, "shape_of_you.wav"),
 ]
-
-# Pretty titles for speech and matching
-TITLE_BY_PATH = {
+TITLE = {
     PLAYLIST[0]: "bad guy",
     PLAYLIST[1]: "love me like you do",
     PLAYLIST[2]: "shape of you",
 }
-
-# Accept common variants per song
 ACCEPT = {
     "bad guy": {"bad guy", "billie eilish bad guy", "badguy"},
     "love me like you do": {"love me like you do", "love me like u do"},
     "shape of you": {"shape of you", "ed sheeran shape of you", "shapeofyou"},
 }
 
-# ---------- Playback ----------
 current_idx = 0
 score = 0
 last_guess = ""
@@ -114,23 +90,24 @@ def play_path(path):
     pygame.mixer.music.set_volume(1.0)
     pygame.mixer.music.play()
     print("[PLAY]", path, "busy:", pygame.mixer.music.get_busy())
+    # prompt after song starts (non-blocking)
+    speak_async(PROMPT_LINE)
 
 def pause(): pygame.mixer.music.pause()
 def unpause(): pygame.mixer.music.unpause()
 def stop(): pygame.mixer.music.stop()
 
-# ---------- STT (Vosk 4s capture) ----------
+# ============ STT (Vosk, 4s capture) ============
 USE_STT = True
 try:
     import sounddevice as sd
     from vosk import Model, KaldiRecognizer
 except Exception as e:
     USE_STT = False
-    print("[STT] sounddevice/vosk unavailable:", e)
+    print("[STT] unavailable:", e)
 
 def transcribe_once(seconds: int = 4, samplerate: int = 16000, device=None) -> str:
-    if not USE_STT:
-        return ""
+    if not USE_STT: return ""
     global _vosk_model
     try:
         _ = _vosk_model
@@ -159,10 +136,8 @@ def transcribe_once(seconds: int = 4, samplerate: int = 16000, device=None) -> s
     print("[STT] transcript:", text)
     return text.strip()
 
-# ---------- Flask app ----------
+# ============ Flask ============
 app = Flask(__name__)
-
-ROBOT_START = "Hello! Let's start the music guessing game!"
 
 @app.route("/")
 def home():
@@ -175,17 +150,20 @@ def controller():
     html = f"""
     <!doctype html><meta charset="utf-8"><title>Music Guessing</title>
     <style>
-      body{{font-family:system-ui,sans-serif;padding:24px}} .row{{display:flex;gap:8px;flex-wrap:wrap}}
-      button{{padding:8px 16px;font-size:16px}} .badge{{padding:2px 6px;border-radius:6px;background:#eef}}
+      body{{font-family:system-ui,sans-serif;padding:24px}}
+      .row{{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}}
+      button{{padding:8px 16px;font-size:16px}}
+      .badge{{padding:2px 6px;border-radius:6px;background:#eef}}
       .mono{{font-family:monospace}}
     </style>
     <h1>Music Guessing Controller</h1>
-    <div>Now: <span class="badge">{'Playing' if busy else 'Idle'}</span></div>
-    <div>Song file: <span class="mono">{song}</span></div>
+    <div>Status: <span class="badge">{'Playing' if busy else 'Idle'}</span></div>
+    <div>Song: <span class="mono">{song}</span></div>
     <div>Score: <span class="badge">{score}</span></div>
     <div>Last guess: <span class="mono">{last_guess}</span></div>
-    <form class="row" action="/action" method="post" style="margin:12px 0">
+    <form class="row" action="/action" method="post">
       <button type="submit" name="cmd" value="start">▶ Start</button>
+      <button type="submit" name="cmd" value="play">▶ Play</button>
       <button type="submit" name="cmd" value="pause">⏸ Pause</button>
       <button type="submit" name="cmd" value="unpause">⏯ Continue</button>
       <button type="submit" name="cmd" value="stop">⏹ Stop</button>
@@ -194,33 +172,32 @@ def controller():
       <button type="submit" name="cmd" value="reset">🔁 Reset</button>
       <button type="submit" formaction="/guess" formmethod="post">🎤 Guess (4s)</button>
     </form>
-    <p>If robot voice is silent, switch SDL_AUDIODRIVER at top of app.py to "pulse" and restart.</p>
+    <p>If robot voice is silent, install espeak-ng and/or change SDL_AUDIODRIVER to "pulse" and restart.</p>
     """
     return Response(html, mimetype="text/html")
 
 @app.route("/action", methods=["POST"])
 def action():
     global current_idx, score
-    cmd = (request.form.get("cmd") or "").lower()
+    cmd = (request.form.get("cmd") or "").lower().strip()
     print("[ACTION]", cmd)
     try:
-        if cmd == "start":
-            speak(ROBOT_START)
-            time.sleep(0.3)  # let TTS begin
+        if cmd in ("start", "play"):
+            # speak BEFORE playing (blocking so you hear it for sure)
+            speak_sync(START_LINE)
             play_path(current_song_path())
-            speak("Can you guess the song?")
         elif cmd == "pause": pause()
         elif cmd == "unpause": unpause()
         elif cmd == "stop": stop()
         elif cmd == "next":
             current_idx = (current_idx + 1) % len(PLAYLIST)
-            play_path(current_song_path()); speak("Next song. Guess the title.")
+            play_path(current_song_path())
         elif cmd == "prev":
             current_idx = (current_idx - 1) % len(PLAYLIST)
-            play_path(current_song_path()); speak("Previous song. Guess the title.")
+            play_path(current_song_path())
         elif cmd == "reset":
             stop(); current_idx = 0; score = 0
-            speak("Game reset. Starting over.")
+            speak_async(RESET_LINE)
         else:
             print("[ACTION] unknown:", cmd)
     except Exception as e:
@@ -232,27 +209,24 @@ def guess():
     global last_guess, score, current_idx
     text = transcribe_once(seconds=4) if USE_STT else ""
     last_guess = text or "(empty)"
-    target = TITLE_BY_PATH[current_song_path()]
+    target = TITLE[current_song_path()]
     ok = False
 
     if text:
         ntext = normalize(text)
-        # direct hit by any accepted variant
-        for var in ACCEPT[target]:
-            if normalize(var) in ntext:
+        for variant in ACCEPT[target]:
+            if normalize(variant) in ntext:
                 ok = True; break
-        # fuzzy fallback
         if not ok and similar(text, target) >= 0.72:
             ok = True
 
     if ok:
         score += 1
-        speak(f"Yes! You got it right! The song is {target}.")
+        speak_async(f"Yes! You got it right! The song is {target}.")
         current_idx = (current_idx + 1) % len(PLAYLIST)
         play_path(current_song_path())
-        speak("Next song. Can you guess the title?")
     else:
-        speak("Oops! That's not right. Try again.")
+        speak_async(WRONG_LINE)
     return redirect("/controller")
 
 @app.route("/debug")
@@ -269,7 +243,6 @@ def debug():
     return info, 200
 
 if __name__ == "__main__":
-    # Optional: speak on boot so you know TTS works
-    speak("Controller ready.")
+    # Small boot cue so you know TTS path works
+    speak_async("Controller ready.")
     app.run(host="0.0.0.0", port=5000, debug=False)
-
