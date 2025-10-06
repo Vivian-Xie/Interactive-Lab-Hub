@@ -267,9 +267,11 @@ NAMES OF COLLABORATORS: Maggie Liang(ml2927) Xueer Zhang(xz946) Xinwei Xie(xx218
 
 </details>
 
-![Verplank digram_1](./Verplank_digram_1.png)
+## 🎨 Storyboard
 
-![Verplank digram_2](./Verplank_digram_2.png)
+![Verplank Diagram](guess_music_diagram%202.png)
+![Storyboard](guess_music_storyboard.png)
+
 
 Write out what you imagine the dialogue to be. Use cards, post-its, or whatever method helps you develop alternatives or group responses. 
 
@@ -364,6 +366,7 @@ I learned that designing a system requires thinking about human factors. People 
 ### How could you use your system to create a dataset of interaction? What other sensing modalities would make sense to capture?
 
 The system could collect useful data for improvement. We could record all user guesses to create a voice dataset with both correct and incorrect answers. We could measure response time to see how long users take to guess each song. This would help us understand song difficulty and rate songs based on how often users guess correctly. We could also track error patterns to find common mistakes in voice recognition. This data could help make the game better and more user-friendly in future versions.
+
 
 
 
