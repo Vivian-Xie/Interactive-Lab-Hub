@@ -318,21 +318,51 @@ Screen or text display: Display short prompts like “Listening…” or “Say 
 Facial or emotional expressions: In a future version, a simple animated face could reflect the robot’s reactions (e.g., smiling for correct, sad for incorrect).
 5. Make a new storyboard, diagram and/or script based on these reflections.
 
-## Prototype your system 
-👉 [View app.py](https://github.com/xz946-maker/Interactive-Lab-Hub/blob/073756390b9e6479cb406d21b616c287fc2c992b/Lab%203/app.py)
 
-This is a music guessing game that uses a Raspberry Pi. Players listen to song clips and try to guess the song name by speaking to the system.
-[The link to our demo](https://drive.google.com/file/d/1LMfZVcPqiEs-d2FYJQiQ2slWikf9R6w-/view?usp=sharing)
+<details>
+  <summary><strong>Prep for Part 2 (Click to Expand)</strong></summary>
+  For Part 2, you will redesign the interaction with the speech-enabled device using the data collected, as well as feedback from part 1.
+  
+  
+  ## Prototype your system
+  
+  The system should:
+  * use the Raspberry Pi 
+  * use one or more sensors
+  * require participants to speak to it.
+</details>
 
-
-The system should:
-* use the Raspberry Pi 
-* use one or more sensors
-* require participants to speak to it. 
+![Verplank digram_1](./Verplank_digram_1.png)
 
 *Document how the system works*
 
+This is a music guessing game that uses a Raspberry Pi. Players listen to song clips and try to guess the song name by speaking to the system.
+
+Design Improvements
+
+We made several improvements based on Part 1 feedback:
+
+- Clearer Instructions: We used more clear and standard wording to give users instructions
+- Lower Difficulty: We made the song guessing process easier for players
+
+
+Interaction Modes and System Design
+
+The system uses speech interaction:
+- Users must click a button on the webpage to start the game.
+- And the speaker will instruct the user to play the game.
+- After each game, users need to reset and click start again to play
+
+The system includes:
+- Raspberry Pi: Main controller
+- Speaker and Web Camera
+
+System Control:
+- Speech Input: Players speak their guesses to the system
+
 *Include videos or screencaptures of both the system and the controller.*
+👉 [View app.py](https://github.com/xz946-maker/Interactive-Lab-Hub/blob/073756390b9e6479cb406d21b616c287fc2c992b/Lab%203/app.py)
+*[Guessing Game Video](https://drive.google.com/file/d/1LMfZVcPqiEs-d2FYJQiQ2slWikf9R6w-/view?usp=sharing)*
 
 <details>
   <summary><strong>Submission Cleanup Reminder (Click to Expand)</strong></summary>
@@ -352,12 +382,11 @@ Try to get at least two people to interact with your system. (Ideally, you would
 Answer the following:
 
 ### What worked well about the system and what didn't?
-The controller performed smoothly during testing. It played music without problems and responded quickly to user inputs. The basic game flow worked as we expected. Players could start the game, hear songs, make guesses, and receive feedback from the system.
 We found several problems during testing. The biggest issue was voice recognition. The system had difficulty understanding what players said. Sometimes players guessed the correct song name, but the system did not recognize it. The system also required exact matching. Players had to say the exact song name without adding or missing any words. This was very frustrating for users. Another problem was song length. Many users told us the music intro was too short. They could not recognize the song before it ended. Users also wanted more features. When they could not guess a song, they wanted to hear more of it, but the system did not have this option.
 
 ### What worked well about the controller and what didn't?
 
-\*\**your answer here*\*\*
+I learned that designing a system requires thinking about human factors. People who use the system for the first time need clear guidance and instructions so they understand how to play. They also need forgiveness for small mistakes because people naturally speak in different ways. Users need enough time to think and respond, especially when listening to music they are trying to remember. The system should also provide flexible input methods because strict rules make the game less fun and more frustrating.
 
 ### What lessons can you take away from the WoZ interactions for designing a more autonomous version of the system?
 
@@ -367,6 +396,7 @@ I learned that designing a system requires thinking about human factors. People 
 ### How could you use your system to create a dataset of interaction? What other sensing modalities would make sense to capture?
 
 The system could collect useful data for improvement. We could record all user guesses to create a voice dataset with both correct and incorrect answers. We could measure response time to see how long users take to guess each song. This would help us understand song difficulty and rate songs based on how often users guess correctly. We could also track error patterns to find common mistakes in voice recognition. This data could help make the game better and more user-friendly in future versions.
+
 
 
 
