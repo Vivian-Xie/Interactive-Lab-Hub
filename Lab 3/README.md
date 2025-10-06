@@ -114,7 +114,7 @@ NAMES OF COLLABORATORS: Maggie Liang(ml2927) Xueer Zhang(xz946) Xinwei Xie(xx218
 \*\***Write your own shell file to use your favorite of these TTS engines to have your Pi greet you by name.**\*\*
 (This shell file should be saved to your own repo for this lab.)
 
-*[See greet.sh](https://github.com/m-lmq/Interactive-Lab-Hub/blob/Fall2025/Lab%203/speech-scripts/greet.sh)*
+[View greet_me.sh on GitHub](https://github.com/xz946-maker/Interactive-Lab-Hub/blob/Fall2025/Lab%203/speech-scripts/greet_me.sh)
 
 <details>
   <summary><strong> Speech to Text (Click to Expand)</strong></summary>
@@ -363,6 +363,7 @@ I learned that designing a system requires thinking about human factors. People 
 ### How could you use your system to create a dataset of interaction? What other sensing modalities would make sense to capture?
 
 The system could collect useful data for improvement. We could record all user guesses to create a voice dataset with both correct and incorrect answers. We could measure response time to see how long users take to guess each song. This would help us understand song difficulty and rate songs based on how often users guess correctly. We could also track error patterns to find common mistakes in voice recognition. This data could help make the game better and more user-friendly in future versions.
+
 
 
 
