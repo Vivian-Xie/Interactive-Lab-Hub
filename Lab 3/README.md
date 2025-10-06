@@ -274,7 +274,9 @@ For Part 2, you will redesign the interaction with the speech-enabled device usi
 2. What are other modes of interaction _beyond speech_ that you might also use to clarify how to interact?
 3. Make a new storyboard, diagram and/or script based on these reflections.
 
-## Prototype your system
+## Prototype your system 
+👉 [View app.py](https://github.com/YourUsername/music-chatterbox/blob/main/app.py)
+
 
 The system should:
 * use the Raspberry Pi 
@@ -317,6 +319,7 @@ Answer the following:
 ### How could you use your system to create a dataset of interaction? What other sensing modalities would make sense to capture?
 
 \*\**your answer here*\*\*
+
 
 
 
