@@ -319,9 +319,10 @@ Facial or emotional expressions: In a future version, a simple animated face cou
 5. Make a new storyboard, diagram and/or script based on these reflections.
 
 ## Prototype your system 
-👉 [View app.py on GitHub](https://github.com/xz946-maker/Interactive-Lab-Hub/blob/073756390b9e6479cb406d21b616c287fc2c992b/Lab%203/app.py)
+👉 [View app.py](https://github.com/xz946-maker/Interactive-Lab-Hub/blob/073756390b9e6479cb406d21b616c287fc2c992b/Lab%203/app.py)
 
-[View the file on Google Drive](https://drive.google.com/file/d/1LMfZVcPqiEs-d2FYJQiQ2slWikf9R6w-/view?usp=sharing)
+This is a music guessing game that uses a Raspberry Pi. Players listen to song clips and try to guess the song name by speaking to the system.
+[The link to our demo](https://drive.google.com/file/d/1LMfZVcPqiEs-d2FYJQiQ2slWikf9R6w-/view?usp=sharing)
 
 
 The system should:
@@ -366,6 +367,7 @@ I learned that designing a system requires thinking about human factors. People 
 ### How could you use your system to create a dataset of interaction? What other sensing modalities would make sense to capture?
 
 The system could collect useful data for improvement. We could record all user guesses to create a voice dataset with both correct and incorrect answers. We could measure response time to see how long users take to guess each song. This would help us understand song difficulty and rate songs based on how often users guess correctly. We could also track error patterns to find common mistakes in voice recognition. This data could help make the game better and more user-friendly in future versions.
+
 
 
 
