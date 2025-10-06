@@ -270,59 +270,47 @@ In the [demo directory](./demo), you will find an example Wizard of Oz project. 
 
 \*\***Describe if the dialogue seemed different than what you imagined, or when acted out, when it was wizarded, and how.**\*\*
 
-# Lab 3 Part 2
+# Lab 3 Part 2 Music Guessing Game
+### Project Overview
+This is a music guessing game that uses a Raspberry Pi. Players listen to song clips and try to guess the song name by speaking to the system.
 
-For Part 2, you will redesign the interaction with the speech-enabled device using the data collected, as well as feedback from part 1.
+1. Design Improvements
+We made several improvements based on Part 1 feedback:
 
-## Prep for Part 2
+- Clearer Instructions: We used more clear and standard wording to give users instructions
+- Lower Difficulty: We made the song guessing process easier for players
 
-1. What are concrete things that could use improvement in the design of your device? For example: wording, timing, anticipation of misunderstandings...
-2. What are other modes of interaction _beyond speech_ that you might also use to clarify how to interact?
-3. Make a new storyboard, diagram and/or script based on these reflections.
+2. Interaction Modes and System Design
+The system uses speech interaction:
 
-## Prototype your system
+Users must click a button on the webpage to start the game.
+And the speaker will instruct the user to play the game.
+After each game, users need to reset and click start again to play
 
-The system should:
-* use the Raspberry Pi 
-* use one or more sensors
-* require participants to speak to it. 
+The system includes:
 
-*Document how the system works*
+Raspberry Pi: Main controller
+Speaker and Web Camera
+Speech Input: Players speak their guesses to the system
 
-*Include videos or screencaptures of both the system and the controller.*
+3. New Storyboard
+![Verplank digram_1](./Verplank_digram_1.png)
 
-<details>
-  <summary><strong>Submission Cleanup Reminder (Click to Expand)</strong></summary>
-  
-  **Before submitting your README.md:**
-  - This readme.md file has a lot of extra text for guidance.
-  - Remove all instructional text and example prompts from this file.
-  - You may either delete these sections or use the toggle/hide feature in VS Code to collapse them for a cleaner look.
-  - Your final submission should be neat, focused on your own work, and easy to read for grading.
-  
-  This helps ensure your README.md is clear professional and uniquely yours!
-</details>
+![Verplank digram_2](./Verplank_digram_2.png)
+System Design
 
-## Test the system
-Try to get at least two people to interact with your system. (Ideally, you would inform them that there is a wizard _after_ the interaction, but we recognize that can be hard.)
+## Testing Results
+### What Worked Well
+The controller performed smoothly during testing. It played music without problems and responded quickly to user inputs. The basic game flow worked as we expected. Players could start the game, hear songs, make guesses, and receive feedback from the system.
 
-Answer the following:
+### What Didn't Work Well
+We found several problems during testing. The biggest issue was voice recognition. The system had difficulty understanding what players said. Sometimes players guessed the correct song name, but the system did not recognize it. The system also required exact matching. Players had to say the exact song name without adding or missing any words. This was very frustrating for users. Another problem was song length. Many users told us the music intro was too short. They could not recognize the song before it ended. Users also wanted more features. When they could not guess a song, they wanted to hear more of it, but the system did not have this option.
 
-### What worked well about the system and what didn't?
-\*\**your answer here*\*\*
+### Lessons Learned
+I learned that designing a system requires thinking about human factors. People who use the system for the first time need clear guidance and instructions so they understand how to play. They also need forgiveness for small mistakes because people naturally speak in different ways. Users need enough time to think and respond, especially when listening to music they are trying to remember. The system should also provide flexible input methods because strict rules make the game less fun and more frustrating.
 
-### What worked well about the controller and what didn't?
-
-\*\**your answer here*\*\*
-
-### What lessons can you take away from the WoZ interactions for designing a more autonomous version of the system?
-
-\*\**your answer here*\*\*
-
-
-### How could you use your system to create a dataset of interaction? What other sensing modalities would make sense to capture?
-
-\*\**your answer here*\*\*
+### Future Dataset Collection
+The system could collect useful data for improvement. We could record all user guesses to create a voice dataset with both correct and incorrect answers. We could measure response time to see how long users take to guess each song. This would help us understand song difficulty and rate songs based on how often users guess correctly. We could also track error patterns to find common mistakes in voice recognition. This data could help make the game better and more user-friendly in future versions.
 
 
 
