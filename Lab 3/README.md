@@ -243,17 +243,9 @@ From a remote browser on the same network, check to make sure your webserver is 
 
 ### Storyboard
 
-Storyboard and/or use a Verplank diagram to design a speech-enabled device. (Stuck? Make a device that talks for dogs. If that is too stupid, find an application that is better than that.) 
-
-\*\***Post your storyboard and diagram here.**\*\*
-
 ![Verplank digram_1](./Verplank_digram_1.png)
 
 ![Verplank digram_2](./Verplank_digram_2.png)
-
-Write out what you imagine the dialogue to be. Use cards, post-its, or whatever method helps you develop alternatives or group responses. 
-
-\*\***Please describe and document your process.**\*\*
 
 *[See Document](https://docs.google.com/document/d/1e_OX-vOWRYc_an2_wXuBSy633hKnThJmf2AJ_P2LgNg/edit?tab=t.0)*
 
@@ -273,6 +265,7 @@ In the [demo directory](./demo), you will find an example Wizard of Oz project. 
 # Lab 3 Part 2 Music Guessing Game
 ### Project Overview
 This is a music guessing game that uses a Raspberry Pi. Players listen to song clips and try to guess the song name by speaking to the system.
+[The link to our demo](https://drive.google.com/file/d/1LMfZVcPqiEs-d2FYJQiQ2slWikf9R6w-/view?usp=sharing)
 
 1. Design Improvements
 We made several improvements based on Part 1 feedback:
@@ -291,6 +284,8 @@ The system includes:
 
 Raspberry Pi: Main controller
 Speaker and Web Camera
+
+System Control:
 Speech Input: Players speak their guesses to the system
 
 3. New Storyboard
@@ -310,6 +305,7 @@ I learned that designing a system requires thinking about human factors. People 
 
 #### Future Dataset Collection
 The system could collect useful data for improvement. We could record all user guesses to create a voice dataset with both correct and incorrect answers. We could measure response time to see how long users take to guess each song. This would help us understand song difficulty and rate songs based on how often users guess correctly. We could also track error patterns to find common mistakes in voice recognition. This data could help make the game better and more user-friendly in future versions.
+
 
 
 
