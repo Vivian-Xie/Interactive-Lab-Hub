@@ -164,7 +164,8 @@ NAMES OF COLLABORATORS: Maggie Liang(ml2927) Xueer Zhang(xz946) Xinwei Xie(xx218
 
 \*\***Write your own shell file that verbally asks for a numerical based input (such as a phone number, zipcode, number of pets, etc) and records the answer the respondent provides.**\*\*
 
-*[See number_input.sh](https://github.com/m-lmq/Interactive-Lab-Hub/blob/Fall2025/Lab%203/speech-scripts/number_input.sh)*
+[View ask_numeric.sh on GitHub](https://github.com/xz946-maker/Interactive-Lab-Hub/blob/Fall2025/Lab%203/speech-scripts/ask_numeric.sh)
+
 
 <details>
   <summary><strong> 🤖 NEW: AI-Powered Conversations with Ollama (Click to Expand)</strong></summary>
@@ -363,6 +364,7 @@ I learned that designing a system requires thinking about human factors. People 
 ### How could you use your system to create a dataset of interaction? What other sensing modalities would make sense to capture?
 
 The system could collect useful data for improvement. We could record all user guesses to create a voice dataset with both correct and incorrect answers. We could measure response time to see how long users take to guess each song. This would help us understand song difficulty and rate songs based on how often users guess correctly. We could also track error patterns to find common mistakes in voice recognition. This data could help make the game better and more user-friendly in future versions.
+
 
 
 
