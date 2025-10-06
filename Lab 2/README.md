@@ -1,5 +1,5 @@
 # Interactive Prototyping: The Clock of Pi
-**NAMES OF COLLABORATORS HERE**
+**NAMES OF COLLABORATORS HERE** Xueer Zhang, Maggie Liang, Vivian Xie
 
 Does it feel like time is moving strangely during this semester?
 
