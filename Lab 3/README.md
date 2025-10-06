@@ -110,7 +110,8 @@ echo 'This sentence is spoken first. This sentence is synthesized while the firs
 ```
   
 ### Speech to Text
-
+<details>
+  <summary><strong>Instruction:Speech to Text </strong></summary>
 Next setup speech to text. We are using a speech recognition engine, [Vosk](https://alphacephei.com/vosk/), which is made by researchers at Carnegie Mellon University. Vosk is amazing because it is an offline speech recognition engine; that is, all the processing for the speech recognition is happening onboard the Raspberry Pi. 
 
 Make sure you're running in your virtual environment with the dependencies already installed:
@@ -152,12 +153,14 @@ and
 ```
 python faster_whisper_try.py
 ```
+<details>
 \*\***Write your own shell file that verbally asks for a numerical based input (such as a phone number, zipcode, number of pets, etc) and records the answer the respondent provides.**\*\*
 [ask_numeric.sh](speech-scripts/ask_numeric.sh)
 ## TTS Greeting
 
 ### 🤖 NEW: AI-Powered Conversations with Ollama
-
+<details>
+  <summary><strong>Ollama </strong></summary>
 Want to add intelligent conversation capabilities to your voice projects? **Ollama** lets you run AI models locally on your Raspberry Pi for sophisticated dialogue without requiring internet connectivity!
 
 #### Quick Start with Ollama
@@ -222,6 +225,7 @@ answer = ask_ai("How should I greet users?")
 **📖 Complete Setup Guide**: See `OLLAMA_SETUP.md` for detailed instructions, troubleshooting, and advanced usage!
 
 \*\***Try creating a simple voice interaction that combines speech recognition, Ollama processing, and text-to-speech output. Document what you built and how users responded to it.**\*\*
+<details>
 
 ### Serving Pages
 
@@ -338,6 +342,7 @@ Answer the following:
 ### How could you use your system to create a dataset of interaction? What other sensing modalities would make sense to capture?
 
 \*\**your answer here*\*\*
+
 
 
 
