@@ -6,7 +6,7 @@ from threading import Thread
 from difflib import SequenceMatcher
 from flask import Flask, request, redirect, Response
 
-# ==================== STDOUT/ERR （防 UnicodeEncodeError） ====================
+# ==================== STDOUT/ERR 编码兜底（防 UnicodeEncodeError） ====================
 try:
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
@@ -63,15 +63,6 @@ PROMPT_LINE = "Can you guess the song?"
 RESET_LINE = "Game reset. Starting over."
 WRONG_LINE = "Oops! That's not right. Try again!"
 
-# ==================== QUIT ====================
-QUIT_PATTERNS = {
-    "i want to quit", "i want to stop", "i want to exit", "quit", "stop", "exit"
-}
-
-def said_quit(text: str) -> bool:
-    n = normalize(text)
-    return any(normalize(p) in n for p in QUIT_PATTERNS)
-
 # ==================== Helpers ====================
 def normalize(s: str) -> str:
     if not s: return ""
@@ -80,7 +71,7 @@ def normalize(s: str) -> str:
 def similar(a: str, b: str) -> float:
     return SequenceMatcher(None, normalize(a), normalize(b)).ratio()
 
-# ==================== Playlist） ====================
+# ==================== 固定播放列表（三首歌） ====================
 PLAYLIST = [
     os.path.join(SONGS_DIR, "bad_guy.wav"),
     os.path.join(SONGS_DIR, "love_me_like_you_do.wav"),
@@ -98,9 +89,11 @@ ACCEPT = {
 }
 
 current_idx = 0
+is_paused = False
+is_stopped = False
 score = 0
 last_guess = ""
-round_token = 0  
+round_token = 0  # 防止并发串台：每播放一首自增
 
 def current_song_path():
     global current_idx
@@ -108,7 +101,7 @@ def current_song_path():
     return PLAYLIST[current_idx]
 
 def play_path(path):
-
+    """播放歌曲，并启动自动“播完-提问-录音-判断”线程"""
     global round_token
     if not os.path.exists(path):
         raise FileNotFoundError(path)
@@ -121,20 +114,21 @@ def play_path(path):
     token = round_token
     Thread(target=auto_after_play, args=(token,), daemon=True).start()
 
-def pause(): pygame.mixer.music.pause()
-def unpause(): pygame.mixer.music.unpause()
-def stop(): pygame.mixer.music.stop()
+def pause():
+    global is_paused
+    is_paused = True
+    pygame.mixer.music.pause()
 
+def unpause():
+    global is_paused
+    is_paused = False
+    pygame.mixer.music.unpause()
 
-def replay_current_song_once():
-    path = current_song_path()
-    if not os.path.exists(path):
-        raise FileNotFoundError(path)
+def stop():
+    global is_stopped
+    is_stopped = True
     pygame.mixer.music.stop()
-    pygame.mixer.music.load(path)
-    pygame.mixer.music.set_volume(1.0)
-    pygame.mixer.music.play()
-    print("[REPLAY]", path)
+
 
 # ==================== STT（Vosk） ====================
 USE_STT = True
@@ -197,6 +191,9 @@ def auto_after_play(token):
             if token != round_token:
                 print("[AUTO] token changed, abort this round.")
                 return
+            if is_stopped or is_paused:
+                print("[AUTO] manually paused/stopped, abort this round.")
+                return
             if not mixer_busy_safe():
                 break
             time.sleep(0.1)
@@ -204,46 +201,69 @@ def auto_after_play(token):
         # 提示音（同步 TTS，确保听见）
         speak_sync(PROMPT_LINE)
 
-        # 录音识别（异常不让崩）
-        text = ""
-        if USE_STT:
+        # 定义一个安全的录音函数（可复用）
+        def safe_listen(prompt=""):
+            if prompt:
+                speak_sync(prompt)
+            if not USE_STT:
+                return ""
             try:
-                # 如需强制设备索引，设置 device=你的设备号（例如 0）
-                text = transcribe_once(seconds=4, samplerate=16000, device=None) or ""
+                return transcribe_once(seconds=4, samplerate=16000, device=None) or ""
             except Exception as e:
-                print("[STT][ERROR][auto]", e)
+                print("[STT][listen ERROR]", e)
                 traceback.print_exc()
-                USE_STT = False
-                text = ""
+                return ""
+
+        # 初次录音
+        text = safe_listen()
         last_guess = text or "(empty)"
 
-        # 目标与可接受集合
+        # 获取目标信息
         path = current_song_path()
         target = TITLE.get(path)
         accepted = ACCEPT.get(target, set())
 
-        # 判定
-        ok = False
-        if text and target:
-            n = normalize(text)
+        def is_correct(t):
+            if not t or not target:
+                return False
+            n = normalize(t)
             for v in accepted:
                 if normalize(v) in n:
-                    ok = True
-                    break
-            if not ok and similar(text, target) >= 0.72:
-                ok = True
+                    return True
+            return similar(t, target) >= 0.72
 
+        # ================= 主循环 =================
+        attempts = 0
+        ok = is_correct(text)
+
+        while not ok and attempts < 2:  # 最多再问两次
+            attempts += 1
+            if token != round_token:  # 被新一轮打断时立即退出
+                print("[AUTO] aborted due to token change.")
+                return
+            text = safe_listen("Can you guess again?")
+            last_guess = text or "(empty)"
+            ok = is_correct(text)
+
+        # ================= 结果处理 =================
         if ok:
             score += 1
-            speak_async(f"Yes! You got it right! The song is {target}.")
+            msg = f"Yes! You got it right! The song is {target}."
+            speak_sync(msg)
+            est = min(3, 0.2 * len(msg.split()))  # 大约每个单词0.1秒
+            time.sleep(est)
             current_idx = (current_idx + 1) % len(PLAYLIST)
-            play_path(current_song_path())  # 播放下一首；新一轮会自增 token
+            play_path(current_song_path())
         else:
-            speak_async(WRONG_LINE)
-            # 停留在当前歌；可手动点 Next/Prev/Play 重播或换歌
+            speak_async(f"Let's move on. The answer was {target}.")
+            current_idx = (current_idx + 1) % len(PLAYLIST)
+            play_path(current_song_path())
+
     except Exception as e:
         print("[AUTO][ERROR]", e)
         traceback.print_exc()
+
+
 
 # ==================== Flask ====================
 app = Flask(__name__)
@@ -300,29 +320,50 @@ def controller():
 
 @app.route("/action", methods=["POST"])
 def action():
-    global current_idx, score
+    global current_idx, score, is_stopped, is_paused
     cmd = (request.form.get("cmd") or "").lower().strip()
     print("[ACTION]", cmd)
     try:
         if cmd in ("start", "play"):
+            is_stopped = False
+            is_paused = False
             speak_sync(START_LINE)
             play_path(current_song_path())
-        elif cmd == "pause": pause()
-        elif cmd == "unpause": unpause()
-        elif cmd == "stop": stop()
+
+        elif cmd == "pause":
+            pause()
+
+        elif cmd == "unpause":
+            unpause()
+
+        elif cmd == "stop":
+            stop()
+
         elif cmd == "next":
+            is_stopped = False
+            is_paused = False
             current_idx = (current_idx + 1) % len(PLAYLIST)
             play_path(current_song_path())
+
         elif cmd == "prev":
+            is_stopped = False
+            is_paused = False
             current_idx = (current_idx - 1) % len(PLAYLIST)
             play_path(current_song_path())
+
         elif cmd == "reset":
-            stop(); current_idx = 0; score = 0
+            stop()
+            current_idx = 0
+            score = 0
             speak_async(RESET_LINE)
+
         else:
             print("[ACTION] unknown:", cmd)
+
     except Exception as e:
-        print("[ACTION ERROR]", e); traceback.print_exc()
+        print("[ACTION ERROR]", e)
+        traceback.print_exc()
+
     return redirect("/controller")
 
 @app.route("/debug")
@@ -339,6 +380,7 @@ def debug():
     }
     return info, 200
 
+# 可选：本地 STT 自测端点
 @app.route("/stt_test", methods=["POST"])
 def stt_test():
     try:
@@ -350,4 +392,6 @@ def stt_test():
 
 if __name__ == "__main__":
     speak_async("Controller ready.")
+    # 若你需要固定输入设备，可通过环境变量 MIC_DEVICE_INDEX=0 传入；
+    # 或者直接在上面把 device=None 改成 device=0。
     app.run(host="0.0.0.0", port=5000, debug=False)
