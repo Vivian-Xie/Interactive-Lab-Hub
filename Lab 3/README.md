@@ -1,9 +1,11 @@
 # Chatterboxes
 **NAMES OF COLLABORATORS HERE** Xueer Zhang, Maggie Liang, Vivian Xie
 
-## Prep for Part 1
 <details>
-<summary><strong>Click to Expand</strong></summary>
+  <summary><strong>Prep (Click to Expand)</strong></summary>
+
+  ## Prep for Part 1
+
   
 [![Watch the video](https://user-images.githubusercontent.com/1128669/135009222-111fe522-e6ba-46ad-b6dc-d1633d21129c.png)](https://www.youtube.com/embed/Q8FWzLMobx0?start=19)
 
@@ -35,13 +37,14 @@ pi@ixe00:~/Interactive-Lab-Hub $ git push
 ```
 
 Option 2: On your your own GitHub repo, [create pull request](https://github.com/FAR-Lab/Developing-and-Designing-Interactive-Devices/blob/2022Fall/readings/Submitting%20Labs.md) to get updates from the class Interactive-Lab-Hub. After you have latest updates online, go on your Pi, `cd` to your `Interactive-Lab-Hub` and use `git pull` to get updates from your own GitHub repo.
+
 </details>
 
 ## Part 1.
 ### Setup 
 
 <details>
-<summary><strong>Click to Expand</strong></summary>
+  <summary><strong> Setup (Click to Expand)</strong></summary>
   
 Activate your virtual environment
 
@@ -60,12 +63,14 @@ Next, run the setup script to install additional text-to-speech dependencies:
 ```
 (.venv)pi@ixe00:~/Interactive-Lab-Hub/Lab 3 $ ./setup.sh
 ```
+
+</details>
+
 <details>
+  <summary><strong>Text to Speech (Click to Expand)</strong></summary>
 
 ### Text to Speech
 
-<details>
-<summary><strong>Click to Expand</strong></summary>
 
 In this part of lab, we are going to start peeking into the world of audio on your Pi! 
 
@@ -118,11 +123,11 @@ echo 'This sentence is spoken first. This sentence is synthesized while the firs
   piper --model en_US-lessac-medium --output-raw | \
   aplay -r 22050 -f S16_LE -t raw -
 ```
-  
-### Speech to Text
 
 <details>
-<summary><strong>Click to Expand</strong></summary>
+  <summary><strong> Speech to Text (Click to Expand)</strong></summary>
+
+  ### Speech to Text
 
 Next setup speech to text. We are using a speech recognition engine, [Vosk](https://alphacephei.com/vosk/), which is made by researchers at Carnegie Mellon University. Vosk is amazing because it is an offline speech recognition engine; that is, all the processing for the speech recognition is happening onboard the Raspberry Pi. 
 
@@ -171,10 +176,11 @@ python faster_whisper_try.py
 [ask_numeric.sh](speech-scripts/ask_numeric.sh)
 ## TTS Greeting
 
-### 🤖 NEW: AI-Powered Conversations with Ollama
-
 <details>
-<summary><strong>Click to Expand</strong></summary>
+  <summary><strong> 🤖 NEW: AI-Powered Conversations with Ollama (Click to Expand)</strong></summary>
+
+  ### 🤖 NEW: AI-Powered Conversations with Ollama
+
 
 Want to add intelligent conversation capabilities to your voice projects? **Ollama** lets you run AI models locally on your Raspberry Pi for sophisticated dialogue without requiring internet connectivity!
 
@@ -243,6 +249,9 @@ answer = ask_ai("How should I greet users?")
 
 <details>
 
+<details>
+  <summary><strong> Serving Pages (Click to Expand)</strong></summary>
+  
 ### Serving Pages
 
 In Lab 1, we served a webpage with flask. In this lab, you may find it useful to serve a webpage for the controller on a remote device. Here is a simple example of a webserver.
@@ -261,6 +270,10 @@ pi@ixe00:~/Interactive-Lab-Hub/Lab 3 $ python server.py
 ```
 From a remote browser on the same network, check to make sure your webserver is working by going to `http://<YourPiIPAddress>:5000`. You should be able to see "Hello World" on the webpage.
 
+</details>
+
+<details>
+  <summary><strong> Storyboard (Click to Expand)</strong></summary>
 ### Storyboard
 
 Storyboard and/or use a Verplank diagram to design a speech-enabled device. (Stuck? Make a device that talks for dogs. If that is too stupid, find an application that is better than that.) 
@@ -276,6 +289,12 @@ Write out what you imagine the dialogue to be. Use cards, post-its, or whatever 
 
 \*\***Please describe and document your process.**\*\*
 
+
+<details>
+
+
+<details>
+  <summary><strong> Acting out the dialogue (Click to Expand)</strong></summary>
 ### Acting out the dialogue
 
 Find a partner, and *without sharing the script with your partner* try out the dialogue you've designed, where you (as the device designer) act as the device you are designing.  Please record this interaction (for example, using Zoom's record feature).
@@ -285,7 +304,8 @@ Find a partner, and *without sharing the script with your partner* try out the d
 
 \*\***Describe if the dialogue seemed different than what you imagined when it was acted out, and how.**\*\*
 
-
+<details>
+  <summary><strong> Wizarding with the Pi (optional)</strong></summary>
 ### Wizarding with the Pi (optional)
 
 In the [demo directory](./demo), you will find an example Wizard of Oz project. In that project, you can see how audio and sensor data is streamed from the Pi to a wizard controller that runs in the browser.  You may use this demo code as a template. By running the `app.py` script, you can see how audio and sensor data (Adafruit MPU-6050 6-DoF Accel and Gyro Sensor) is streamed from the Pi to a wizard controller that runs in the browser `http://<YouPiIPAddress>:5000`. You can control what the system says from the controller as well!
@@ -344,7 +364,8 @@ Try to get at least two people to interact with your system. (Ideally, you would
 Answer the following:
 
 ### What worked well about the system and what didn't?
-\*\**your answer here*\*\*
+The controller performed smoothly during testing. It played music without problems and responded quickly to user inputs. The basic game flow worked as we expected. Players could start the game, hear songs, make guesses, and receive feedback from the system.
+We found several problems during testing. The biggest issue was voice recognition. The system had difficulty understanding what players said. Sometimes players guessed the correct song name, but the system did not recognize it. The system also required exact matching. Players had to say the exact song name without adding or missing any words. This was very frustrating for users. Another problem was song length. Many users told us the music intro was too short. They could not recognize the song before it ended. Users also wanted more features. When they could not guess a song, they wanted to hear more of it, but the system did not have this option.
 
 ### What worked well about the controller and what didn't?
 
@@ -352,12 +373,14 @@ Answer the following:
 
 ### What lessons can you take away from the WoZ interactions for designing a more autonomous version of the system?
 
-\*\**your answer here*\*\*
+I learned that designing a system requires thinking about human factors. People who use the system for the first time need clear guidance and instructions so they understand how to play. They also need forgiveness for small mistakes because people naturally speak in different ways. Users need enough time to think and respond, especially when listening to music they are trying to remember. The system should also provide flexible input methods because strict rules make the game less fun and more frustrating.
 
 
 ### How could you use your system to create a dataset of interaction? What other sensing modalities would make sense to capture?
 
-\*\**your answer here*\*\*
+The system could collect useful data for improvement. We could record all user guesses to create a voice dataset with both correct and incorrect answers. We could measure response time to see how long users take to guess each song. This would help us understand song difficulty and rate songs based on how often users guess correctly. We could also track error patterns to find common mistakes in voice recognition. This data could help make the game better and more user-friendly in future versions.
+
+
 
 
 
