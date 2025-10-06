@@ -332,7 +332,6 @@ Facial or emotional expressions: In a future version, a simple animated face cou
   * require participants to speak to it.
 </details>
 
-![Verplank digram_1](./Verplank_digram_1.png)
 
 *Document how the system works*
 
@@ -362,6 +361,8 @@ System Control:
 
 *Include videos or screencaptures of both the system and the controller.*
 👉 [View app.py](https://github.com/xz946-maker/Interactive-Lab-Hub/blob/073756390b9e6479cb406d21b616c287fc2c992b/Lab%203/app.py)
+
+
 *[Guessing Game Video](https://drive.google.com/file/d/1LMfZVcPqiEs-d2FYJQiQ2slWikf9R6w-/view?usp=sharing)*
 
 <details>
@@ -396,6 +397,7 @@ I learned that designing a system requires thinking about human factors. People 
 ### How could you use your system to create a dataset of interaction? What other sensing modalities would make sense to capture?
 
 The system could collect useful data for improvement. We could record all user guesses to create a voice dataset with both correct and incorrect answers. We could measure response time to see how long users take to guess each song. This would help us understand song difficulty and rate songs based on how often users guess correctly. We could also track error patterns to find common mistakes in voice recognition. This data could help make the game better and more user-friendly in future versions.
+
 
 
 
