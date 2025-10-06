@@ -33,9 +33,12 @@ pi@ixe00:~/Interactive-Lab-Hub $ git push
 
 Option 2: On your your own GitHub repo, [create pull request](https://github.com/FAR-Lab/Developing-and-Designing-Interactive-Devices/blob/2022Fall/readings/Submitting%20Labs.md) to get updates from the class Interactive-Lab-Hub. After you have latest updates online, go on your Pi, `cd` to your `Interactive-Lab-Hub` and use `git pull` to get updates from your own GitHub repo.
 </details>
+
 ## Part 1.
 ### Setup 
-
+<details>
+  <summary><strong>set up </strong></summary>
+  
 Activate your virtual environment
 
 ```
@@ -53,11 +56,12 @@ Next, run the setup script to install additional text-to-speech dependencies:
 ```
 (.venv)pi@ixe00:~/Interactive-Lab-Hub/Lab 3 $ ./setup.sh
 ```
-
+<details>
 
 ### Text to Speech 
 <details>
   <summary><strong>Instruction:Text to Speech </strong></summary>
+
 In this part of lab, we are going to start peeking into the world of audio on your Pi! 
 
 We will be using the microphone and speaker on your webcamera. In the directory is a folder called `speech-scripts` containing several shell scripts. `cd` to the folder and list out all the files by `ls`:
@@ -112,6 +116,7 @@ echo 'This sentence is spoken first. This sentence is synthesized while the firs
 ### Speech to Text
 <details>
   <summary><strong>Instruction:Speech to Text </strong></summary>
+
 Next setup speech to text. We are using a speech recognition engine, [Vosk](https://alphacephei.com/vosk/), which is made by researchers at Carnegie Mellon University. Vosk is amazing because it is an offline speech recognition engine; that is, all the processing for the speech recognition is happening onboard the Raspberry Pi. 
 
 Make sure you're running in your virtual environment with the dependencies already installed:
@@ -154,6 +159,7 @@ and
 python faster_whisper_try.py
 ```
 <details>
+  
 \*\***Write your own shell file that verbally asks for a numerical based input (such as a phone number, zipcode, number of pets, etc) and records the answer the respondent provides.**\*\*
 [ask_numeric.sh](speech-scripts/ask_numeric.sh)
 ## TTS Greeting
@@ -161,6 +167,7 @@ python faster_whisper_try.py
 ### 🤖 NEW: AI-Powered Conversations with Ollama
 <details>
   <summary><strong>Ollama </strong></summary>
+
 Want to add intelligent conversation capabilities to your voice projects? **Ollama** lets you run AI models locally on your Raspberry Pi for sophisticated dialogue without requiring internet connectivity!
 
 #### Quick Start with Ollama
@@ -342,6 +349,7 @@ Answer the following:
 ### How could you use your system to create a dataset of interaction? What other sensing modalities would make sense to capture?
 
 \*\**your answer here*\*\*
+
 
 
 
