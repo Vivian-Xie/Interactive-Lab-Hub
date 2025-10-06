@@ -1,7 +1,10 @@
 # Chatterboxes
 **NAMES OF COLLABORATORS HERE** Xueer Zhang, Maggie Liang, Vivian Xie
+
+## Prep for Part 1
 <details>
-  <summary><strong>Prep (Click to Expand)</strong></summary>
+<summary><strong>Click to Expand</strong></summary>
+  
 [![Watch the video](https://user-images.githubusercontent.com/1128669/135009222-111fe522-e6ba-46ad-b6dc-d1633d21129c.png)](https://www.youtube.com/embed/Q8FWzLMobx0?start=19)
 
 In this lab, we want you to design interaction with a speech-enabled device--something that listens and talks to you. This device can do anything *but* control lights (since we already did that in Lab 1).  First, we want you first to storyboard what you imagine the conversational interaction to be like. Then, you will use wizarding techniques to elicit examples of what people might say, ask, or respond.  We then want you to use the examples collected from at least two other people to inform the redesign of the device.
@@ -36,8 +39,9 @@ Option 2: On your your own GitHub repo, [create pull request](https://github.com
 
 ## Part 1.
 ### Setup 
+
 <details>
-  <summary><strong>set up </strong></summary>
+<summary><strong>Click to Expand</strong></summary>
   
 Activate your virtual environment
 
@@ -61,7 +65,7 @@ Next, run the setup script to install additional text-to-speech dependencies:
 ### Text to Speech
 
 <details>
-  <summary><strong>Instruction:Text to Speech </strong></summary>
+<summary><strong>Click to Expand</strong></summary>
 
 In this part of lab, we are going to start peeking into the world of audio on your Pi! 
 
@@ -88,6 +92,7 @@ Now, you might wonder what exactly is a `.sh` file?
 Typically, a `.sh` file is a shell script which you can execute in a terminal. The example files we offer here are for you to figure out the ways to play with audio on your Pi!
 
 You can also play audio files directly with `aplay filename`. Try typing `aplay lookdave.wav`.
+
 <details>
 
 \*\***Write your own shell file to use your favorite of these TTS engines to have your Pi greet you by name.**\*\*
@@ -115,8 +120,9 @@ echo 'This sentence is spoken first. This sentence is synthesized while the firs
 ```
   
 ### Speech to Text
+
 <details>
-  <summary><strong>Instruction:Speech to Text </strong></summary>
+<summary><strong>Click to Expand</strong></summary>
 
 Next setup speech to text. We are using a speech recognition engine, [Vosk](https://alphacephei.com/vosk/), which is made by researchers at Carnegie Mellon University. Vosk is amazing because it is an offline speech recognition engine; that is, all the processing for the speech recognition is happening onboard the Raspberry Pi. 
 
@@ -166,8 +172,9 @@ python faster_whisper_try.py
 ## TTS Greeting
 
 ### 🤖 NEW: AI-Powered Conversations with Ollama
+
 <details>
-  <summary><strong>Ollama </strong></summary>
+<summary><strong>Click to Expand</strong></summary>
 
 Want to add intelligent conversation capabilities to your voice projects? **Ollama** lets you run AI models locally on your Raspberry Pi for sophisticated dialogue without requiring internet connectivity!
 
@@ -233,6 +240,7 @@ answer = ask_ai("How should I greet users?")
 **📖 Complete Setup Guide**: See `OLLAMA_SETUP.md` for detailed instructions, troubleshooting, and advanced usage!
 
 \*\***Try creating a simple voice interaction that combines speech recognition, Ollama processing, and text-to-speech output. Document what you built and how users responded to it.**\*\*
+
 <details>
 
 ### Serving Pages
@@ -350,6 +358,7 @@ Answer the following:
 ### How could you use your system to create a dataset of interaction? What other sensing modalities would make sense to capture?
 
 \*\**your answer here*\*\*
+
 
 
 
