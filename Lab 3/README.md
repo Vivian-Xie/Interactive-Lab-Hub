@@ -275,7 +275,8 @@ For Part 2, you will redesign the interaction with the speech-enabled device usi
 3. Make a new storyboard, diagram and/or script based on these reflections.
 
 ## Prototype your system 
-👉 [View app.py](https://github.com/YourUsername/music-chatterbox/blob/main/app.py)
+👉 [View app.py on GitHub](https://github.com/xz946-maker/Interactive-Lab-Hub/blob/073756390b9e6479cb406d21b616c287fc2c992b/Lab%203/app.py)
+
 
 
 The system should:
@@ -319,6 +320,7 @@ Answer the following:
 ### How could you use your system to create a dataset of interaction? What other sensing modalities would make sense to capture?
 
 \*\**your answer here*\*\*
+
 
 
 
