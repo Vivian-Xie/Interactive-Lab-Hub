@@ -271,12 +271,22 @@ For Part 2, you will redesign the interaction with the speech-enabled device usi
 ## Prep for Part 2
 
 1. What are concrete things that could use improvement in the design of your device? For example: wording, timing, anticipation of misunderstandings...
-2. What are other modes of interaction _beyond speech_ that you might also use to clarify how to interact?
-3. Make a new storyboard, diagram and/or script based on these reflections.
+   First, the speech interaction is limited—users must wait for the system to finish speaking before responding, and it cannot continuously listen or handle interruptions naturally. Ideally, the robot would allow real-time input or a buzz-in system for faster guessing, though this might not be technically feasible yet.
+Second, the feedback timing and clarity need refinement. Sometimes, users are unsure whether the robot is listening, processing, or ready for the next song. Adding more distinct sound or light cues could help.
+Third, wording and phrasing could be simplified to avoid confusion—for example, changing “Try again!” to “That’s not right—say another song name or press the button to replay.”
+Lastly, the error handling is too rigid. If the speech recognition fails, the system should display or speak what it heard, and offer alternative actions like pressing a button to retry or skip a song.
+3. What are other modes of interaction _beyond speech_ that you might also use to clarify how to interact?
+   Beyond speech, the device could integrate multimodal interaction to reduce ambiguity and make the experience more dynamic.
+Buttons: A simple button could control music playback or serve as a buzzer for multiple players to answer quickly.
+LED Lights: Different colors or flashing patterns could indicate states—such as blue for listening, yellow for music playing, green for correct, and red for incorrect.
+Screen or text display: Display short prompts like “Listening…” or “Say your answer!” to help users know what to do.
+Facial or emotional expressions: In a future version, a simple animated face could reflect the robot’s reactions (e.g., smiling for correct, sad for incorrect).
+5. Make a new storyboard, diagram and/or script based on these reflections.
 
 ## Prototype your system 
 👉 [View app.py on GitHub](https://github.com/xz946-maker/Interactive-Lab-Hub/blob/073756390b9e6479cb406d21b616c287fc2c992b/Lab%203/app.py)
 
+[View the file on Google Drive](https://drive.google.com/file/d/1LMfZVcPqiEs-d2FYJQiQ2slWikf9R6w-/view?usp=sharing)
 
 
 The system should:
@@ -320,6 +330,7 @@ Answer the following:
 ### How could you use your system to create a dataset of interaction? What other sensing modalities would make sense to capture?
 
 \*\**your answer here*\*\*
+
 
 
 
