@@ -29,5 +29,4 @@ while True:
             i2c.unlock()
         except:
             pass
-    
     time.sleep(0.3)
