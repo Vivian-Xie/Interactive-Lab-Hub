@@ -19,20 +19,20 @@ Script Design
 We designed a script for the Music Guessing Chatterbox with three main characters: a Host who introduces the system, a Robot that plays music and gives feedback, and a User who interacts with the game. The script includes several important interaction scenarios.
 First, the Robot introduces itself and explains the game rules. It tells users that it will play songs and they should try to guess the song names. The Robot can respond to both correct and incorrect guesses. When users guess correctly, the Robot confirms their answer and moves to the next song. When users guess incorrectly, the Robot encourages them to try again and replays the music. Users can also quit the game at any time by saying they want to stop.
 Acting Out the Dialogue
-We tested the dialogue by acting it out with a partner. One person played the role of the Robot device, and the other person played the User. We did not share the script with the User beforehand to see how natural the interaction felt.
+We tested the dialogue by acting it out with a partner. One of our teammate played the role of the Robot device, and the tester played the User. We did not share the script with the User beforehand to see how natural the interaction felt.
 
 Observations from Testing
 
 The dialogue felt different when we acted it out compared to what we imagined. Several issues became clear during the test. The timing between playing music and waiting for guesses was difficult to get right. Sometimes the Robot spoke too quickly and users did not have enough time to think. Other times there were awkward silences when the Robot waited too long for a response.
 The feedback messages also seemed repetitive when acted out multiple times. Hearing "Oops! That's not right. Try again!" several times in a row felt discouraging rather than encouraging. We realized the system needed more variety in its responses to keep users engaged.
 Another important finding was that users were confused about what exactly they should say. They were not sure if they should say "the song is..." or just say the song name directly. The script did not give clear enough instructions about the expected format for answers.
-Finally, we noticed that the music playing sounds ("♪ ♫ ♪") worked well in the written script but were hard to act out in real life. We realized we needed to think more carefully about how the actual music would be played and how long each clip should be.
 These observations helped us understand what needed to be improved for Part 2 of the project.
 
 *[Dialogue Video](https://drive.google.com/file/d/1YpRYrWIZNIVNQHW5lIoD8B3Sx3k7n2K-/view?usp=sharing)*
 
+The act out with script
 
-
+https://github.com/user-attachments/assets/287168e8-c2c2-49f8-971a-7511b35cceb1
 
 # Lab 3 Part 2 Music Guessing Game
 ### Project Overview
@@ -316,6 +316,7 @@ From a remote browser on the same network, check to make sure your webserver is 
 In the [demo directory](./demo), you will find an example Wizard of Oz project. In that project, you can see how audio and sensor data is streamed from the Pi to a wizard controller that runs in the browser.  You may use this demo code as a template. By running the `app.py` script, you can see how audio and sensor data (Adafruit MPU-6050 6-DoF Accel and Gyro Sensor) is streamed from the Pi to a wizard controller that runs in the browser `http://<YouPiIPAddress>:5000`. You can control what the system says from the controller as well!
 
 \*\***Describe if the dialogue seemed different than what you imagined, or when acted out, when it was wizarded, and how.**\*\*
+
 
 
 
