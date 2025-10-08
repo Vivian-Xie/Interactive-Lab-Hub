@@ -1,23 +1,90 @@
 # Chatterboxes
-**NAMES OF COLLABORATORS HERE**
-
 Name: Maggie Liang(ml2927) Xueer Zhang(xz946) Xinwei Xie(xx2185)
+
+# Lab 3 Part 1 
+### Storyboard
+
+![Verplank digram_1](./Verplank_digram_1.png)
+
+![Verplank digram_2](./Verplank_digram_2.png)
+
+*[See Document](https://docs.google.com/document/d/1e_OX-vOWRYc_an2_wXuBSy633hKnThJmf2AJ_P2LgNg/edit?tab=t.0)*
+
+### Acting out the dialogue
+
+Script Design
+
+We designed a script for the Music Guessing Chatterbox with three main characters: a Host who introduces the system, a Robot that plays music and gives feedback, and a User who interacts with the game. The script includes several important interaction scenarios.
+First, the Robot introduces itself and explains the game rules. It tells users that it will play songs and they should try to guess the song names. The Robot can respond to both correct and incorrect guesses. When users guess correctly, the Robot confirms their answer and moves to the next song. When users guess incorrectly, the Robot encourages them to try again and replays the music. Users can also quit the game at any time by saying they want to stop.
+Acting Out the Dialogue
+We tested the dialogue by acting it out with a partner. One person played the role of the Robot device, and the other person played the User. We did not share the script with the User beforehand to see how natural the interaction felt.
+
+Observations from Testing
+
+The dialogue felt different when we acted it out compared to what we imagined. Several issues became clear during the test. The timing between playing music and waiting for guesses was difficult to get right. Sometimes the Robot spoke too quickly and users did not have enough time to think. Other times there were awkward silences when the Robot waited too long for a response.
+The feedback messages also seemed repetitive when acted out multiple times. Hearing "Oops! That's not right. Try again!" several times in a row felt discouraging rather than encouraging. We realized the system needed more variety in its responses to keep users engaged.
+Another important finding was that users were confused about what exactly they should say. They were not sure if they should say "the song is..." or just say the song name directly. The script did not give clear enough instructions about the expected format for answers.
+Finally, we noticed that the music playing sounds ("♪ ♫ ♪") worked well in the written script but were hard to act out in real life. We realized we needed to think more carefully about how the actual music would be played and how long each clip should be.
+These observations helped us understand what needed to be improved for Part 2 of the project.
+
+*[Dialogue Video](https://drive.google.com/file/d/1YpRYrWIZNIVNQHW5lIoD8B3Sx3k7n2K-/view?usp=sharing)*
+
+
+https://github.com/user-attachments/assets/287168e8-c2c2-49f8-971a-7511b35cceb1
+
+
+
+# Lab 3 Part 2 Music Guessing Game
+### Project Overview
+This is a music guessing game that uses a Raspberry Pi. Players listen to song clips and try to guess the song name by speaking to the system.
+[The link to our demo](https://drive.google.com/file/d/1LMfZVcPqiEs-d2FYJQiQ2slWikf9R6w-/view?usp=sharing)
+
+1. Design Improvements
+We made several improvements based on Part 1 feedback:
+
+- Clearer Instructions: We used more clear and standard wording to give users instructions
+- Lower Difficulty: We made the song guessing process easier for players
+
+2. Interaction Modes and System Design
+The system uses speech interaction:
+
+Users must click a button on the webpage to start the game.
+And the speaker will instruct the user to play the game.
+After each game, users need to reset and click start again to play
+
+The system includes:
+
+Raspberry Pi: Main controller
+Speaker and Web Camera
+
+System Control:
+Speech Input: Players speak their guesses to the system
+
+3. New Storyboard
+![Verplank digram_1](./Verplank_digram_1.png)
+
+![Verplank digram_2](./Verplank_digram_2.png)
+
+### Testing Results
+#### What Worked Well
+The controller performed smoothly during testing. It played music without problems and responded quickly to user inputs. The basic game flow worked as we expected. Players could start the game, hear songs, make guesses, and receive feedback from the system.
+
+#### What Didn't Work Well
+We found several problems during testing. The biggest issue was voice recognition. The system had difficulty understanding what players said. Sometimes players guessed the correct song name, but the system did not recognize it. The system also required exact matching. Players had to say the exact song name without adding or missing any words. This was very frustrating for users. Another problem was song length. Many users told us the music intro was too short. They could not recognize the song before it ended. Users also wanted more features. When they could not guess a song, they wanted to hear more of it, but the system did not have this option.
+
+#### Lessons Learned
+I learned that designing a system requires thinking about human factors. People who use the system for the first time need clear guidance and instructions so they understand how to play. They also need forgiveness for small mistakes because people naturally speak in different ways. Users need enough time to think and respond, especially when listening to music they are trying to remember. The system should also provide flexible input methods because strict rules make the game less fun and more frustrating.
+
+#### Future Dataset Collection
+The system could collect useful data for improvement. We could record all user guesses to create a voice dataset with both correct and incorrect answers. We could measure response time to see how long users take to guess each song. This would help us understand song difficulty and rate songs based on how often users guess correctly. We could also track error patterns to find common mistakes in voice recognition. This data could help make the game better and more user-friendly in future versions.
+
+
+
 
 [![Watch the video](https://user-images.githubusercontent.com/1128669/135009222-111fe522-e6ba-46ad-b6dc-d1633d21129c.png)](https://www.youtube.com/embed/Q8FWzLMobx0?start=19)
 
-In this lab, we want you to design interaction with a speech-enabled device--something that listens and talks to you. This device can do anything *but* control lights (since we already did that in Lab 1).  First, we want you first to storyboard what you imagine the conversational interaction to be like. Then, you will use wizarding techniques to elicit examples of what people might say, ask, or respond.  We then want you to use the examples collected from at least two other people to inform the redesign of the device.
 
-We will focus on **audio** as the main modality for interaction to start; these general techniques can be extended to **video**, **haptics** or other interactive mechanisms in the second part of the Lab.
-
-## Prep for Part 1: Get the Latest Content and Pick up Additional Parts 
-
-Please check instructions in [prep.md](prep.md) and complete the setup before class on Wednesday, Sept 23rd.
-
-### Pick up Web Camera If You Don't Have One
-
-Students who have not already received a web camera will receive their [Logitech C270 Webcam](https://www.amazon.com/Logitech-Desktop-Widescreen-Calling-Recording/dp/B004FHO5Y6/ref=sr_1_3?crid=W5QN79TK8JM7&dib=eyJ2IjoiMSJ9.FB-davgIQ_ciWNvY6RK4yckjgOCrvOWOGAG4IFaH0fczv-OIDHpR7rVTU8xj1iIbn_Aiowl9xMdeQxceQ6AT0Z8Rr5ZP1RocU6X8QSbkeJ4Zs5TYqa4a3C_cnfhZ7_ViooQU20IWibZqkBroF2Hja2xZXoTqZFI8e5YnF_2C0Bn7vtBGpapOYIGCeQoXqnV81r2HypQNUzFQbGPh7VqjqDbzmUoloFA2-QPLa5lOctA.L5ztl0wO7LqzxrIqDku9f96L9QrzYCMftU_YeTEJpGA&dib_tag=se&keywords=webcam%2Bc270&qid=1758416854&sprefix=webcam%2Bc270%2Caps%2C125&sr=8-3&th=1) and bluetooth speaker on Wednesday at the beginning of lab. If you cannot make it to class this week, please contact the TAs to ensure you get these. 
-
-### Get the Latest Content
+### Get the Latest Content ✅️
 
 As always, pull updates from the class Interactive-Lab-Hub to both your Pi and your own GitHub repo. There are 2 ways you can do so:
 
@@ -34,7 +101,7 @@ pi@ixe00:~/Interactive-Lab-Hub $ git push
 Option 2: On your your own GitHub repo, [create pull request](https://github.com/FAR-Lab/Developing-and-Designing-Interactive-Devices/blob/2022Fall/readings/Submitting%20Labs.md) to get updates from the class Interactive-Lab-Hub. After you have latest updates online, go on your Pi, `cd` to your `Interactive-Lab-Hub` and use `git pull` to get updates from your own GitHub repo.
 
 ## Part 1.
-### Setup 
+### Setup ✅️
 
 Activate your virtual environment
 
@@ -54,7 +121,7 @@ Next, run the setup script to install additional text-to-speech dependencies:
 (.venv)pi@ixe00:~/Interactive-Lab-Hub/Lab 3 $ ./setup.sh
 ```
 
-### Text to Speech 
+### Text to Speech ✅️
 
 In this part of lab, we are going to start peeking into the world of audio on your Pi! 
 
@@ -107,7 +174,7 @@ echo 'This sentence is spoken first. This sentence is synthesized while the firs
   aplay -r 22050 -f S16_LE -t raw -
 ```
   
-### Speech to Text
+### Speech to Text ✅️
 
 Next setup speech to text. We are using a speech recognition engine, [Vosk](https://alphacephei.com/vosk/), which is made by researchers at Carnegie Mellon University. Vosk is amazing because it is an offline speech recognition engine; that is, all the processing for the speech recognition is happening onboard the Raspberry Pi. 
 
@@ -241,70 +308,13 @@ pi@ixe00:~/Interactive-Lab-Hub/Lab 3 $ python server.py
 ```
 From a remote browser on the same network, check to make sure your webserver is working by going to `http://<YourPiIPAddress>:5000`. You should be able to see "Hello World" on the webpage.
 
-### Storyboard
 
-![Verplank digram_1](./Verplank_digram_1.png)
-
-![Verplank digram_2](./Verplank_digram_2.png)
-
-*[See Document](https://docs.google.com/document/d/1e_OX-vOWRYc_an2_wXuBSy633hKnThJmf2AJ_P2LgNg/edit?tab=t.0)*
-
-### Acting out the dialogue
-
-Find a partner, and *without sharing the script with your partner* try out the dialogue you've designed, where you (as the device designer) act as the device you are designing.  Please record this interaction (for example, using Zoom's record feature).
-
-*[Dialogue Video](https://drive.google.com/file/d/1YpRYrWIZNIVNQHW5lIoD8B3Sx3k7n2K-/view?usp=sharing)*
-
-\*\***Describe if the dialogue seemed different than what you imagined when it was acted out, and how.**\*\*
 
 ### Wizarding with the Pi (optional)
 In the [demo directory](./demo), you will find an example Wizard of Oz project. In that project, you can see how audio and sensor data is streamed from the Pi to a wizard controller that runs in the browser.  You may use this demo code as a template. By running the `app.py` script, you can see how audio and sensor data (Adafruit MPU-6050 6-DoF Accel and Gyro Sensor) is streamed from the Pi to a wizard controller that runs in the browser `http://<YouPiIPAddress>:5000`. You can control what the system says from the controller as well!
 
 \*\***Describe if the dialogue seemed different than what you imagined, or when acted out, when it was wizarded, and how.**\*\*
 
-# Lab 3 Part 2 Music Guessing Game
-### Project Overview
-This is a music guessing game that uses a Raspberry Pi. Players listen to song clips and try to guess the song name by speaking to the system.
-[The link to our demo](https://drive.google.com/file/d/1LMfZVcPqiEs-d2FYJQiQ2slWikf9R6w-/view?usp=sharing)
-
-1. Design Improvements
-We made several improvements based on Part 1 feedback:
-
-- Clearer Instructions: We used more clear and standard wording to give users instructions
-- Lower Difficulty: We made the song guessing process easier for players
-
-2. Interaction Modes and System Design
-The system uses speech interaction:
-
-Users must click a button on the webpage to start the game.
-And the speaker will instruct the user to play the game.
-After each game, users need to reset and click start again to play
-
-The system includes:
-
-Raspberry Pi: Main controller
-Speaker and Web Camera
-
-System Control:
-Speech Input: Players speak their guesses to the system
-
-3. New Storyboard
-![Verplank digram_1](./Verplank_digram_1.png)
-
-![Verplank digram_2](./Verplank_digram_2.png)
-
-### Testing Results
-#### What Worked Well
-The controller performed smoothly during testing. It played music without problems and responded quickly to user inputs. The basic game flow worked as we expected. Players could start the game, hear songs, make guesses, and receive feedback from the system.
-
-#### What Didn't Work Well
-We found several problems during testing. The biggest issue was voice recognition. The system had difficulty understanding what players said. Sometimes players guessed the correct song name, but the system did not recognize it. The system also required exact matching. Players had to say the exact song name without adding or missing any words. This was very frustrating for users. Another problem was song length. Many users told us the music intro was too short. They could not recognize the song before it ended. Users also wanted more features. When they could not guess a song, they wanted to hear more of it, but the system did not have this option.
-
-#### Lessons Learned
-I learned that designing a system requires thinking about human factors. People who use the system for the first time need clear guidance and instructions so they understand how to play. They also need forgiveness for small mistakes because people naturally speak in different ways. Users need enough time to think and respond, especially when listening to music they are trying to remember. The system should also provide flexible input methods because strict rules make the game less fun and more frustrating.
-
-#### Future Dataset Collection
-The system could collect useful data for improvement. We could record all user guesses to create a voice dataset with both correct and incorrect answers. We could measure response time to see how long users take to guess each song. This would help us understand song difficulty and rate songs based on how often users guess correctly. We could also track error patterns to find common mistakes in voice recognition. This data could help make the game better and more user-friendly in future versions.
 
 
 
