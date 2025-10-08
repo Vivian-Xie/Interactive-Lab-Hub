@@ -2,6 +2,8 @@
 Name: Maggie Liang(ml2927) Xueer Zhang(xz946) Xinwei Xie(xx2185)
 
 # Lab 3 Part 1 
+
+This is a music guessing game that uses a Raspberry Pi. Players listen to song clips and try to guess the song name by speaking to the system.
 ### Storyboard
 
 ![Verplank digram_1](./Verplank_digram_1.png)
@@ -30,14 +32,14 @@ These observations helped us understand what needed to be improved for Part 2 of
 *[Dialogue Video](https://drive.google.com/file/d/1YpRYrWIZNIVNQHW5lIoD8B3Sx3k7n2K-/view?usp=sharing)*
 
 
-https://github.com/user-attachments/assets/287168e8-c2c2-49f8-971a-7511b35cceb1
-
 
 
 # Lab 3 Part 2 Music Guessing Game
 ### Project Overview
 This is a music guessing game that uses a Raspberry Pi. Players listen to song clips and try to guess the song name by speaking to the system.
 [The link to our demo](https://drive.google.com/file/d/1LMfZVcPqiEs-d2FYJQiQ2slWikf9R6w-/view?usp=sharing)
+
+https://github.com/user-attachments/assets/287168e8-c2c2-49f8-971a-7511b35cceb1
 
 1. Design Improvements
 We made several improvements based on Part 1 feedback:
@@ -314,6 +316,7 @@ From a remote browser on the same network, check to make sure your webserver is 
 In the [demo directory](./demo), you will find an example Wizard of Oz project. In that project, you can see how audio and sensor data is streamed from the Pi to a wizard controller that runs in the browser.  You may use this demo code as a template. By running the `app.py` script, you can see how audio and sensor data (Adafruit MPU-6050 6-DoF Accel and Gyro Sensor) is streamed from the Pi to a wizard controller that runs in the browser `http://<YouPiIPAddress>:5000`. You can control what the system says from the controller as well!
 
 \*\***Describe if the dialogue seemed different than what you imagined, or when acted out, when it was wizarded, and how.**\*\*
+
 
 
 
