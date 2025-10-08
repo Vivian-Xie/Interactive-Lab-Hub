@@ -6,7 +6,6 @@ from threading import Thread
 from difflib import SequenceMatcher
 from flask import Flask, request, redirect, Response
 
-# ==================== STDOUT/ERR 编码兜底（防 UnicodeEncodeError） ====================
 try:
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
@@ -15,15 +14,22 @@ except Exception:
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
-# ==================== 音频驱动与路径 ====================
-# 如播放没声音，可将 "alsa" 改为 "pulse" 再启动：SDL_AUDIODRIVER=pulse python3 app.py
 os.environ.setdefault("SDL_AUDIODRIVER", "alsa")
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 SONGS_DIR = os.path.join(BASE, "songs")
 
-# ==================== Pygame mixer ====================
 import pygame
+
+# ========== NEW: Import I2C libraries ==========
+try:
+    import board
+    import busio
+    I2C_AVAILABLE = True
+    print("[I2C] Libraries loaded successfully")
+except ImportError as e:
+    I2C_AVAILABLE = False
+    print("[I2C] Not available:", e)
 
 def init_mixer():
     try:
@@ -43,7 +49,6 @@ def mixer_busy_safe():
         print("[AUDIO][BUSY ERROR]", e)
         return False
 
-# ==================== TTS（espeak-ng） ====================
 def speak_sync(text: str):
     if not text: return
     try:
@@ -63,7 +68,6 @@ PROMPT_LINE = "Can you guess the song?"
 RESET_LINE = "Game reset. Starting over."
 WRONG_LINE = "Oops! That's not right. Try again!"
 
-# ==================== Helpers ====================
 def normalize(s: str) -> str:
     if not s: return ""
     return re.sub(r"[^a-z0-9]+", "", s.lower())
@@ -71,7 +75,6 @@ def normalize(s: str) -> str:
 def similar(a: str, b: str) -> float:
     return SequenceMatcher(None, normalize(a), normalize(b)).ratio()
 
-# ==================== 固定播放列表（三首歌） ====================
 PLAYLIST = [
     os.path.join(SONGS_DIR, "bad_guy.wav"),
     os.path.join(SONGS_DIR, "love_me_like_you_do.wav"),
@@ -93,7 +96,7 @@ is_paused = False
 is_stopped = False
 score = 0
 last_guess = ""
-round_token = 0  # 防止并发串台：每播放一首自增
+round_token = 0 
 
 def current_song_path():
     global current_idx
@@ -101,7 +104,6 @@ def current_song_path():
     return PLAYLIST[current_idx]
 
 def play_path(path):
-    """播放歌曲，并启动自动“播完-提问-录音-判断”线程"""
     global round_token
     if not os.path.exists(path):
         raise FileNotFoundError(path)
@@ -118,11 +120,13 @@ def pause():
     global is_paused
     is_paused = True
     pygame.mixer.music.pause()
+    print("[PAUSE] Game paused")
 
 def unpause():
     global is_paused
     is_paused = False
     pygame.mixer.music.unpause()
+    print("[UNPAUSE] Game resumed")
 
 def stop():
     global is_stopped
@@ -130,13 +134,11 @@ def stop():
     pygame.mixer.music.stop()
 
 
-# ==================== STT（Vosk） ====================
 USE_STT = True
 try:
     import sounddevice as sd
     from vosk import Model, KaldiRecognizer
 
-    # 可通过环境变量指定麦克风设备索引，例如：MIC_DEVICE_INDEX=0 python3 app.py
     mic_env = os.environ.get("MIC_DEVICE_INDEX")
     if mic_env and mic_env.strip().isdigit():
         sd.default.device = (int(mic_env), None)
@@ -164,7 +166,7 @@ def transcribe_once(seconds: int = 4, samplerate: int = 16000, device=None) -> s
     print(f"[STT] recording {seconds}s… device={device}")
     text = ""
     try:
-        import sounddevice as sd  # lazy import for safety
+        import sounddevice as sd 
         with sd.RawInputStream(samplerate=samplerate, blocksize=8000, dtype="int16",
                                channels=1, callback=cb, device=device):
             start = time.time()
@@ -181,27 +183,23 @@ def transcribe_once(seconds: int = 4, samplerate: int = 16000, device=None) -> s
     print("[STT] transcript:", text)
     return text.strip()
 
-# ==================== 自动流程：歌播完 -> 问 -> 录音 -> 判断 ====================
 def auto_after_play(token):
     global last_guess, score, current_idx, USE_STT, round_token
 
     try:
-        # 等当前歌曲播放结束或被新一轮打断
         while True:
             if token != round_token:
                 print("[AUTO] token changed, abort this round.")
                 return
             if is_stopped or is_paused:
                 print("[AUTO] manually paused/stopped, abort this round.")
-                return
+                continue
             if not mixer_busy_safe():
                 break
             time.sleep(0.1)
 
-        # 提示音（同步 TTS，确保听见）
         speak_sync(PROMPT_LINE)
 
-        # 定义一个安全的录音函数（可复用）
         def safe_listen(prompt=""):
             if prompt:
                 speak_sync(prompt)
@@ -214,11 +212,9 @@ def auto_after_play(token):
                 traceback.print_exc()
                 return ""
 
-        # 初次录音
         text = safe_listen()
         last_guess = text or "(empty)"
 
-        # 获取目标信息
         path = current_song_path()
         target = TITLE.get(path)
         accepted = ACCEPT.get(target, set())
@@ -232,30 +228,29 @@ def auto_after_play(token):
                     return True
             return similar(t, target) >= 0.72
 
-        # ================= 主循环 =================
         attempts = 0
         ok = is_correct(text)
 
-        while not ok and attempts < 2:  # 最多再问两次
+        while not ok and attempts < 2:
             attempts += 1
-            if token != round_token:  # 被新一轮打断时立即退出
+            if token != round_token:
                 print("[AUTO] aborted due to token change.")
                 return
             text = safe_listen("Can you guess again?")
             last_guess = text or "(empty)"
             ok = is_correct(text)
 
-        # ================= 结果处理 =================
         if ok:
             score += 1
             msg = f"Yes! You got it right! The song is {target}."
             speak_sync(msg)
-            est = min(3, 0.2 * len(msg.split()))  # 大约每个单词0.1秒
-            time.sleep(est)
+            time.sleep(min(3, 0.2 * len(msg.split())))
             current_idx = (current_idx + 1) % len(PLAYLIST)
             play_path(current_song_path())
         else:
-            speak_async(f"Let's move on. The answer was {target}.")
+            msg = f"Let's move on. The answer was {target}."
+            speak_sync(msg)
+            time.sleep(min(3, 0.2 * len(msg.split())))
             current_idx = (current_idx + 1) % len(PLAYLIST)
             play_path(current_song_path())
 
@@ -264,8 +259,71 @@ def auto_after_play(token):
         traceback.print_exc()
 
 
+# ========== NEW: Simple Hardware Button Monitor ==========
+def monitor_hardware_button():
+    """
+    Monitor I2C button - simple version without register writes.
+    Reads 4 bytes directly and checks if byte[3] changes from 0x03 to 0x07.
+    """
+    if not I2C_AVAILABLE:
+        print("[BUTTON] I2C not available, button monitoring disabled")
+        return
+    
+    try:
+        i2c = busio.I2C(board.SCL, board.SDA)
+        print("[BUTTON] I2C initialized")
+        
+        I2C_ADDRESS = 0x6f  # Your device address
+        button_was_pressed = False
+        
+        while True:
+            try:
+                # Lock I2C bus
+                while not i2c.try_lock():
+                    time.sleep(0.01)
+                
+                # Read 4 bytes directly (no register write needed)
+                result = bytearray(4)
+                i2c.readfrom_into(I2C_ADDRESS, result)
+                
+                # Unlock immediately
+                i2c.unlock()
+                
+                # Check if button is pressed: byte[3] == 0x07
+                # Normal state: byte[3] == 0x03
+                button_pressed = (result[3] == 0x07)
+                
+                # Detect button press (rising edge only)
+                if button_pressed and not button_was_pressed:
+                    print(f"[BUTTON] Pressed! Data: {[f'0x{b:02x}' for b in result]}")
+                    
+                    # Toggle pause state
+                    global is_paused
+                    if is_paused:
+                        unpause()
+                        speak_async("Resumed")
+                    else:
+                        pause()
+                        speak_async("Paused")
+                
+                button_was_pressed = button_pressed
+                time.sleep(0.1)  # Check every 100ms
+                
+            except OSError as e:
+                print(f"[BUTTON][READ ERROR] {e}")
+                try:
+                    i2c.unlock()
+                except:
+                    pass
+                time.sleep(0.5)
+                continue
+                
+    except Exception as e:
+        print("[BUTTON][FATAL ERROR]", e)
+        traceback.print_exc()
 
-# ==================== Flask ====================
+
+# Flask
 app = Flask(__name__)
 
 @app.route("/")
@@ -274,7 +332,6 @@ def home():
 
 @app.route("/controller")
 def controller():
-    # 安全读取 busy 与当前歌曲名，避免 500
     try:
         busy = mixer_busy_safe()
     except Exception as e:
@@ -298,9 +355,11 @@ def controller():
     </style>
     <h1>Music Guessing Controller (Auto-guess Mode)</h1>
     <div>Status: <span class="badge">{'Playing' if busy else 'Idle'}</span></div>
+    <div>Paused: <span class="badge">{'Yes' if is_paused else 'No'}</span></div>
     <div>Song: <span class="mono">{song}</span></div>
     <div>Score: <span class="badge">{score}</span></div>
     <div>Last guess: <span class="mono">{last_guess}</span></div>
+    <div>Hardware Button: <span class="badge">{'Active' if I2C_AVAILABLE else 'Disabled'}</span></div>
 
     <form class="row" action="/action" method="post">
       <button type="submit" name="cmd" value="start">▶ Start</button>
@@ -314,6 +373,7 @@ def controller():
     </form>
 
     <p>After each song finishes, the robot will ask: <b>"Can you guess the song?"</b> and listen for 4 seconds automatically.</p>
+    <p><b>Hardware button:</b> Press the physical button to pause/resume the game at any time.</p>
     <p>If TTS is silent, ensure <code>espeak-ng</code> is installed. If playback is silent, try <code>SDL_AUDIODRIVER=pulse</code>.</p>
     """
     return Response(html, mimetype="text/html")
@@ -377,10 +437,12 @@ def debug():
         "score": score,
         "last_guess": last_guess,
         "USE_STT": USE_STT,
+        "is_paused": is_paused,
+        "I2C_AVAILABLE": I2C_AVAILABLE,
     }
     return info, 200
 
-# 可选：本地 STT 自测端点
+
 @app.route("/stt_test", methods=["POST"])
 def stt_test():
     try:
@@ -391,7 +453,11 @@ def stt_test():
         return {"ok": False, "error": str(e)}, 500
 
 if __name__ == "__main__":
+    # Start hardware button monitoring thread
+    if I2C_AVAILABLE:
+        button_thread = Thread(target=monitor_hardware_button, daemon=True)
+        button_thread.start()
+        print("[BUTTON] Hardware button monitoring started")
+    
     speak_async("Controller ready.")
-    # 若你需要固定输入设备，可通过环境变量 MIC_DEVICE_INDEX=0 传入；
-    # 或者直接在上面把 device=None 改成 device=0。
     app.run(host="0.0.0.0", port=5000, debug=False)
