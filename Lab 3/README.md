@@ -290,6 +290,10 @@ Write out what you imagine the dialogue to be. Use cards, post-its, or whatever 
 *[Dialogue Video](https://drive.google.com/file/d/1YpRYrWIZNIVNQHW5lIoD8B3Sx3k7n2K-/view?usp=sharing)*
 
 
+
+https://github.com/user-attachments/assets/67c2bc5f-dc63-4d27-bced-aa284e47cf09
+
+
 <details>
   <summary><strong> Wizarding with the Pi (optional)</strong></summary>
   
@@ -406,6 +410,7 @@ I learned that designing a system requires thinking about human factors. People 
 ### How could you use your system to create a dataset of interaction? What other sensing modalities would make sense to capture?
 
 The system could collect useful data for improvement. We could record all user guesses to create a voice dataset with both correct and incorrect answers. We could measure response time to see how long users take to guess each song. This would help us understand song difficulty and rate songs based on how often users guess correctly. We could also track error patterns to find common mistakes in voice recognition. This data could help make the game better and more user-friendly in future versions.
+
 
 
 
