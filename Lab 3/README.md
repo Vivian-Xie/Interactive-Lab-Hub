@@ -322,6 +322,17 @@ Facial or emotional expressions: In a future version, a simple animated face cou
 
 4. Make a new storyboard, diagram and/or script based on these reflections.
 
+Data flow of Chatterboxes voice game.
+
+                                    Audio Input (Microphone)
+↓
+Speech‑to‑Text Engine
+↓
+LLM/Ollama Processing
+↓
+Game Logic → Feedback Generation
+↓
+Text‑to‑Speech + Screen/LED Output
 
 <details>
   <summary><strong>Prep for Part 2 (Click to Expand)</strong></summary>
@@ -340,6 +351,14 @@ Facial or emotional expressions: In a future version, a simple animated face cou
 
 This is a music guessing game that uses a Raspberry Pi. Players listen to song clips and try to guess the song name by speaking to the system.
 
+Game Logic (with physical control)
+1. System plays 5–10s music intro (Playing).
+2. Player may press Button A to Pause/Resume the clip at any time (for freeze/think moments).
+3. Player speaks the song title (Listening).
+4. Speech is transcribed → compared with answer list (Processing → Feedback).
+5. Logs user responses and freeze events for dataset analysis.
+
+
 The system includes:
 - Raspberry Pi: Main controller
 - Speaker and Web Camera
@@ -352,6 +371,8 @@ System Control:
 
 
 *[Guessing Game Video](https://drive.google.com/file/d/1LMfZVcPqiEs-d2FYJQiQ2slWikf9R6w-/view?usp=sharing)*
+
+
 
 <details>
   <summary><strong>Submission Cleanup Reminder (Click to Expand)</strong></summary>
@@ -385,6 +406,7 @@ I learned that designing a system requires thinking about human factors. People 
 ### How could you use your system to create a dataset of interaction? What other sensing modalities would make sense to capture?
 
 The system could collect useful data for improvement. We could record all user guesses to create a voice dataset with both correct and incorrect answers. We could measure response time to see how long users take to guess each song. This would help us understand song difficulty and rate songs based on how often users guess correctly. We could also track error patterns to find common mistakes in voice recognition. This data could help make the game better and more user-friendly in future versions.
+
 
 
 
