@@ -21,6 +21,16 @@ SONGS_DIR = os.path.join(BASE, "songs")
 
 import pygame
 
+# ========== NEW: Import I2C libraries ==========
+try:
+    import board
+    import busio
+    I2C_AVAILABLE = True
+    print("[I2C] Libraries loaded successfully")
+except ImportError as e:
+    I2C_AVAILABLE = False
+    print("[I2C] Not available:", e)
+
 def init_mixer():
     try:
         pygame.mixer.quit()
@@ -110,11 +120,13 @@ def pause():
     global is_paused
     is_paused = True
     pygame.mixer.music.pause()
+    print("[PAUSE] Game paused")
 
 def unpause():
     global is_paused
     is_paused = False
     pygame.mixer.music.unpause()
+    print("[UNPAUSE] Game resumed")
 
 def stop():
     global is_stopped
@@ -181,7 +193,7 @@ def auto_after_play(token):
                 return
             if is_stopped or is_paused:
                 print("[AUTO] manually paused/stopped, abort this round.")
-                return
+                continue
             if not mixer_busy_safe():
                 break
             time.sleep(0.1)
@@ -247,6 +259,69 @@ def auto_after_play(token):
         traceback.print_exc()
 
 
+# ========== NEW: Simple Hardware Button Monitor ==========
+def monitor_hardware_button():
+    """
+    Monitor I2C button - simple version without register writes.
+    Reads 4 bytes directly and checks if byte[3] changes from 0x03 to 0x07.
+    """
+    if not I2C_AVAILABLE:
+        print("[BUTTON] I2C not available, button monitoring disabled")
+        return
+    
+    try:
+        i2c = busio.I2C(board.SCL, board.SDA)
+        print("[BUTTON] I2C initialized")
+        
+        I2C_ADDRESS = 0x6f  # Your device address
+        button_was_pressed = False
+        
+        while True:
+            try:
+                # Lock I2C bus
+                while not i2c.try_lock():
+                    time.sleep(0.01)
+                
+                # Read 4 bytes directly (no register write needed)
+                result = bytearray(4)
+                i2c.readfrom_into(I2C_ADDRESS, result)
+                
+                # Unlock immediately
+                i2c.unlock()
+                
+                # Check if button is pressed: byte[3] == 0x07
+                # Normal state: byte[3] == 0x03
+                button_pressed = (result[3] == 0x07)
+                
+                # Detect button press (rising edge only)
+                if button_pressed and not button_was_pressed:
+                    print(f"[BUTTON] Pressed! Data: {[f'0x{b:02x}' for b in result]}")
+                    
+                    # Toggle pause state
+                    global is_paused
+                    if is_paused:
+                        unpause()
+                        speak_async("Resumed")
+                    else:
+                        pause()
+                        speak_async("Paused")
+                
+                button_was_pressed = button_pressed
+                time.sleep(0.1)  # Check every 100ms
+                
+            except OSError as e:
+                print(f"[BUTTON][READ ERROR] {e}")
+                try:
+                    i2c.unlock()
+                except:
+                    pass
+                time.sleep(0.5)
+                continue
+                
+    except Exception as e:
+        print("[BUTTON][FATAL ERROR]", e)
+        traceback.print_exc()
+
 
 # Flask
 app = Flask(__name__)
@@ -280,9 +355,11 @@ def controller():
     </style>
     <h1>Music Guessing Controller (Auto-guess Mode)</h1>
     <div>Status: <span class="badge">{'Playing' if busy else 'Idle'}</span></div>
+    <div>Paused: <span class="badge">{'Yes' if is_paused else 'No'}</span></div>
     <div>Song: <span class="mono">{song}</span></div>
     <div>Score: <span class="badge">{score}</span></div>
     <div>Last guess: <span class="mono">{last_guess}</span></div>
+    <div>Hardware Button: <span class="badge">{'Active' if I2C_AVAILABLE else 'Disabled'}</span></div>
 
     <form class="row" action="/action" method="post">
       <button type="submit" name="cmd" value="start">▶ Start</button>
@@ -296,6 +373,7 @@ def controller():
     </form>
 
     <p>After each song finishes, the robot will ask: <b>"Can you guess the song?"</b> and listen for 4 seconds automatically.</p>
+    <p><b>Hardware button:</b> Press the physical button to pause/resume the game at any time.</p>
     <p>If TTS is silent, ensure <code>espeak-ng</code> is installed. If playback is silent, try <code>SDL_AUDIODRIVER=pulse</code>.</p>
     """
     return Response(html, mimetype="text/html")
@@ -359,6 +437,8 @@ def debug():
         "score": score,
         "last_guess": last_guess,
         "USE_STT": USE_STT,
+        "is_paused": is_paused,
+        "I2C_AVAILABLE": I2C_AVAILABLE,
     }
     return info, 200
 
@@ -373,5 +453,11 @@ def stt_test():
         return {"ok": False, "error": str(e)}, 500
 
 if __name__ == "__main__":
+    # Start hardware button monitoring thread
+    if I2C_AVAILABLE:
+        button_thread = Thread(target=monitor_hardware_button, daemon=True)
+        button_thread.start()
+        print("[BUTTON] Hardware button monitoring started")
+    
     speak_async("Controller ready.")
     app.run(host="0.0.0.0", port=5000, debug=False)
