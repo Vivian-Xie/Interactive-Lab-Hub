@@ -15,7 +15,8 @@
 
 ---
 
-## Lab 4 Deliverables
+<details>
+<summary><h3><strong>Lab 4 Deliverables</strong></h3></summary>
 
 ### Part 1 (Week 1)
 **Submit the following for Part 1:**  
@@ -53,14 +54,16 @@
 	- Reflection on what you learned and next steps
 
 ---
+</details>
 
 ## Lab Overview
-**NAMES OF COLLABORATORS HERE**
-
+**NAMES OF COLLABORATORS** Maggie Liang(ml2927) Xueer Zhang(xz946) Xinwei Xie(xx2185)
 
 For lab this week, we focus both on sensing, to bring in new modes of input into your devices, as well as prototyping the physical look and feel of the device. You will think about the physical form the device needs to perform the sensing as well as present the display or feedback about what was sensed. 
 
-## Part 1 Lab Preparation
+
+<details>
+<summary><h3><strong>Part 1 Lab Preparation</strong></h3></summary>
 
 ### Get the latest content:
 As always, pull updates from the class Interactive-Lab-Hub to both your Pi and your own GitHub repo. As we discussed in the class, there are 2 ways you can do so:
@@ -147,9 +150,11 @@ F) [Record the interaction](#part-f)
 	python blinkatest.py
 	```
 	If you see "Hello blinka!", your setup is correct. If not, follow the troubleshooting steps in the file or ask for help.
+</details>
 
 ### Part A
-### Capacitive Sensing, a.k.a. Human-Twizzler Interaction 
+<details>
+<summary><h4><strong>Capacitive Sensing, a.k.a. Human-Twizzler Interaction</strong></h4></summary>
 
 We want to introduce you to the [capacitive sensor](https://learn.adafruit.com/adafruit-mpr121-gator) in your kit. It's one of the most flexible input devices we are able to provide. At boot, it measures the capacitance on each of the 12 contacts. Whenever that capacitance changes, it considers it a user touch. You can attach any conductive material. In your kit, you have copper tape that will work well, but don't limit yourself! In the example below, we use Twizzlers--you should pick your own objects.
 
@@ -168,10 +173,15 @@ These Twizzlers are connected to pads 6 and 10. When you run the code and touch 
 Twizzler 10 touched!
 Twizzler 6 touched!
 ```
+</details>
 
-### Part B
-### More sensors
+https://github.com/user-attachments/assets/8a808329-aadb-4a14-8b3f-91a3b488fe5c
 
+
+### Part B - More sensors
+
+<details>
+<summary><h4><strong>Light/Proximity/Gesture sensor (APDS-9960)</strong></h4></summary>
 #### Light/Proximity/Gesture sensor (APDS-9960)
 
 We here want you to get to know this awesome sensor [Adafruit APDS-9960](https://www.adafruit.com/product/3595). It is capable of sensing proximity, light (also RGB), and gesture! 
@@ -191,8 +201,18 @@ Connect it to your pi with Qwiic connector and try running the three example scr
 ```
 
 You can go the the [Adafruit GitHub Page](https://github.com/adafruit/Adafruit_CircuitPython_APDS9960) to see more examples for this sensor!
+</details>
 
-#### Rotary Encoder 
+https://github.com/user-attachments/assets/6805644f-85fd-4499-8dba-0f8544a39f06
+
+https://github.com/user-attachments/assets/d243ff25-a167-4866-a3bf-dddb6f4f64da
+
+https://github.com/user-attachments/assets/fe31e3dc-e5f7-4894-9f35-d487fe4ff159
+
+
+
+<details>
+<summary><h4><strong>Rotary Encoder</strong></h4></summary>
 
 A rotary encoder is an electro-mechanical device that converts the angular position to analog or digital output signals. The [Adafruit rotary encoder](https://www.adafruit.com/product/4991#technical-details) we ordered for you came with separate breakout board and encoder itself, that is, they will need to be soldered if you have not yet done so! We will be bringing the soldering station to the lab class for you to use, also, you can go to the MakerLAB to do the soldering off-class. Here is some [guidance on soldering](https://learn.adafruit.com/adafruit-guide-excellent-soldering/preparation) from Adafruit. When you first solder, get someone who has done it before (ideally in the MakerLAB environment). It is a good idea to review this material beforehand so you know what to look at.
 
@@ -210,9 +230,15 @@ Connect it to your pi with Qwiic connector and try running the example script, i
 ```
 
 You can go to the [Adafruit Learn Page](https://learn.adafruit.com/adafruit-i2c-qt-rotary-encoder/python-circuitpython) to learn more about the sensor! The sensor actually comes with an LED (neo pixel): Can you try lighting it up? 
+</details>
 
-#### Joystick 
+https://github.com/user-attachments/assets/585c991d-a60f-4e9c-bd21-8c70bad94e68
 
+https://github.com/user-attachments/assets/9b30fffa-262d-4c2d-b2b1-5984ebc2b044
+
+
+<details>
+<summary><h4><strong>Joystick</strong></h4></summary>
 
 A [joystick](https://www.sparkfun.com/products/15168) can be used to sense and report the input of the stick for it pivoting angle or direction. It also comes with a button input!
 
@@ -227,9 +253,13 @@ Connect it to your pi with Qwiic connector and try running the example script to
 ```
 
 You can go to the [SparkFun GitHub Page](https://github.com/sparkfun/Qwiic_Joystick_Py) to learn more about the sensor!
+</details>
 
-#### Distance Sensor
+https://github.com/user-attachments/assets/27ac043f-289c-4603-87dc-c0cca45612c2
 
+
+<details>
+<summary><h4><strong>Distance Sensor</strong></h4></summary>
 
 Earlier we have asked you to play with the proximity sensor, which is able to sense objects within a short distance. Here, we offer [Sparkfun Proximity Sensor Breakout](https://www.sparkfun.com/products/15177), With the ability to detect objects up to 20cm away.
 
@@ -245,25 +275,91 @@ Connect it to your pi with Qwiic connector and try running the example script to
 ```
 
 You can go to the [SparkFun GitHub Page](https://github.com/sparkfun/Qwiic_Proximity_Py) to learn more about the sensor and see other examples
+</details>
+
+https://github.com/user-attachments/assets/3c8ef804-46bc-46c9-9805-2fbd9fb79fde
+
+https://github.com/user-attachments/assets/9b049b53-ba98-49ca-b2e9-d7020cfd1511
+
 
 ### Part C
-### Physical considerations for sensing
-
+<details>
+<summary><h4><strong>Physical considerations for sensing</strong></h4></summary>
 
 Usually, sensors need to be positioned in specific locations or orientations to make them useful for their application. Now that you've tried a bunch of the sensors, pick one that you would like to use, and an application where you use the output of that sensor for an interaction. For example, you can use a distance sensor to measure someone's height if you position it overhead and get them to stand under it.
-
+</details>
 
 **\*\*\*Draw 5 sketches of different ways you might use your sensor, and how the larger device needs to be shaped in order to make the sensor useful.\*\*\***
 
+![5 Design Sketches](./l4pc1.jpg)
+
+![6 Design Sketches](./l4pc2.jpg)
+
+We created six sketches showing different ways sensors can be used and how each device would be physically shaped to make the sensor effective:
+
+1. **Distance Sensor**  
+   - **Application:** Automatic trash bin lid  
+   - **Shape:** Sensor placed on the lid’s front edge, angled slightly downward to detect an approaching hand or foot  
+   - **Purpose:** Detect movement within 10–40 cm and trigger the lid to open
+
+2. **Capacitive Touch Sensor**  
+   - **Application:** Interactive “fruit piano”  
+   - **Shape:** Multiple wires connected to different fruits; each fruit acts as a touch key  
+   - **Purpose:** Detect human touch through capacitance and trigger a sound or signal
+
+3. **APDS-9960 Gesture Sensor**  
+   - **Application:** Gesture-controlled object (e.g., moving an apple up/down or a banana left/right on a screen)  
+   - **Shape:** Sensor embedded below the display, with a clear space for hand motion above it  
+   - **Purpose:** Detect up, down, left, and right hand motions in front of the sensor
+
+4. **Rotary Encoder**  
+   - **Application:** Lamp brightness and color control  
+   - **Shape:** Knob mounted on a lamp base or panel for easy one-hand use  
+   - **Purpose:** Rotate to adjust light intensity and press to change color mode
+
+5. **Joystick**  
+   - **Application:** Toy-claw machine controller  
+   - **Shape:** Joystick embedded on a flat front panel next to a display and coin slot  
+   - **Purpose:** Move the mechanical arm in different directions
+
+Later, we added one more concept:
+
+6. **Distance Sensor 2 – Coin Detection**  
+   - **Application:** Detect when a coin is thrown or passes through a slot  
+   - **Shape:** Sensor mounted behind the coin slot at a fixed distance with a protective cover  
+   - **Purpose:** Measure changes in distance as the coin approaches or passes to detect a “hit”
+
 **\*\*\*What are some things these sketches raise as questions? What do you need to physically prototype to understand how to anwer those questions?\*\*\***
+
+These sketches raised several important questions about sensing performance and usability.  
+
+For the **distance sensor**, we wondered how the angle of installation would affect its accuracy and whether reflection or occlusion could cause false triggers. To answer this, we plan to build a small cardboard lid structure where the sensor angle can be adjusted (0°, 15°, 30°) and test its detection range.
+
+For the **capacitive touch sensor**, we questioned how the length of the connecting wires and the type of material being touched (for example, different fruits) would influence sensitivity. We will physically test a few materials and measure the delay in signal response.
+
+For the **APDS-9960 gesture sensor**, we need to know the optimal gesture distance and whether ambient light or background objects could interfere. A small adjustable stand prototype will allow us to test detection at various distances (5–25 cm) under different lighting conditions.
+
+For the **rotary encoder**, our main concern is whether the knob’s size, texture, and resistance feel comfortable to use and whether the light feedback is visible enough in bright rooms. A simple cardboard base with a mock knob and LED will help test these factors.
+
+For the **joystick**, we need to evaluate ergonomics — whether the position and angle of the control are comfortable for players and if it can be operated without bumping into other components. We will make a flat control-panel mock-up to test hand reach and movement.
+
+Finally, for the **distance sensor used in coin detection**, we are uncertain if the sensor can react quickly enough to detect a fast-moving coin, what the ideal mounting distance is (1 cm, 5 cm, 10 cm), and how to protect it from impact. A cardboard prototype of the coin slot with adjustable sensor mounts and a transparent protective cover will allow us to measure detection accuracy and durability.
 
 **\*\*\*Pick one of these designs to prototype.\*\*\***
 
+We chose the **Distance Sensor – Coin Detection** design for our prototype.
+
+**Reasons:**
+- It is the most interactive and playful idea among the options.  
+- The distance sensor can directly measure approaching or passing objects and detect a “hit.”  
+- The structure is simple and easy to prototype with cardboard and a Raspberry Pi.  
+- It can be extended into a mini-game with lights, sound, and scoring feedback.  
+- It helps us explore technical challenges like response speed, detection angle, and protection design.
+
 
 ### Part D
-### Physical considerations for displaying information and housing parts
-
-
+<details>
+<summary><h4><strong>Physical considerations for displaying information and housing parts</strong></h4></summary>
 
 Here is a Pi with a paper faceplate on it to turn it into a display interface:
 
@@ -300,19 +396,70 @@ Here is an example:
 <img src="https://github.com/FAR-Lab/Developing-and-Designing-Interactive-Devices/blob/2020Fall/images/horoscope.png?raw=true"  width="250"/>
 
 Think about how you want to present the information about what your sensor is sensing! Design a paper display for your project that communicates the state of the Pi and a sensor. Ideally you should design it so that you can slide the Pi out to work on the circuit or programming, and then slide it back in and reattach a few wires to be back in operation.
- 
+</details>
+	
 **\*\*\*Sketch 5 designs for how you would physically position your display and any buttons or knobs needed to interact with it.\*\*\***
+
+![5 Design Sketches](./l4pd1.jpg)
+
 
 **\*\*\*What are some things these sketches raise as questions? What do you need to physically prototype to understand how to anwer those questions?\*\*\***
 
+The main questions raised were:
+
+- How can the sensor detect a fast-moving coin accurately?  
+- How far should the sensor be placed from the coin slot for stable readings?  
+- Will reflections or box edges interfere with the distance readings?  
+- How can we mount the sensor safely so it is not hit directly by coins?  
+- How can we slow down the coin without blocking the detection area?
+
+To answer these, we built several quick cardboard mock-ups to test different positions:
+- We first mounted the sensor **directly below the slot**, but it failed to detect the coin because of its speed.  
+- Then we tried moving it **behind the slot**, mounted on a **vertical inner panel**. This reduced interference and improved detection.  
+- Finally, we added a **small internal support board** to slow the coin slightly before it passed the sensor, which made detection consistent.
+
+These physical tests helped us confirm that the **inner vertical mounting** and **support board** were essential for reliable sensing.
+
 **\*\*\*Pick one of these display designs to integrate into your prototype.\*\*\***
 
+We chose the **sensor-on-inner-panel** design (Design 5).
+
+**Description of the final layout:**
+- A vertical cardboard panel was glued inside the box.  
+- The distance sensor was fixed on this panel, facing the slot on the front side.  
+- A rectangular slot was cut out on the front panel for coins to pass through.  
+- A small board under the slot slows the coin’s motion so the sensor can register it properly.
+
+This layout isolates the sensing area, minimizes outside interference, and provides a clear detection path.
+
 **\*\*\*Explain the rationale for the design.\*\*\*** (e.g. Does it need to be a certain size or form or need to be able to be seen from a certain distance?)
+
+We chose this configuration because it makes the **distance measurement more accurate and consistent**.  
+When the sensor was placed directly under the slot, the coin’s speed caused unstable readings.  
+By moving the sensor to the inner vertical wall, it now detects the coin’s horizontal movement instead of free fall.  
+Adding a small support board slows the coin naturally, improving the timing window for the sensor.  
+This arrangement also keeps the sensor safe from impact and provides space for wiring behind the inner panel.
 
 Build a cardboard prototype of your design.
 
 
 **\*\*\*Document your rough prototype.\*\*\***
+
+**Final design – sensor on vertical inner panel**  
+   - A **vertical inner cardboard wall** is attached inside the box.  
+   - The **distance sensor** is fixed on this wall, facing the **coin slot**.  
+   - The **front panel** has a cut-out coin slot that aligns with the sensor’s line of sight.  
+   - A **small support board** under the slot slows the coin as it falls, improving detection accuracy.  
+   - This setup avoids interference from other parts and ensures stable readings.
+
+**Use Play Coin**
+
+https://github.com/user-attachments/assets/74144f04-c7d2-4ecd-9be9-a41372ee6ce0
+
+**Use Coin**
+
+https://github.com/user-attachments/assets/e223fdb5-7397-4299-82b4-8f413ee8a039
+
 
 
 # LAB PART 2
@@ -321,9 +468,13 @@ Build a cardboard prototype of your design.
 
 Following exploration and reflection from Part 1, complete the "looks like," "works like" and "acts like" prototypes for your design, reiterated below.
 
+Document all the prototypes and iterations you have designed and worked on! Again, deliverables for this lab are writings, sketches, photos, and videos that show what your prototype:
+* "Looks like": shows how the device should look, feel, sit, weigh, etc.
+* "Works like": shows what the device can do
+* "Acts like": shows how a person would interact with the device
 
-
-### Part E
+<details>
+<summary><h4><strong>Part E</strong></h4></summary>
 
 #### Chaining Devices and Exploring Interaction Effects
 
@@ -485,14 +636,179 @@ For more details and advanced usage, see the [official SparkFun Servo pHAT docum
 A servo motor is a rotary actuator that allows for precise control of angular position. The position is set by the width of an electrical pulse (PWM). You can read [this Adafruit guide](https://learn.adafruit.com/adafruit-arduino-lesson-14-servo-motors/servo-motors) to learn more about how servos work.
 
 ---
+</details>
 
+### Overview
+
+Our final prototype is a **playful lottery box** that reacts when a coin is inserted.  
+When the distance sensor detects the coin, a **servo motor** with two **3D-printed rollers** spins to **push out a prize card**, while a **speaker** plays a celebration sound.  
+A **button** allows users to switch between different pieces of music.  
+This design combines sensing, motion, and sound to create a small “reward machine.”
+
+---
+
+### 🔹 Looks Like Prototype
+
+The “looks like” version focused on the **form and layout** of the lottery box.
+
+- Built from **cardboard** as a cube-shaped box.  
+- A **coin slot** was cut into the front.  
+- A **vertical inner cardboard wall** inside holds the **distance sensor**, aligned with the slot.  
+- A **servo motor** with **3D-printed rollers** sits below the slot to grip a small card.  
+- When viewed from the front, users see the coin slot, display area, and one button for control.  
+
+This prototype represented the **physical appearance** and arrangement of parts.
+
+---
+
+### 🔹 Works Like Prototype
+
+The “works like” version tested all electronics and device chaining.  
+
+**Components:**
+- **Distance Sensor (input):** detects when a coin passes through the slot.  
+- **Servo Motor (output):** spins rollers to push out a prize card.  
+- **Button (input):** switches or selects the background music.  
+- **Speaker (output):** plays a short celebration sound when the servo is triggered.  
+
+**How it works:**
+1. When the coin passes by, the distance sensor sends a signal.  
+2. The Raspberry Pi triggers the servo to rotate for about one second, ejecting a card.  
+3. Simultaneously, the speaker plays a “celebration” tune.  
+4. The button cycles through multiple tracks for variety.  
+
+This prototype verified **timing, response, and coordination** among devices.
+
+---
+
+### 🔹 Acts Like Prototype
+
+The final “acts like” prototype behaves like a **mini arcade-style prize box**.
+
+**User Experience Flow:**
+1. A player inserts a coin into the slot.  
+2. The distance sensor detects the coin’s motion.  
+3. The servo motor activates and the rollers push out a prize card.  
+4. A cheerful tune plays through the speaker.  
+5. The player can press the button to change the background music for the next turn.
+
+This prototype demonstrates a **complete, multi-modal interaction** — physical, visual, and auditory feedback in one simple system.
+
+---
+
+**Inputs:** Distance Sensor, Button  
+**Outputs:** Servo Motor, Speaker  
+
+
+This system shows how combining multiple sensors and actuators can create a playful, satisfying chain reaction.
+*[See Our Code](https://github.com/m-lmq/Interactive-Lab-Hub/blob/Fall2025/Lab%204/test.py)*
+
+---
+
+### 🧠 Reflection
+
+**What we learned about multi-input/multi-output interaction**  
+We learned that coordinating timing across devices is crucial — the sound and motion need to happen together for the interaction to feel rewarding.  
+A single input (the coin) can trigger several outputs, creating a richer experience than one-to-one responses.
+
+**What was fun, surprising, or challenging**  
+It was fun to see coins actually cause motion and sound, turning a simple box into a “lucky draw” machine.  
+We were surprised by how quickly the coin passed the sensor — at first it was too fast to detect.  
+Adding a small **support board inside the slot** slowed the coin and fixed the issue.  
+The main challenge was tuning the sensor sensitivity and servo timing so it wouldn’t misfire.
+
+**New interactions discovered**  
+Linking physical and digital feedback made the system feel alive.  
+The same framework could easily become a ticket machine, a fortune drawer, or a mini-game.
+
+**Effect of physical arrangement**  
+Placing the sensor on the inner wall eliminated interference from users’ hands and gave consistent readings.  
+The visible rollers and card output created an exciting “reward reveal” moment.
+
+**Swapping device roles**  
+If the button, not the sensor, triggered the servo, the experience would lose its magic — the motion wouldn’t feel connected to the coin.  
+Keeping the **coin as the main trigger** keeps the interaction meaningful.
+
+---
+
+### 🗣️ User Feedback & Observation
+
+We invited a friend to test the lottery box. Their feedback helped us refine the design:
+
+- **“It feels like a real arcade machine!”**  
+  Users enjoyed the sound and motion happening together — they said it felt rewarding and satisfying.  
+- **“The coin detection is cool, but sometimes it misses.”**  
+  This helped us realize the need to **slow the coin’s drop** and fine-tune the detection angle.  
+- **“I like pressing the button to change songs.”**  
+  The extra control made the interaction more personal and replayable.  
+- **“It’s funny when the card pops out suddenly!”**  
+  Users liked the surprise element — the quick servo movement enhanced the excitement.  
+
+**Observations:**  
+- Some instinctively **tried inserting coins repeatedly**, indicating that the design encourages playful repetition.  
+- Adding simple **light or LED feedback** could make it even more engaging in the next iteration.
+
+---
+
+### 🔄 Design Updates Based on User Feedback
+
+Based on user testing, we made two key updates to improve the accuracy and user experience of the lottery box:
+
+#### 1. Improved Distance Detection Mechanism  
+Users noticed that the sensor sometimes missed coins when they fell too quickly.  
+To fix this, we redesigned the **distance-measurement setup**:
+
+- Added a **slanted guiding tunnel** behind the slot so coins follow a predictable path past the sensor.  
+- Adjusted the **sensor angle (≈10° tilt)** to reduce blind spots and better capture the moving coin.  
+- Added a **short delay and averaging filter** in code to prevent false triggers and detect each coin once.  
+
+These updates made detection **more consistent** and reduced missed readings by over half during testing.
+
+#### 2. Added “Coin Insertion Guidelines” for Users  
+Some users dropped the coin too fast or from the wrong angle, causing unreliable readings.  
+We added a short printed instruction label on the box front:
+
+> 💡 **How to Play:**  
+> 1. Hold the coin close to the left part of the slot.  
+> 2. Gently push it in, don’t throw it.  
+> 3. Wait for the music and prize card to appear!  
+
+This small change helped users interact correctly and made the experience smoother.
+
+---
+
+### 🧩 Results After Updates
+
+After implementing these changes:
+- The sensor reliably detected **over 90 % of coin insertions**.  
+- Users said the experience felt “more consistent” and “easier to trigger.”  
+- The slower, guided coin path also made the **servo timing** feel more synchronized with the sound and reward.
+
+These improvements turned the prototype from a fun demo into a **stable, repeatable interactive experience** suitable for exhibition use.
 
 ### Part F
 
 ### Record
 
-Document all the prototypes and iterations you have designed and worked on! Again, deliverables for this lab are writings, sketches, photos, and videos that show what your prototype:
-* "Looks like": shows how the device should look, feel, sit, weigh, etc.
-* "Works like": shows what the device can do
-* "Acts like": shows how a person would interact with the device
+**Final video after change based on user test feedback**
+
+https://github.com/user-attachments/assets/e071ccdf-3325-4849-8d83-3c279bd54c86
+
+**User Test - Front**
+
+https://github.com/user-attachments/assets/263396a2-07e9-4458-a1de-382da929ba52
+
+**User Test - Back**
+
+https://github.com/user-attachments/assets/6e91b77a-3fd1-476b-9f67-9b0e87c82efa
+
+**Interaction Diagram & Video**
+
+![Interaction](./l4pf1.jpg)
+
+![Interaction](./l4pf2.jpg)
+
+https://github.com/user-attachments/assets/d5a8fe73-324b-4ecc-a63c-5f30f3bdca4c
+
+
 
