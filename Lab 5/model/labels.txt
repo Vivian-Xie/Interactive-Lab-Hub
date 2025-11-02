@@ -1,0 +1,7 @@
+0 orange
+1 pen
+2 mug
+3 raspberry
+4 vitamin
+5 notebook
+6 blank
