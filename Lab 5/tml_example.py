@@ -3,7 +3,7 @@ import cv2 as cv
 
 cap = cv.VideoCapture(0)
 
-model_path = 'model.tflite'
+model_path = 'model_unquant.tflite'
 image_file_name = "frame.jpg"
 labels_path = "labels.txt"
 

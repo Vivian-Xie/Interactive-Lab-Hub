@@ -90,4 +90,6 @@ with torch.no_grad():
             print(f"{frame_count / (now-last_logged)} fps")
             last_logged = now
             frame_count = 0
-
+        
+        # 新增：休息1秒
+        time.sleep(1)
