@@ -1,6 +1,6 @@
 # Observant Systems
 
-**NAMES OF COLLABORATORS HERE**
+**NAMES OF COLLABORATORS HERE** Maggie Liang(ml2927) Xueer Zhang(xz946) Xinwei Xie(xx2185)
 
 
 For lab this week, we focus on creating interactive systems that can detect and respond to events or stimuli in the environment of the Pi, like the Boat Detector we mentioned in lecture. 
