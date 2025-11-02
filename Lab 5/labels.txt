@@ -1,2 +1,4 @@
-0 Phone
-1 Zooming
+0 orange
+1 pen
+2 mug
+3 raspberry
