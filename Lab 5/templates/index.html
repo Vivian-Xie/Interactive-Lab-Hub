@@ -1,0 +1,274 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Check-in Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .main-container {
+            display: flex;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Left side - Schedule */
+        .left-panel {
+            flex: 1;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .left-panel h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #4caf50;
+            padding-bottom: 10px;
+        }
+        
+        .schedule-container {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .schedule-item {
+            display: flex;
+            background-color: #ffffff;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .schedule-time {
+            min-width: 90px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #4caf50;
+            padding-right: 15px;
+            border-right: 2px solid #e0e0e0;
+        }
+        
+        .schedule-content {
+            flex: 1;
+            padding-left: 15px;
+        }
+        
+        .schedule-activity {
+            font-size: 16px;
+            color: #333;
+            line-height: 1.5;
+        }
+        
+        /* Right side - Real-time detection */
+        .right-panel {
+            flex: 1;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .right-panel h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #ff9800;
+            padding-bottom: 10px;
+        }
+        
+        .status {
+            text-align: center;
+            padding: 20px;
+            background-color: #e8f5e9;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .result-box {
+            background-color: #fff3e0;
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .label {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ff6f00;
+            margin: 10px 0;
+        }
+        
+        .confidence {
+            font-size: 24px;
+            color: #666;
+        }
+        
+        .empty-schedule {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Daily Check-in Dashboard</h1>
+    
+    <div class="main-container">
+        <!-- Left Panel - Schedule -->
+        <div class="left-panel">
+            <h2>Today's Schedule</h2>
+            <div class="schedule-container" id="scheduleContainer">
+                <div class="empty-schedule">No activities yet</div>
+            </div>
+        </div>
+        
+        <!-- Right Panel - Real-time Detection -->
+        <div class="right-panel">
+            <h2>Live Detection</h2>
+            
+            <div class="status">
+                <p>Camera is detecting objects in real-time</p>
+            </div>
+            
+            <div class="result-box">
+                <h3>Current Detection:</h3>
+                <div class="label" id="label">Waiting...</div>
+                <div class="confidence" id="confidence">--</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let lastLoggedLabel = '';
+        let lastLoggedTime = 0;
+        const LOG_COOLDOWN = 10000; // 5 seconds in milliseconds
+        
+        // Activity mapping
+        const activityMap = {
+            '0 orange': 'Eat an orange',
+            '1 pen': 'Complete a math exercise',
+            '2 mug': 'Drink a cup of water',
+            '3 raspberry': 'Work on Interactive Lab homework',
+            '4 vitamin': 'Take vitamin',
+            '5 notebook': 'Organize notes'
+        };
+        
+        // Get current time string with seconds
+        function getCurrentTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            return `${hours}:${minutes}:${seconds}`;
+        }
+        
+        // Add schedule item
+        function addScheduleItem(label) {
+            const activity = activityMap[label];
+            
+            // Don't add if no mapping
+            if (!activity) return;
+            
+            const scheduleContainer = document.getElementById('scheduleContainer');
+            
+            // Remove empty message if exists
+            const emptySchedule = scheduleContainer.querySelector('.empty-schedule');
+            if (emptySchedule) {
+                emptySchedule.remove();
+            }
+            
+            // Create new schedule item
+            const scheduleItem = document.createElement('div');
+            scheduleItem.className = 'schedule-item';
+            scheduleItem.innerHTML = `
+                <div class="schedule-time">${getCurrentTime()}</div>
+                <div class="schedule-content">
+                    <div class="schedule-activity">${activity}</div>
+                </div>
+            `;
+            
+            // Add to top of schedule
+            scheduleContainer.insertBefore(scheduleItem, scheduleContainer.firstChild);
+        }
+        
+        // Update recognition results
+        function updateResult() {
+            fetch('/api/result')
+                .then(response => response.json())
+                .then(data => {
+                    // Update right panel
+                    document.getElementById('label').textContent = data.label;
+                    document.getElementById('confidence').textContent = 
+                        'Confidence: ' + data.confidence.toFixed(2) + '%';
+                    
+                    const currentTime = Date.now();
+                    
+                    // Check if should log:
+                    // 1. Not blank
+                    // 2. Confidence > 90
+                    // 3. Either different object OR same object but after 5 seconds cooldown
+                    if (data.confidence > 90 && activityMap[data.label]) {
+                        const timeSinceLastLog = currentTime - lastLoggedTime;
+                        
+                        // Log if: different label OR same label but cooldown passed
+                        if (data.label !== lastLoggedLabel) {
+                            // Different object - log immediately
+                            addScheduleItem(data.label);
+                            lastLoggedLabel = data.label;
+                            lastLoggedTime = currentTime;
+                            console.log('Logged new item:', data.label);
+                        } else if (timeSinceLastLog >= LOG_COOLDOWN) {
+                            // Same object but cooldown passed - log again
+                            addScheduleItem(data.label);
+                            lastLoggedTime = currentTime;
+                            console.log('Logged same item after cooldown:', data.label);
+                        } else {
+                            console.log('Skipped - cooldown active:', (LOG_COOLDOWN - timeSinceLastLog) / 1000, 'seconds left');
+                        }
+                    }
+                    
+                    // Reset tracking if we see blank
+                    if (data.label === '6 blank') {
+                        lastLoggedLabel = '';
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+        
+        // Update every 1 second
+        setInterval(updateResult, 1000);
+        
+        // Run once immediately
+        updateResult();
+    </script>
+</body>
+</html>

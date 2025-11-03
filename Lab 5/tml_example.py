@@ -5,7 +5,7 @@ cap = cv.VideoCapture(0)
 
 model_path = 'model/model.tflite'
 image_file_name = "frame.jpg"
-labels_path = "labels.txt"
+labels_path = "model/labels.txt"
 
 tm_model = TeachableMachineLite(model_path=model_path, labels_file_path=labels_path)
 
