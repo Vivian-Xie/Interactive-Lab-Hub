@@ -2,6 +2,8 @@
 
 **NAMES OF COLLABORATORS HERE**
 
+Maggie Liang(ml2927) Xueer Zhang(xz946) Xinwei Xie(xx2185)
+
 For submission, replace this section with your documentation!
 
 ---
