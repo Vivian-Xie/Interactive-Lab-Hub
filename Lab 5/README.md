@@ -1,6 +1,6 @@
 # Observant Systems
 
-**NAMES OF COLLABORATORS HERE**
+**NAMES OF COLLABORATORS HERE** Maggie Liang(ml2927) Xueer Zhang(xz946) Xinwei Xie(xx2185)
 
 
 For lab this week, we focus on creating interactive systems that can detect and respond to events or stimuli in the environment of the Pi, like the Boat Detector we mentioned in lecture. 
@@ -41,7 +41,8 @@ D) [Reflect](#part-d)
 ### Part A
 ### Play with different sense-making algorithms.
 
-#### Pytorch for object recognition
+<details>
+<summary><h4><strong>Pytorch for object recognition</strong></h4></summary>
 
 For this first demo, you will be using PyTorch and running a MobileNet v2 classification model in real time (30 fps+) on the CPU. We will be following steps adapted from [this tutorial](https://pytorch.org/tutorials/intermediate/realtime_rpi.html).
 
@@ -79,7 +80,15 @@ For more details on transfer learning and deployment to embedded devices, see De
 ### Machine Vision With Other Tools
 The following sections describe tools ([MediaPipe](#mediapipe) and [Teachable Machines](#teachable-machines)).
 
-#### MediaPipe
+</details>
+
+https://github.com/user-attachments/assets/91717ab8-b622-45bc-8059-351f32000585
+
+https://github.com/user-attachments/assets/ea6a155e-8355-434b-b43d-6fafae67bb72
+
+
+<details>
+<summary><h4><strong>MediaPipe</strong></h4></summary>
 
 A established open source and efficient method of extracting information from video streams comes out of Google's [MediaPipe](https://mediapipe.dev/), which offers state of the art face, face mesh, hand pose, and body pose detection.
 
@@ -101,10 +110,17 @@ Try the two main features of this script: 1) pinching for percentage control, an
 Consider how you might use this position based approach to create an interaction, and write how you might use it on either face, hand or body pose tracking.
 
 (You might also consider how this notion of percentage control with hand tracking might be used in some of the physical UI you may have experimented with in the last lab, for instance in controlling a servo or rotary encoder.)
+</details>
+
+https://github.com/user-attachments/assets/8b46ae82-065d-4bf8-9f28-90cad102fe9a
+
+https://github.com/user-attachments/assets/fdd56732-d369-4d55-8e5d-6a4ea8678aee
+
+https://github.com/user-attachments/assets/47ea991b-1f54-4a0c-bcb3-29f378120505
 
 
-
-#### Moondream Vision-Language Model
+<details>
+<summary><h4><strong>Moondream Vision-Language Model</strong></h4></summary>
 
 [Moondream](https://www.ollama.com/library/moondream) is a lightweight vision-language model that can understand and answer questions about images. Unlike the classification models above, Moondream can describe images in natural language and answer specific questions about what it sees.
 
@@ -121,8 +137,13 @@ python moondream_simple.py
 This will capture an image from your webcam and let you ask questions about it in natural language. Note that vision-language models are slower than classification models (responses may take up to minutes on a Raspberry Pi). There are newer models like [LFM2-VL](https://huggingface.co/LiquidAI/LFM2-VL-450M-GGUF), but many are very recent and not yet optimized for embedded devices.
 
 **Design consideration**: Think about how slower response times change your interaction design. What kinds of observant systems benefit from thoughtful, delayed responses rather than real-time classification? Consider systems that monitor over longer time periods or provide periodic summaries rather than instant feedback.
+</details>
 
-#### Teachable Machines
+![9a3864e46723ebcbf1eb666504bc1ae](https://github.com/user-attachments/assets/fc3894fb-4a4d-42cd-abca-8c95d40008b8)
+
+<details>
+<summary><h4><strong>Teachable Machines</strong></h4></summary>
+  
 Google's [TeachableMachines](https://teachablemachine.withgoogle.com/train) is very useful for prototyping with the capabilities of machine learning. We are using [a python package](https://github.com/MeqdadDev/teachable-machine-lite) with tensorflow lite to simplify the deployment process.
 
 ![Tachable Machines Pi](Readme_files/tml_pi.gif)
@@ -151,50 +172,164 @@ Teachable machines provides an audio classifier too. If you want to use audio cl
 
 In an earlier version of this class students experimented with foundational computer vision techniques such as face and flow detection. Techniques like these can be sufficient, more performant, and allow non discrete classification. Find the material here:
 [CV_optional/cv.md](CV_optional/cv.md).
+</details>
+
+<img width="1704" height="1426" alt="94114f28a8d208a91e101132d9da04d" src="https://github.com/user-attachments/assets/add35c36-2fdf-4c10-9e92-094f4bc4341d" />
+
+<img width="1682" height="1422" alt="83e437c11cf3a882b320e3f4b73fd23" src="https://github.com/user-attachments/assets/bb6fb6d2-7609-4df3-a5b9-7d6350d27e1d" />
+
+https://github.com/user-attachments/assets/c79fd5ee-89c3-481a-a3fb-50a81c84bd38
+
+https://github.com/user-attachments/assets/f738588f-7067-447e-aa5b-9a9616a21c4f
+
 
 ### Part B
+
 ### Construct a simple interaction.
 
-* Pick one of the models you have tried, and experiment with prototyping an interaction.
-* This can be as simple as the boat detector shown in lecture.
-* Try out different interaction outputs and inputs.
+#### Model Used
+We selected a **Teachable Machine Image Classification model** trained to recognize five everyday activities we want to track:
 
+- **Pen** → studying/writing  
+- **Orange** → eating
+- **Vitamin** → taking supplements  
+- **Cup** → drinking water
+- **Book** → reading
+- **Raspberry Pi** → doing interactive design work
 
-**\*\*\*Describe and detail the interaction, as well as your experimentation here.\*\*\***
+We trained each class with multiple images captured from different angles and distances. We also varied lighting conditions to improve generalization.
+
+#### Interaction Description
+
+- **Input:** Live video feed from Raspberry Pi camera.
+- **Recognition:** The model runs inference continuously.
+- **Decision Logic (Temporal Smoothing):**
+  - If one label maintains **≥ 0.80 confidence for ~1.5 seconds**, we consider the activity “detected”.
+  - If confidence drops below **0.60 for ~0.8 seconds**, we consider the activity “finished”.
+- **Output / Feedback:**
+  - The screen displays the current detected activity and confidence level.
+  - The system logs the activity into a `.csv` sheet:  
+    `timestamp, activity, confidence, duration`.
+
+This creates an **automatic habit tracking system** where holding or using an object triggers a log entry without manual input.
+
+---
 
 ### Part C
 ### Test the interaction prototype
 
 Now flight test your interactive prototype and **note down your observations**:
-For example:
-1. When does it what it is supposed to do?
-1. When does it fail?
-1. When it fails, why does it fail?
-1. Based on the behavior you have seen, what other scenarios could cause problems?
 
-**\*\*\*Think about someone using the system. Describe how you think this will work.\*\*\***
-1. Are they aware of the uncertainties in the system?
-1. How bad would they be impacted by a miss classification?
-1. How could change your interactive system to address this?
-1. Are there optimizations you can try to do on your sense-making algorithm.
+#### When the System Worked Well
+- **Pen**: Writing at a desk was recognized reliably (clear shape + movement).
+- **Book**: Reading position and rectangular shape produced high confidence.
+- **Vitamin**: When the supplement bottle was held close to the camera, detection was consistent.
+
+#### When the System Failed
+- **Orange** sometimes failed:  
+  It was recognized during training but failed in real usage.  
+  Likely causes:
+  - Background colors (wood desk / skin tones) visually resemble the orange.
+  - Lighting changed between training and testing environments.
+- **Cup** (black cup) often misclassified:  
+  Any **dark/black object** was sometimes recognized as the cup because the model over-learned **color** rather than **shape**.
+
+#### Why These Failures Occur
+- Model relied heavily on **color cues**, not object contour.
+- Background and lighting during training were less diverse than in real use.
+- Without negative examples of “confusing similar objects,” the model generalizes poorly.
+
+#### Potential Problem Scenarios
+- Using the system in a different room or lighting environment.
+- Introducing new black objects near the cup (mouse, phone case).
+- Eating other orange-colored foods (carrots, snacks) may trigger false detections.
+
+#### User Experience Considerations
+Users can notice uncertainty because the interface shows a confidence bar and plays a confirmation sound when detection is stable.  
+Misclassification may cause incorrect habit logs, which can impact the reliability and usefulness of the tracking system.  
+If mistakes happen often, users may lose trust in the system or feel frustrated.
+
+### Improvements / Optimizations
+
+#### Sensing / Model Improvements
+- Collect **more varied training data** (different lighting, background clutter).
+- Train each class with **multiple object instances** (e.g., different cups, different fruit).
+- Include training images where the target object is present **but not centered**, reflecting real use.
+
+#### Interaction Layer Improvements
+- Only confirm detection after **temporal smoothing** (already partly implemented).
+- Add a small “preview” window showing the last captured frame when detection occurs → helps users verify logs.
+
+#### System Redesign Possibility
+- Combine **image recognition + simple movement cues** (e.g., pen tip motion vs static pen).
+- For the black cup: use a **white marker/label** to add distinctive features for the model to latch onto.
+
+#### Summary
+This prototype successfully demonstrates automatic habit tracking using object-based activity recognition. However, real-world variability (especially color-based confusion and inconsistent lighting) significantly influences performance. The system benefits from temporal smoothing and user-facing feedback, but improving training data diversity and shifting the model to focus on shape rather than color will be necessary for robust everyday use.
 
 ### Part D
 ### Characterize your own Observant system
 
-Now that you have experimented with one or more of these sense-making systems **characterize their behavior**.
-During the lecture, we mentioned questions to help characterize a material:
-* What can you use X for?
-* What is a good environment for X?
-* What is a bad environment for X?
-* When will X break?
-* When it breaks how will X break?
-* What are other properties/behaviors of X?
-* How does X feel?
+#### What can we use this system for?
+We can use it for hands-free habit tracking. The system can detect daily activities (such as studying, drinking water, reading, taking vitamins, etc.) and automatically record the time spent on each activity. It is good for people who want to track routines without manually starting or stopping timers.
+
+#### What is a good environment for this system?
+The system works well under stable lighting, a clear camera view, and when the target object is held or placed within a reasonable distance. A desk with consistent lighting and fewer visually similar items nearby creates ideal conditions.
+
+#### What is a bad environment for this system?
+The system performs poorly in environments where:
+- Lighting changes frequently (e.g., sunlight shifting)
+- Background is cluttered with visually similar objects
+- The camera is too far away or shaking
+- The target object has similar color to surrounding items
+
+#### When will the system break?
+It will break when it cannot distinguish between two visually similar objects.  
+For example, the black cup may be confused with any other black object, and the orange may be confused under warm lighting conditions.
+
+#### How will it break?
+When it breaks, it does not crash. Instead, it **misclassifies** or **oscillates** between two labels, leading to incorrect time logs or short unintended activity segments.
+
+#### Other properties and behaviors
+- It is sensitive to **color** more than object **shape**.
+- It becomes more stable when temporal smoothing is applied.
+- The system "feels" like it needs guidance — it benefits from feedback loops, clear lighting, and deliberate user positioning.
+
+#### How does the system feel (as an interaction experience)?
+It feels helpful when it works because it reduces user effort and makes habit tracking automatic.
+However, it can feel fragile or uncertain in situations where the environment changes, which reminds the user that the system is not fully “intelligent,” but a responsive sensing material.
 
 **\*\*\*Include a short video demonstrating the answers to these questions.\*\*\***
+![8f00ab4868e8602b777adabdd3d8629](https://github.com/user-attachments/assets/46e706f4-5128-4359-9243-ab1f3209e5dd)
+![9c1046616cdb9bdd87dc19746651921](https://github.com/user-attachments/assets/5e7bbf58-d279-4321-90f0-11d4a100a39e)
 
 ### Part 2.
 
 Following exploration and reflection from Part 1, finish building your interactive system, and demonstrate it in use with a video.
 
-**\*\*\*Include a short video demonstrating the finished result.\*\*\***
+#### Updated Improvement — More User-Friendly Web Interaction
+
+In the improved version of our system, we added a **web-based user interface** to make the interaction clearer and more accessible.  
+Instead of only recording the moment when an action is detected, the system now:
+
+- **Starts a timer** automatically when a specific activity is recognized.
+- **Displays a live timer** on the webpage so the user can see how long they have been doing the activity.
+- **Stops the timer** when the system detects that the activity has ended (confidence drops).
+- **Automatically logs the total duration** into the habit tracking record.
+
+This improvement makes the system **much more user-friendly**, because users no longer need to manually enter or estimate how long they have been performing the activity.  
+In many traditional habit-tracking apps, the user must remember to:
+1) start the timer  
+2) stop the timer  
+3) write down the activity duration  
+
+#### Benefits of This Change
+- Reduces **user input effort** — truly hands-free habit tracking.
+- Produces **more accurate time data**, especially for activities that are easy to forget.
+- Makes the system feel like a **real interactive assistant** instead of only a detector.
+- Helps users build habits more smoothly because **tracking becomes automatic**.
+
+This enhancement not only improves usability but also makes the system more aligned with real-life habit-tracking needs.
+
+https://github.com/user-attachments/assets/8dff075a-bf6b-481c-9ff9-bdec297ae944
+
