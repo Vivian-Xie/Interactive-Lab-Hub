@@ -58,6 +58,16 @@
             animation: slideIn 0.3s ease;
         }
         
+        .schedule-item.ongoing {
+            background-color: #fff9c4;
+            border-left: 4px solid #fbc02d;
+        }
+        
+        .schedule-item.completed {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+        }
+        
         @keyframes slideIn {
             from {
                 opacity: 0;
@@ -87,6 +97,13 @@
             font-size: 16px;
             color: #333;
             line-height: 1.5;
+        }
+        
+        .duration {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
         }
         
         /* Right side - Real-time detection */
@@ -137,6 +154,15 @@
             color: #999;
             padding: 40px;
         }
+        
+        .ongoing-notice {
+            background-color: #fff9c4;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 2px solid #fbc02d;
+        }
     </style>
 </head>
 <body>
@@ -146,6 +172,9 @@
         <!-- Left Panel - Schedule -->
         <div class="left-panel">
             <h2>Today's Schedule</h2>
+            <div id="ongoingNotice" style="display: none;" class="ongoing-notice">
+                <strong>Currently doing:</strong> <span id="ongoingActivity"></span>
+            </div>
             <div class="schedule-container" id="scheduleContainer">
                 <div class="empty-schedule">No activities yet</div>
             </div>
@@ -170,16 +199,31 @@
     <script>
         let lastLoggedLabel = '';
         let lastLoggedTime = 0;
-        const LOG_COOLDOWN = 10000; // 5 seconds in milliseconds
+        const LOG_COOLDOWN = 10000; // 10 seconds
         
-        // Activity mapping
-        const activityMap = {
+        // Track ongoing time-based activities
+        let ongoingActivity = null; // {label, startTime, element}
+        
+        // Activity types
+        const INSTANT_ACTIVITIES = {
             '0 orange': 'Eat an orange',
-            '1 pen': 'Complete a math exercise',
             '2 mug': 'Drink a cup of water',
-            '3 raspberry': 'Work on Interactive Lab homework',
-            '4 vitamin': 'Take vitamin',
-            '5 notebook': 'Organize notes'
+            '4 vitamin': 'Take vitamin'
+        };
+        
+        const TIME_BASED_ACTIVITIES = {
+            '1 pen': {
+                start: 'Started math exercise',
+                end: 'Completed math exercise'
+            },
+            '3 raspberry': {
+                start: 'Started working on Interactive Lab homework',
+                end: 'Finished Interactive Lab homework'
+            },
+            '5 notebook': {
+                start: 'Started organizing notes',
+                end: 'Finished organizing notes'
+            }
         };
         
         // Get current time string with seconds
@@ -191,11 +235,23 @@
             return `${hours}:${minutes}:${seconds}`;
         }
         
-        // Add schedule item
-        function addScheduleItem(label) {
-            const activity = activityMap[label];
+        // Calculate duration between two times
+        function calculateDuration(startTime, endTime) {
+            const duration = endTime - startTime;
+            const hours = Math.floor(duration / 3600000);
+            const minutes = Math.floor((duration % 3600000) / 60000);
+            const seconds = Math.floor((duration % 60000) / 1000);
             
-            // Don't add if no mapping
+            let result = '';
+            if (hours > 0) result += `${hours}h `;
+            if (minutes > 0) result += `${minutes}m `;
+            result += `${seconds}s`;
+            return result;
+        }
+        
+        // Add instant activity
+        function addInstantActivity(label) {
+            const activity = INSTANT_ACTIVITIES[label];
             if (!activity) return;
             
             const scheduleContainer = document.getElementById('scheduleContainer');
@@ -216,8 +272,75 @@
                 </div>
             `;
             
-            // Add to top of schedule
             scheduleContainer.insertBefore(scheduleItem, scheduleContainer.firstChild);
+        }
+        
+        // Start time-based activity
+        function startTimeBasedActivity(label) {
+            const activity = TIME_BASED_ACTIVITIES[label];
+            if (!activity) return;
+            
+            const scheduleContainer = document.getElementById('scheduleContainer');
+            
+            // Remove empty message if exists
+            const emptySchedule = scheduleContainer.querySelector('.empty-schedule');
+            if (emptySchedule) {
+                emptySchedule.remove();
+            }
+            
+            const startTime = Date.now();
+            
+            // Create new schedule item (ongoing)
+            const scheduleItem = document.createElement('div');
+            scheduleItem.className = 'schedule-item ongoing';
+            scheduleItem.innerHTML = `
+                <div class="schedule-time">${getCurrentTime()}</div>
+                <div class="schedule-content">
+                    <div class="schedule-activity">${activity.start}</div>
+                </div>
+            `;
+            
+            scheduleContainer.insertBefore(scheduleItem, scheduleContainer.firstChild);
+            
+            // Track ongoing activity
+            ongoingActivity = {
+                label: label,
+                startTime: startTime,
+                element: scheduleItem
+            };
+            
+            // Show ongoing notice
+            document.getElementById('ongoingNotice').style.display = 'block';
+            document.getElementById('ongoingActivity').textContent = activity.start;
+            
+            console.log('Started time-based activity:', label);
+        }
+        
+        // End time-based activity
+        function endTimeBasedActivity(label) {
+            if (!ongoingActivity || ongoingActivity.label !== label) return;
+            
+            const activity = TIME_BASED_ACTIVITIES[label];
+            const endTime = Date.now();
+            const duration = calculateDuration(ongoingActivity.startTime, endTime);
+            
+            // Update the existing element
+            ongoingActivity.element.className = 'schedule-item completed';
+            ongoingActivity.element.innerHTML = `
+                <div class="schedule-time">${ongoingActivity.element.querySelector('.schedule-time').textContent} - ${getCurrentTime()}</div>
+                <div class="schedule-content">
+                    <div class="schedule-activity">${activity.end}</div>
+                    <div class="duration">Duration: ${duration}</div>
+                </div>
+            `;
+            
+            // Clear ongoing activity
+            ongoingActivity = null;
+            
+            // Hide ongoing notice
+            document.getElementById('ongoingNotice').style.display = 'none';
+            
+            console.log('Ended time-based activity:', label);
         }
         
         // Update recognition results
@@ -232,27 +355,36 @@
                     
                     const currentTime = Date.now();
                     
-                    // Check if should log:
-                    // 1. Not blank
-                    // 2. Confidence > 90
-                    // 3. Either different object OR same object but after 5 seconds cooldown
-                    if (data.confidence > 90 && activityMap[data.label]) {
+                    if (data.confidence > 90) {
                         const timeSinceLastLog = currentTime - lastLoggedTime;
                         
-                        // Log if: different label OR same label but cooldown passed
-                        if (data.label !== lastLoggedLabel) {
-                            // Different object - log immediately
-                            addScheduleItem(data.label);
-                            lastLoggedLabel = data.label;
-                            lastLoggedTime = currentTime;
-                            console.log('Logged new item:', data.label);
-                        } else if (timeSinceLastLog >= LOG_COOLDOWN) {
-                            // Same object but cooldown passed - log again
-                            addScheduleItem(data.label);
-                            lastLoggedTime = currentTime;
-                            console.log('Logged same item after cooldown:', data.label);
-                        } else {
-                            console.log('Skipped - cooldown active:', (LOG_COOLDOWN - timeSinceLastLog) / 1000, 'seconds left');
+                        // Handle instant activities
+                        if (INSTANT_ACTIVITIES[data.label]) {
+                            if (data.label !== lastLoggedLabel || timeSinceLastLog >= LOG_COOLDOWN) {
+                                addInstantActivity(data.label);
+                                lastLoggedLabel = data.label;
+                                lastLoggedTime = currentTime;
+                                console.log('Logged instant activity:', data.label);
+                            }
+                        }
+                        
+                        // Handle time-based activities
+                        if (TIME_BASED_ACTIVITIES[data.label]) {
+                            if (!ongoingActivity) {
+                                // No ongoing activity - start new one
+                                if (data.label !== lastLoggedLabel || timeSinceLastLog >= LOG_COOLDOWN) {
+                                    startTimeBasedActivity(data.label);
+                                    lastLoggedLabel = data.label;
+                                    lastLoggedTime = currentTime;
+                                }
+                            } else if (ongoingActivity.label === data.label) {
+                                // Same activity detected again - end it
+                                if (timeSinceLastLog >= LOG_COOLDOWN) {
+                                    endTimeBasedActivity(data.label);
+                                    lastLoggedLabel = data.label;
+                                    lastLoggedTime = currentTime;
+                                }
+                            }
                         }
                     }
                     
