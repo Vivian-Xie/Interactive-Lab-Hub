@@ -1,66 +1,36 @@
 # Distributed Interaction
 
-**NAMES OF COLLABORATORS HERE**
+**NAMES OF COLLABORATORS**
 
 Maggie Liang(ml2927) Xueer Zhang(xz946) Xinwei Xie(xx2185)
 
-For submission, replace this section with your documentation!
-
 ---
-
-## Prep
-
-1. Pull the new changes
-2. Read: [The Presence Table](https://dl.acm.org/doi/10.1145/1935701.1935800) ([video](https://vimeo.com/15932020))
-
-## Overview
-
-Build interactive systems where **multiple devices communicate over a network** using MQTT messaging. Work in teams of 3+ with Raspberry Pis.
-
-**Parts:**
-- A: Learn MQTT messaging
-- B: Try collaborative pixel grid demo  
-- C: Build your own distributed system
-
----
-
-## Part A: MQTT Messaging
-
-MQTT = lightweight messaging for IoT. Publish/subscribe model with central broker.
-
-**Concepts:**
-- **Broker**: `farlab.infosci.cornell.edu:1883`
-- **Topic**: Like `IDD/bedroom/temperature` (use `#` wildcard)
-- **Publish/Subscribe**: Send and receive messages
-
-**Install MQTT tools on your Pi:**
-```bash
-sudo apt-get update
-sudo apt-get install -y mosquitto-clients
-```
-
-**Test it:**
-
-**Subscribe to messages (listener):**
-```bash
-mosquitto_sub -h farlab.infosci.cornell.edu -p 1883 -t 'IDD/#' -u idd -P 'device@theFarm'
-```
-
-**Publish a message (sender):**
-```bash
-mosquitto_pub -h farlab.infosci.cornell.edu -p 1883 -t 'IDD/test/yourname' -m 'Hello!' -u idd -P 'device@theFarm'
-```
-
-> **💡 Tips:**
-> - Replace `yourname` with your actual name in the topic
-> - Use single quotes around the password: `'device@theFarm'`
-
-**🔧 Debug Tool:** View all MQTT messages in real-time at `http://farlab.infosci.cornell.edu:5001`
-
-![MQTT Explorer showing messages](imgs/MQTT-explorer.png)
 
 **💡 Brainstorm 5 ideas for messaging between devices**
+1) Shared Message Board
 
+- Multiple devices in the same space can post short messages that are shown on every other device.
+ This allows everyone to share thoughts or updates at the same time without needing direct replies.
+
+2) Group Status Display
+
+- Each device can send its current status, such as “working,” “break,” or “done.”
+All devices display the group’s statuses together, so everyone can see what others are doing in the moment.
+
+3) Synchronized Light Signals
+
+- When one device changes its light color, all other devices change to the same color.
+This creates a shared mood or environment across the space without needing any response.
+
+4) Collective Timer
+
+- One device can start a timer, and all devices show the same countdown.
+Everyone in the room can keep time together without needing to interact individually.
+
+5) Group Sound Cue
+
+- Any device can send a signal that makes all devices play a short tone at the same time.
+This works as a gentle way to signal transitions such as “begin,” “pause,” or “end.”
 ---
 
 ## Part B: Collaborative Pixel Grid
