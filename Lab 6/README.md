@@ -7,20 +7,18 @@
 The Distributed Goose Counting Game is a collaborative counting challenge where multiple players use Raspberry Pi devices with physical buttons to compete in counting geese from an image. The system creates an engaging, real-time competitive experience using distributed hardware and networked communication.
 
 **Game Flow:**
-1. An image of geese is displayed for 3 seconds
+1. An image of geese is displayed for 5 seconds
 2. After the image disappears, players wait through a 5-second countdown
 3. When the countdown ends, players have 5 seconds to answer
 4. Players press their button once for each goose they counted
-5. Players hold their button for 2 seconds to submit their final answer
+5. After 5 seconds, the system automatically calculates each player's answer based on their total button presses
 6. The first player with the correct answer wins
 
 ### Why is it interesting?
 
 This project demonstrates distributed sensing and real-time collaboration in several ways:
 
-**Distributed Input:** Each Raspberry Pi independently reads button presses and sends them via MQTT, creating a truly distributed input system where no single device controls the interaction.
-
-**Real-time Feedback:** All players can see each other's progress on the web interface as clicks happen in real-time, creating social pressure and excitement.
+**Real-time Feedback:** After the 5-second answer period, all players' answers are revealed simultaneously on the web interface, creating anticipation and excitement.
 
 **Physical-Digital Bridge:** The game combines physical button pressing with digital visualization, making abstract networked systems tangible and fun.
 
@@ -34,9 +32,9 @@ Players experience the game in three phases:
 
 **Waiting Phase:** The countdown creates anticipation. Players must remember their count while watching the timer.
 
-**Action Phase:** Players frantically press buttons to enter their count, then must decide when to submit. Holding too long might lose, but submitting too early with wrong answer also loses. The real-time display shows other players' progress, adding competitive pressure.
+**Action Phase:** Players frantically press buttons to enter their count within the 5-second window. They cannot see other players' progress during this time, adding tension. When time expires, all answers are revealed simultaneously, creating a dramatic moment of truth.
 
-The physical button creates a more engaging experience than keyboard input - each press feels meaningful and the act of holding to submit creates a moment of commitment.
+The physical button creates a more engaging experience than keyboard input - each press feels meaningful and the pressure of the ticking clock creates urgency.
 
 ---
 
@@ -65,7 +63,6 @@ The physical button creates a more engaging experience than keyboard input - eac
                     ║ farlab.infosci.cornell ║
                     ║  Topics:               ║
                     ║  - IDD/goose/button    ║
-                    ║  - IDD/goose/submit    ║
                     ╚════════════════════════╝
                                  ↓
                     ┌────────────────────────┐
@@ -161,17 +158,7 @@ SCL           →    GPIO3/SCL (Pin 5)
 }
 ```
 
-**Topic: `IDD/goose/submit`**
-- Purpose: Submit final answer
-- QoS: 0
-- Retained: No
-- Message format:
-```json
-{
-  "mac": "dc:a6:32:1a:2b:3c",
-  "timestamp": 1699876548
-}
-```
+The system tracks all button presses during the 5-second answer window and automatically calculates each player's final answer when time expires.
 
 ### Code Snippets with Explanations
 
@@ -200,14 +187,12 @@ def read_button(i2c):
 
 **Explanation:** This function safely reads the I2C button state. The button returns 0x00 when pressed and 0xff when released. The try_lock() ensures thread-safe access to the I2C bus.
 
-**Press Type Detection:**
+**Press Detection:**
 ```python
 # Button pressed (state changed to 0x00 or similar)
 if new_state == 0x00 or new_state < 0x80:
     # Debounce
     if current_time - last_press_time > DEBOUNCE_TIME:
-        press_start_time = current_time
-        
         # Publish button press
         payload = json.dumps({
             'mac': mac,
@@ -219,26 +204,9 @@ if new_state == 0x00 or new_state < 0x80:
         print(f'Button pressed')
         
         last_press_time = current_time
-
-# Button released
-elif new_state == 0xff or new_state >= 0x80:
-    if press_start_time is not None:
-        hold_time = current_time - press_start_time
-        
-        # If held for 2+ seconds, submit answer
-        if hold_time >= 2.0:
-            payload = json.dumps({
-                'mac': mac,
-                'timestamp': int(current_time)
-            })
-            
-            client.publish(MQTT_TOPIC_SUBMIT, payload)
-            print(f'Answer submitted (held {hold_time:.1f}s)')
-        
-        press_start_time = None
 ```
 
-**Explanation:** Distinguishes between short presses (count) and long presses (submit). Debouncing prevents multiple triggers from mechanical bounce. Hold time is calculated from press start to release.
+**Explanation:** Each button press is immediately published to MQTT. The server tracks all presses during the 5-second answer window and counts them to determine the final answer. Debouncing prevents multiple triggers from mechanical bounce.
 
 #### 2. MQTT Bridge (mqtt_game_bridge.py)
 
@@ -246,44 +214,27 @@ elif new_state == 0xff or new_state >= 0x80:
 ```python
 def on_message(client, userdata, msg):
     """MQTT message received - forward to WebSocket"""
-    try:
-        socketio = userdata['socketio']
-        game_state = userdata['game_state']
+      socketio = userdata['socketio']
+      game_state = userdata['game_state']
         
-        # Parse message
-        data = json.loads(msg.payload.decode('UTF-8'))
-        
-        # Handle different message types
-        if msg.topic.endswith('/button'):
-            # Button press message
-            mac = data.get('mac')
-            ip = data.get('ip', 'unknown')
+      data = json.loads(msg.payload.decode('UTF-8'))
+
+      if msg.topic.endswith('/button'):
+         mac = data.get('mac')
+         ip = data.get('ip', 'unknown')
             
-            print(f'Button press from {mac[:17]}')
+         print(f'Button press from {mac[:17]}')
             
             # Forward to Socket.IO
-            socketio.emit('button_press', {
-                'mac': mac,
-                'ip': ip,
-                'timestamp': datetime.now().isoformat()
-            }, namespace='/')
-            
-        elif msg.topic.endswith('/submit'):
-            # Submit answer message
-            mac = data.get('mac')
-            
-            print(f'Answer submitted from {mac[:17]}')
-            
-            # Forward to Socket.IO
-            socketio.emit('submit_answer', {
-                'mac': mac
-            }, namespace='/')
-        
-    except Exception as e:
-        print(f'Error processing MQTT message: {e}')
+         socketio.emit('button_press', {
+            'mac': mac,
+            'ip': ip,
+            'timestamp': datetime.now().isoformat()
+         }, namespace='/')
+
 ```
 
-**Explanation:** This bridge converts MQTT messages to Socket.IO events. It maintains the game state and routes different message types to appropriate handlers. The namespace='/' ensures messages reach all connected web clients.
+**Explanation:** This bridge converts MQTT messages to Socket.IO events. It maintains the game state and routes button press messages to the game server. The namespace='/' ensures messages reach all connected web clients.
 
 #### 3. Game Logic (real_game_app.py)
 
@@ -292,131 +243,43 @@ def on_message(client, userdata, msg):
 @socketio.on('button_press')
 def handle_button_press(data):
     """Handle button press from Pi"""
-    try:
-        mac = data.get('mac')
-        ip = data.get('ip', 'unknown')
+   mac = data.get('mac')
+   ip = data.get('ip', 'unknown')
         
-        if game_state['phase'] != 'answering':
+   if game_state['phase'] != 'answering':
             return
         
-        # Initialize player if new
-        if mac not in game_state['players']:
-            player_num = len(game_state['players']) + 1
-            game_state['players'][mac] = {
-                'name': f'Player {player_num}',
-                'ip': ip,
-                'clicks': 0,
-                'answer': None,
-                'time': None,
-                'start_time': datetime.now()
-            }
+      # Initialize player if new
+   if mac not in game_state['players']:
+      player_num = len(game_state['players']) + 1
+      game_state['players'][mac] = {
+         'name': f'Player {player_num}',
+         'ip': ip,
+         'clicks': 0,
+         'answer': None,
+         'time': None,
+         'start_time': datetime.now()
+      }
         
-        # Increment click count
-        game_state['players'][mac]['clicks'] += 1
-        clicks = game_state['players'][mac]['clicks']
         
-        # Broadcast click update
-        emit('player_click', {
-            'mac': mac,
-            'name': game_state['players'][mac]['name'],
-            'ip': ip,
-            'clicks': clicks
-        }, broadcast=True)
+   game_state['players'][mac]['clicks'] += 1
+   clicks = game_state['players'][mac]['clicks']
         
-        print(f'{game_state["players"][mac]["name"]}: Click {clicks}')
+   emit('player_click', {
+      'mac': mac,
+      'name': game_state['players'][mac]['name'],
+      'ip': ip,
+      'clicks': clicks
+      }, broadcast=True)
         
-    except Exception as e:
-        print(f'Error handling button press: {e}')
+   print(f'{game_state["players"][mac]["name"]}: Click {clicks}')
+        
 ```
 
-**Explanation:** Tracks each button press per player. Only counts clicks during the 'answering' phase. Broadcasts updates to all connected clients so everyone sees real-time progress.
+**Explanation:** Tracks each button press per player. Only counts clicks during the 'answering' phase. Click counts are stored server-side but NOT broadcast in real-time - they remain hidden until the answer phase ends.
 
-**Winner Detection:**
-```python
-@socketio.on('submit_answer')
-def handle_submit_answer(data):
-    """Handle answer submission from Pi"""
-    try:
-        mac = data.get('mac')
-        
-        if mac not in game_state['players']:
-            return
-        
-        if game_state['players'][mac]['answer'] is not None:
-            return  # Already answered
-        
-        # Record answer
-        answer = game_state['players'][mac]['clicks']
-        elapsed = (datetime.now() - game_state['players'][mac]['start_time']).total_seconds()
-        
-        game_state['players'][mac]['answer'] = answer
-        game_state['players'][mac]['time'] = round(elapsed, 1)
-        
-        # Check if winner
-        is_correct = answer == GAME_CONFIG['correct_answer']
-        is_winner = is_correct and game_state['winner'] is None
-        
-        if is_winner:
-            game_state['winner'] = mac
-        
-        # Broadcast answer
-        emit('player_answer', {
-            'mac': mac,
-            'name': game_state['players'][mac]['name'],
-            'ip': game_state['players'][mac]['ip'],
-            'answer': answer,
-            'time': game_state['players'][mac]['time'],
-            'is_correct': is_correct,
-            'is_winner': is_winner
-        }, broadcast=True)
-        
-        status = 'WINNER' if is_winner else ('correct' if is_correct else 'incorrect')
-        print(f'{game_state["players"][mac]["name"]}: Answer {answer} in {elapsed:.1f}s [{status}]')
-        
-    except Exception as e:
-        print(f'Error handling answer: {e}')
-```
-
-**Explanation:** When a player submits, their click count becomes their final answer. The first correct answer wins. Response time is calculated from the start of the answering phase.
 
 #### 4. Real-time Display (game.html)
-
-**Socket.IO Connection:**
-```javascript
-// Socket.IO connection
-const socket = io();
-
-let players = {};
-
-socket.on('connect', () => {
-    console.log('Connected to server');
-    document.getElementById('connectionStatus').textContent = 'Connected';
-    document.getElementById('connectionStatus').classList.add('connected');
-});
-
-socket.on('button_press', (data) => {
-    console.log('Button press:', data);
-    
-    // Initialize player if new
-    if (!players[data.mac]) {
-        const playerNum = Object.keys(players).length + 1;
-        players[data.mac] = {
-            name: `Player ${playerNum}`,
-            ip: data.ip,
-            clicks: 0,
-            answer: null,
-            time: null
-        };
-        addPlayerToDisplay(data.mac);
-    }
-    
-    // Increment clicks
-    players[data.mac].clicks++;
-    updatePlayerDisplay(data.mac);
-});
-```
-
-**Explanation:** Establishes WebSocket connection for real-time updates. When button presses arrive, the display updates immediately. New players are auto-assigned numbers and added to the UI.
 
 **Dynamic Player Display:**
 ```javascript
@@ -430,6 +293,7 @@ function updatePlayerDisplay(mac, isWinner = false) {
     
     if (!answerDiv) return;
     
+    // Only show results after answer phase ends
     if (player.answer !== null) {
         playerDiv.classList.add('answered');
         answerDiv.textContent = 'Answer: ' + player.answer;
@@ -442,12 +306,13 @@ function updatePlayerDisplay(mac, isWinner = false) {
                 '<span class="winner-badge">WINNER</span>';
         }
     } else {
-        answerDiv.textContent = 'Clicks: ' + player.clicks;
+        // During answer phase, show waiting status
+        answerDiv.textContent = 'Answering...';
     }
 }
 ```
 
-**Explanation:** Updates player display in real-time. Shows click count during answering, then switches to final answer when submitted. Winner gets special styling.
+**Explanation:** Updates player display only after the answer phase ends. Results are revealed all at once when time expires and calculation is processed.
 
 ### Configuration Files
 
@@ -505,73 +370,56 @@ python button_client.py
 
 ### Test Session 1: Initial Gameplay
 
-**Participants:** 2 users not on team (Alex and Jordan)
-
-**Before Testing - What they expected:**
-- Alex: "Probably like a buzzer game? Press when you see the answer?"
-- Jordan: "Maybe count clicks like a clicker? But competitive somehow."
+**Participants:** Alex and Jordan
 
 **Setup:**
-- 3 Raspberry Pis with buttons
+- 2 Raspberry Pis with buttons
 - Laptop showing game on projector
 - Participants given no instructions initially
 
 **What happened:**
 
 **Round 1 (Learning):**
-- Image showed for 3 seconds - both started counting
-- Alex: "Wait, how many was that?"
+- Read the instruction carefully but still don't know when to press the button
 - Countdown started - confusion about what to do
 - Jordan pressed button randomly during countdown
-- Answer phase started - both pressed frantically
-- Alex pressed 12 times, Jordan pressed 15 times
-- Neither submitted (didn't know to hold)
 - Game timed out
 
 **Round 2 (With Instructions):**
-- Explained: "Press once per goose, hold 2 seconds to submit"
 - Both counted more carefully during image display
-- Alex pressed exactly 14 times, waited, then submitted at 3.2s
-- Jordan pressed 13 times, realized mistake, pressed once more, submitted at 4.7s
-- Alex won with correct answer and faster time
+- Alex pressed exactly 14 times over the 5-second period
+- Jordan pressed 13 times, then one more, finishing at 4.7s
+- Alex won with correct answer (14) and faster completion time (last press at 3.8s)
 
 **What surprised them:**
 
 **Alex:**
-- "I didn't expect to see everyone else's clicks in real-time - that made me nervous!"
-- "The hold-to-submit is clever, forces you to commit"
-- "Watching the countdown after the image disappears was stressful"
+- "Not knowing if I'm ahead or behind made it nerve-wracking"
+- "The reveal at the end was dramatic - like waiting for test results"
 
 **Jordan:**
-- "I thought I could change my answer, but once you press, that's it"
-- "Seeing someone else at 14 clicks made me doubt myself"
-- "The physical button makes it more intense than keyboard"
+- "I kept second-guessing - did I press 13 or 14 times?"
+- "No way to change my answer once I pressed - had to commit"
+- "The physical button makes counting feel more real than keyboard"
 
 **What they would change:**
 
 **Alex's suggestions:**
-- "Show the image again very briefly at the start of answering phase"
-- "Maybe a practice round first?"
-- "Option to restart just before submitting"
+- Show one image example very briefly at the start of answering phase
+- Maybe a practice round first?
+- It's more like a switch game.
 
 **Jordan's suggestions:**
-- "Different difficulty levels with more/fewer geese"
-- "Team mode - collaborate to get the right answer"
-- "Show a progress bar for the hold-to-submit"
+- Different difficulty levels with more/fewer geese
 
 ### Test Session 2: Multi-Player Competition
 
-**Participants:** 3 users (Sam, Casey, Riley)
+**Participants:** 3 users (Sam, Casey, Xueer)
 
 **Setup:**
 - Each person with their own Pi and button
 - Game displayed on TV
 - Competitive atmosphere
-
-**Before Testing - What they expected:**
-- Sam: "Racing game? First to count wins?"
-- Casey: "Probably like Family Feud buzzer"
-- Riley: "Trivia game with counting?"
 
 **What happened:**
 
@@ -594,13 +442,11 @@ python button_client.py
 **What surprised them:**
 
 **Sam:**
-- "The real-time click display added psychological pressure"
-- "When I saw Casey racing ahead, I almost rushed"
-- "Physical button is way more satisfying than mouse click"
+- "The reveal at the end was exciting - everyone's answer showed at once"
 
 **Casey:**
 - "I didn't realize speed mattered if you're wrong"
-- "Seeing others' progress made me second-guess my count"
+- "Not seeing others made me focus on my own count"
 - "The 5-second limit feels short but is actually enough"
 
 **Riley:**
@@ -611,27 +457,22 @@ python button_client.py
 **What they would change:**
 
 **Sam's suggestions:**
-- "Show who won previous rounds on screen"
-- "Best of 5 rounds tournament mode"
-- "Harder images with overlapping geese"
+- Best of 5 rounds tournament mode
 
 **Casey's suggestions:**
-- "Sound effects for button presses"
-- "Visual feedback on your own Pi (LED?)"
-- "Penalty for wrong answers (time added)"
+- Visual feedback on your own Pi (LED?)
 
 **Riley's suggestions:**
-- "Different animals, not just geese"
-- "Hide other players' progress until end"
-- "Show accuracy percentage for each player"
+- Different animals, not just geese
+
 
 ### Testing Insights
 
 **Key Observations:**
 
-1. **Learning Curve:** First-time users needed 1-2 rounds to understand the mechanics, especially the hold-to-submit feature.
+1. **Learning Curve:** First-time users needed 1-2 rounds to understand the mechanics, especially the importance of counting accurately while pressing.
 
-2. **Psychological Factors:** Seeing other players' real-time progress created competitive pressure but also self-doubt.
+2. **Psychological Factors:** NOT seeing other players' progress created different kind of tension - uncertainty about relative performance rather than direct comparison.
 
 3. **Physical Engagement:** All users commented that physical buttons made the experience more engaging than keyboard/mouse input.
 
@@ -643,15 +484,15 @@ python button_client.py
 
 - **Positive:**
   - Physical interaction was satisfying
-  - Real-time updates were exciting
-  - Competition was engaging
+  - Hidden progress increased suspense
+  - Simultaneous reveal was exciting
   - Simple to understand core mechanic
 
 - **Suggestions for Improvement:**
   - Add practice round
-  - Visual feedback for hold-to-submit
+  - Audio feedback for button presses
   - Multiple difficulty levels
-  - Sound effects
+  - Optional modes (hidden vs visible progress)
   - Tournament mode
 
 ---
@@ -670,23 +511,24 @@ The MQTT-based architecture proved robust and scalable. Adding new Pis was simpl
 - Handled 3 concurrent players easily
 - Could scale to 10+ with no code changes
 
-**2. Real-time Feedback**
+**2. Delayed Result Reveal**
 
-Socket.IO provided excellent real-time updates. Players could see each other's progress immediately, which added competitive tension. The broadcast mechanism ensured all clients stayed synchronized.
+Socket.IO enabled synchronized result display across all clients. After the 5-second answer period, results were revealed simultaneously to all players, creating a dramatic moment.
 
 **User Experience Success:**
-- Instant visual feedback for button presses
+- Hidden progress increased tension and focus
+- Simultaneous reveal created excitement
 - Synchronized countdown across all clients
-- Immediate winner announcement
-- No perceptible lag
+- Immediate winner announcement after reveal
+- No perceptible lag in final display
 
 **3. Physical Button Interaction**
 
-Using real I2C buttons instead of keyboard/mouse input made the experience significantly more engaging. The tactile feedback and the hold-to-submit mechanism created meaningful physical interaction.
+Using real I2C buttons instead of keyboard/mouse input made the experience significantly more engaging. The tactile feedback and the need to count accurately while pressing created meaningful physical interaction.
 
 **Engagement Success:**
 - Users preferred button over keyboard
-- Hold gesture felt decisive and intentional
+- Each press felt tangible and meaningful
 - Debouncing prevented false triggers
 - Button state detection was reliable
 
@@ -802,40 +644,39 @@ The I2C button sensor reports state changes reliably. Reading the button at 50ms
 
 **Event Processing:**
 
-Converting button events to game actions required careful design:
+Converting button events to game actions was straightforward:
 
 ```python
-# Short press → increment count
+# Each press → increment count
 if new_state == pressed and debounce_okay:
-    publish('button')  # Increment count on server
+    publish('button')  # Server tracks count
     
-# Long press → submit answer  
-if new_state == released and hold_time > 2.0:
-    publish('submit')  # Submit final answer
+# After 5 seconds → calculate final answer from total presses
 ```
 
 **Design Decision:**
 - Click count tracked server-side, not on Pi
-- Pi only reports events, doesn't maintain game state
-- This kept Pi code simple and allowed server to be source of truth
+- Pi only reports press events
+- Results hidden until answer phase ends
+- This kept Pi code simple and allowed server to control reveal timing
 
 **Alternative Considered:**
-- Pi tracks its own count, submits final number
-- Rejected because: loses real-time feedback, harder to debug, increases Pi complexity
+- Show real-time click progress to all players
+- Rejected because: reduces suspense, creates pressure to rush, eliminates strategic element
 
 ### What We Would Improve
 
 **1. User Experience Enhancements**
 
 **Practice Mode:**
-Add a practice round with no timer pressure where users can learn the hold-to-submit mechanic.
+Add a practice round with no timer pressure where users can learn the button mechanics.
 
-**Visual Feedback:**
-- Progress bar showing hold-to-submit progress
-- Color change on button when held long enough
-- Sound effects for clicks and submission
+**Audio Feedback:**
+- Beep sound for each button press to help count
+- Different tone for invalid presses (during wrong phase)
+- Dramatic reveal sound when results display
 
-**Implementation:**
+**Visual Feedback on Pi:**
 ```python
 # On Pi side - add LED feedback
 import board
@@ -844,12 +685,10 @@ import digitalio
 led = digitalio.DigitalInOut(board.D18)
 led.direction = digitalio.Direction.OUTPUT
 
-def indicate_submission():
-    for _ in range(3):
-        led.value = True
-        time.sleep(0.1)
-        led.value = False
-        time.sleep(0.1)
+def indicate_press():
+    led.value = True
+    time.sleep(0.05)
+    led.value = False
 ```
 
 **2. Game Variations**
@@ -949,7 +788,8 @@ function enterFullscreen() {
 
 **Game Design:**
 - Simple mechanics can create emergent complexity
-- Real-time competition needs visible progress
+- Hidden information increases strategic depth and tension
+- Delayed gratification (waiting for results) enhances excitement
 - Physical actions should feel meaningful
 
 ---
@@ -958,8 +798,8 @@ function enterFullscreen() {
 
 The Distributed Goose Counting Game successfully demonstrates key principles of distributed sensing and networked interaction. By combining physical buttons, MQTT messaging, and real-time web visualization, we created an engaging experience that highlights both the possibilities and challenges of distributed systems.
 
-The project shows that meaningful collaborative experiences can emerge from simple sensor inputs when combined with good architecture and thoughtful game design. The real-time nature of the interaction created competitive excitement, while the distributed architecture allowed easy scaling to multiple players.
+The project shows that meaningful collaborative experiences can emerge from simple sensor inputs when combined with good architecture and thoughtful game design. The hidden progress mechanic created suspense and psychological tension, while the distributed architecture allowed easy scaling to multiple players.
 
-Testing revealed that physical interaction significantly enhances engagement compared to traditional keyboard/mouse input, and that real-time feedback creates psychological dynamics that make the experience more compelling.
+Testing revealed that physical interaction significantly enhances engagement compared to traditional keyboard/mouse input, and that delayed result reveals (rather than real-time updates) can create more dramatic and exciting moments. The automatic calculation system eliminated the need for manual submission, streamlining the user experience.
 
-Future work could expand this foundation into more complex collaborative games, explore team-based variants, or use the architecture for entirely different applications beyond gaming.
+Future work could expand this foundation into more complex collaborative games, explore team-based variants, add configurable visibility modes (hidden vs real-time progress), or use the architecture for entirely different applications beyond gaming.
