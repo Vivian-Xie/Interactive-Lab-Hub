@@ -1,4 +1,4 @@
-# Distributed Goose Counting Game
+# Distributed Counting Game
 
 **NAMES OF COLLABORATORS**
 
