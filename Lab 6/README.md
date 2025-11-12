@@ -415,11 +415,11 @@ python button_client.py
 ## User Testing
 
 **What happened:**  
-Both participants counted the objects shown on the screen and pressed their buttons to submit answers.  
-Participant 1 pressed 14 times(around 4+s).  
-Participant 2 pressed 14 times and finished faster (around 3.9s). 
-Participant 3 pressed 13 times and hesitated near the end.  
-Participant 2’s answer was correct and won the round.
+All participants counted the objects shown on the screen and pressed their buttons to submit answers.  
+- Participant 1 pressed 14 times(around 4+s).  
+- Participant 2 pressed 14 times and finished faster (around 3.9s). 
+- Participant 3 pressed 13 times and hesitated near the end.  
+- Participant 2’s answer was correct and faster, Winner.
 
 **What surprised them:**  
 - **Participant 2:** “Not knowing the other player’s progress made it intense.”  
