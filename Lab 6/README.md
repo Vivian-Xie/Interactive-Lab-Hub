@@ -75,8 +75,9 @@ Replace this README with your documentation:
 - What does it do? Why interesting? User experience?
 
 **2. Architecture Diagram**
-- Hardware, connections, data flow
-- Label input/computation/output
+
+<img width="616" height="629" alt="c2de4accd94229364e73879a1c5d8e3" src="https://github.com/user-attachments/assets/2b12516e-def2-4525-939b-60f521e4e87c" />
+
 
 **3. Build Documentation**
 - Photos of each Pi + sensors
@@ -95,6 +96,19 @@ Replace this README with your documentation:
 - Challenges with distributed interaction?
 - How did sensor events work?
 - What would you improve?
+
+
+### Testing 1
+https://github.com/user-attachments/assets/a9d74778-893c-4d91-8b11-2e72ff25f5da
+
+### User Testing 1
+https://github.com/user-attachments/assets/2b5bb2d8-72ad-48e9-819f-fdd2e0fd6321
+
+### User Testing 2
+https://github.com/user-attachments/assets/b0d23fea-0d8a-4a87-b16d-be9ef3f5b92b
+
+
+
 
 ---
 
