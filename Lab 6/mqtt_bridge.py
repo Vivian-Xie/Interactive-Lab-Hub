@@ -10,7 +10,7 @@ from datetime import datetime
 # MQTT Configuration
 MQTT_BROKER = 'farlab.infosci.cornell.edu'
 MQTT_PORT = 1883
-MQTT_TOPIC = 'IDD/goose/#'  # Subscribe to all goose game topics
+MQTT_TOPIC = 'IDD/goose/button' 
 MQTT_USERNAME = 'idd'
 MQTT_PASSWORD = 'device@theFarm'
 
@@ -36,11 +36,11 @@ def on_message(client, userdata, msg):
         # Parse message
         data = json.loads(msg.payload.decode('UTF-8'))
         
-        # Handle different message types
-        if msg.topic.endswith('/button'):
-            # Button press message
+        # Handle button press
+        if msg.topic.endswith('/button') or msg.topic == MQTT_TOPIC:
             mac = data.get('mac')
             ip = data.get('ip', 'unknown')
+            timestamp = data.get('timestamp', int(datetime.now().timestamp()))
             
             print(f'Button press from {mac[:17]}')
             
@@ -48,18 +48,7 @@ def on_message(client, userdata, msg):
             socketio.emit('button_press', {
                 'mac': mac,
                 'ip': ip,
-                'timestamp': datetime.now().isoformat()
-            }, namespace='/')
-            
-        elif msg.topic.endswith('/submit'):
-            # Submit answer message
-            mac = data.get('mac')
-            
-            print(f'Answer submitted from {mac[:17]}')
-            
-            # Forward to Socket.IO
-            socketio.emit('submit_answer', {
-                'mac': mac
+                'timestamp': timestamp
             }, namespace='/')
         
     except Exception as e:

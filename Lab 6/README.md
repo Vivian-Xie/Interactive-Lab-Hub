@@ -544,39 +544,12 @@ The multi-phase structure (view → wait → answer) created good pacing and cha
 
 ### Challenges with Distributed Interaction
 
-**1. State Synchronization**
-
-**Challenge:** Ensuring all clients saw the same game state, especially during phase transitions.
-
-**Issue Encountered:**
-- If a client connected mid-game, they saw incomplete state
-- Winner announcement could arrive before all answers were displayed
-- Network interruptions could cause clients to desynchronize
-
-**Solution:**
-- Implemented `game_state` event on connect to sync new clients
-- Added phase tracking on both server and client
-- Broadcast phase changes to ensure synchronization
-
-**Code Example:**
-```python
-@socketio.on('connect')
-def handle_connect():
-    """Client connected - send current game state"""
-    emit('game_state', {
-        'state': game_state['phase'],
-        'players': [...],  # Current player data
-        'winner': game_state['winner']
-    })
-```
-
-**2. Timing Coordination**
+**1. Timing Coordination**
 
 **Challenge:** Coordinating countdown timers across multiple clients when server controls game flow but clients display it.
 
 **Issue Encountered:**
 - Client-side countdown could drift from server-side game phase
-- If client reloaded during countdown, timer was lost
 - Network latency could cause countdown to be slightly off
 
 **Solution:**
@@ -585,10 +558,9 @@ def handle_connect():
 - Acceptable to have slight visual drift (human perception tolerance)
 
 **Remaining Issue:**
-- Still possible for timer to be 100-200ms off if network is slow
-- Could improve by including server timestamp in phase change messages
+- Could be more accurate for time counting
 
-**3. Player Identity**
+**2. Player Identity**
 
 **Challenge:** Tracking which Pi belongs to which player across disconnects.
 
@@ -607,24 +579,6 @@ def handle_connect():
 - Allow manual name entry on Pi or web interface
 - Persist player identities across game resets
 
-**4. Network Reliability**
-
-**Challenge:** Handling dropped connections, message loss, and latency variation.
-
-**Issue Encountered:**
-- Pi WiFi sometimes dropped briefly
-- MQTT reconnection didn't always resubscribe to topics
-- Lost button presses during connection issues
-
-**Solution:**
-- Implemented auto-reconnect in button client
-- Used QoS 0 for speed (acceptable to lose occasional message)
-- Added connection status indicator on web interface
-
-**What We'd Improve:**
-- Implement message queuing on Pi for offline operation
-- Use QoS 1 for submit messages (more critical)
-- Add heartbeat messages to detect silent failures
 
 ### How Sensor Events Worked
 
@@ -701,105 +655,7 @@ def indicate_press():
 **Multiple Rounds:**
 Track scores across multiple rounds, crown overall winner.
 
-**Team Mode:**
-Players collaborate - game only accepts answer if all team members agree (all submit same number).
-
-**3. Technical Improvements**
-
-**Better State Management:**
-Use a proper state machine library on server:
-```python
-from transitions import Machine
-
-states = ['waiting', 'image_display', 'countdown', 'answering', 'finished']
-transitions = [
-    {'trigger': 'start', 'source': 'waiting', 'dest': 'image_display'},
-    {'trigger': 'hide_image', 'source': 'image_display', 'dest': 'countdown'},
-    # ...
-]
-```
-
-**Improved Networking:**
-- Add message acknowledgment for critical events
-- Implement client-side message queue for offline resilience
-- Use Redis for distributed state instead of in-memory dict
-
-**Data Logging:**
-Log all game events for analysis:
-```python
-import json
-from datetime import datetime
-
-def log_event(event_type, data):
-    with open('game_log.jsonl', 'a') as f:
-        f.write(json.dumps({
-            'timestamp': datetime.now().isoformat(),
-            'type': event_type,
-            'data': data
-        }) + '\n')
-```
-
-**4. Accessibility**
-
-**Multi-sensory Feedback:**
-- Audio cues for countdown
-- Haptic feedback via button vibration (if supported)
-- High-contrast visual mode
-
-**Difficulty Adjustments:**
-- Slower countdown for users who need more time
-- Larger images
-- Adjustable answer time limits
-
-**5. Spectator Experience**
-
-**Large Display Mode:**
-Create a fullscreen view optimized for projection:
-- Bigger player displays
-- More dramatic winner announcement
-- Replay of winning moment
-- Leaderboard across multiple games
-
-**Implementation:**
-```javascript
-// game.html - add fullscreen mode
-function enterFullscreen() {
-    document.documentElement.requestFullscreen();
-    document.body.classList.add('fullscreen-mode');
-}
-```
 
 ### Lessons Learned
 
-**Distributed Systems:**
-- Keep game logic centralized, distribute only input/output
-- Always include connection status indicators
-- Design for graceful degradation when components fail
-
-**Physical Computing:**
-- Physical interaction creates engagement digital can't match
-- Debouncing and state management are critical
-- Test with actual users - button feel matters
-
-**Real-time Systems:**
-- Visual feedback should be immediate even if game logic is deferred
-- Broadcast important state changes, not just deltas
-- Time synchronization is hard - embrace approximate timing
-
-**Game Design:**
-- Simple mechanics can create emergent complexity
-- Hidden information increases strategic depth and tension
-- Delayed gratification (waiting for results) enhances excitement
-- Physical actions should feel meaningful
-
----
-
-## Conclusion
-
-The Distributed Goose Counting Game successfully demonstrates key principles of distributed sensing and networked interaction. By combining physical buttons, MQTT messaging, and real-time web visualization, we created an engaging experience that highlights both the possibilities and challenges of distributed systems.
-
-The project shows that meaningful collaborative experiences can emerge from simple sensor inputs when combined with good architecture and thoughtful game design. The hidden progress mechanic created suspense and psychological tension, while the distributed architecture allowed easy scaling to multiple players.
-
-Testing revealed that physical interaction significantly enhances engagement compared to traditional keyboard/mouse input, and that delayed result reveals (rather than real-time updates) can create more dramatic and exciting moments. The automatic calculation system eliminated the need for manual submission, streamlining the user experience.
-
-Future work could expand this foundation into more complex collaborative games, explore team-based variants, add configurable visibility modes (hidden vs real-time progress), or use the architecture for entirely different applications beyond gaming.
+From a game design perspective, the project demonstrated how simple mechanics can generate emergent complexity. The basic interaction - pressing a button to count - became strategically rich through the addition of time pressure and memory challenges. 

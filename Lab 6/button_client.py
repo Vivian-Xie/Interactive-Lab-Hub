@@ -16,7 +16,6 @@ import subprocess
 MQTT_BROKER = 'farlab.infosci.cornell.edu'
 MQTT_PORT = 1883
 MQTT_TOPIC_BUTTON = 'IDD/goose/button'
-MQTT_TOPIC_SUBMIT = 'IDD/goose/submit'
 MQTT_USERNAME = 'idd'
 MQTT_PASSWORD = 'device@theFarm'
 
@@ -121,13 +120,13 @@ def main():
     
     print("=" * 60)
     print("Press button to count geese!")
-    print("Press and hold for 2 seconds to submit answer")
+    print("Each press counts as one goose")
+    print("After 5 seconds, your answer is automatically submitted")
     print("=" * 60)
     print()
     
     global last_press_time
     button_state = None
-    press_start_time = None
     
     # Main loop
     while True:
@@ -142,8 +141,6 @@ def main():
                 if new_state == 0x00 or new_state < 0x80:
                     # Debounce
                     if current_time - last_press_time > DEBOUNCE_TIME:
-                        press_start_time = current_time
-                        
                         # Publish button press
                         payload = json.dumps({
                             'mac': mac,
@@ -155,23 +152,6 @@ def main():
                         print(f'Button pressed')
                         
                         last_press_time = current_time
-                
-                # Button released
-                elif new_state == 0xff or new_state >= 0x80:
-                    if press_start_time is not None:
-                        hold_time = current_time - press_start_time
-                        
-                        # If held for 2+ seconds, submit answer
-                        if hold_time >= 2.0:
-                            payload = json.dumps({
-                                'mac': mac,
-                                'timestamp': int(current_time)
-                            })
-                            
-                            client.publish(MQTT_TOPIC_SUBMIT, payload)
-                            print(f'Answer submitted (held {hold_time:.1f}s)')
-                        
-                        press_start_time = None
                 
                 button_state = new_state
             

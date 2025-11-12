@@ -8,6 +8,7 @@ from flask_socketio import SocketIO, emit
 import json
 from datetime import datetime
 from collections import OrderedDict
+import threading
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'goose-game-2025'
@@ -23,16 +24,17 @@ except ImportError:
 # Game state
 game_state = {
     'started': False,
-    'phase': 'waiting',  # waiting, countdown, answering, finished
+    'phase': 'waiting',  # waiting, image_display, countdown, answering, finished
     'players': OrderedDict(),  # {mac: {'name': str, 'ip': str, 'clicks': int, 'answer': int, 'time': float}}
     'correct_answer': 14,
-    'winner': None
+    'winner': None,
+    'answer_phase_start': None
 }
 
 # Game configuration
 GAME_CONFIG = {
     'correct_answer': 14,
-    'image_display_time': 3,
+    'image_display_time': 5,
     'countdown_before_answer': 5,
     'answer_time_limit': 5
 }
@@ -85,6 +87,7 @@ def handle_start_game():
         game_state['phase'] = 'image_display'
         game_state['players'].clear()
         game_state['winner'] = None
+        game_state['answer_phase_start'] = None
         
         emit('game_started', {
             'config': GAME_CONFIG
@@ -99,7 +102,9 @@ def handle_button_press(data):
     try:
         mac = data.get('mac')
         ip = data.get('ip', 'unknown')
+        timestamp = data.get('timestamp', int(datetime.now().timestamp()))
         
+        # Only count during answering phase
         if game_state['phase'] != 'answering':
             return
         
@@ -112,69 +117,20 @@ def handle_button_press(data):
                 'clicks': 0,
                 'answer': None,
                 'time': None,
-                'start_time': datetime.now()
+                'first_click_time': datetime.now(),
+                'last_click_time': None
             }
         
         # Increment click count
         game_state['players'][mac]['clicks'] += 1
+        game_state['players'][mac]['last_click_time'] = datetime.now()
         clicks = game_state['players'][mac]['clicks']
         
-        # Broadcast click update
-        emit('player_click', {
-            'mac': mac,
-            'name': game_state['players'][mac]['name'],
-            'ip': ip,
-            'clicks': clicks
-        }, broadcast=True)
-        
+        # Do NOT broadcast click count - keep it hidden
         print(f'{game_state["players"][mac]["name"]}: Click {clicks}')
         
     except Exception as e:
         print(f'Error handling button press: {e}')
-
-
-@socketio.on('submit_answer')
-def handle_submit_answer(data):
-    """Handle answer submission from Pi"""
-    try:
-        mac = data.get('mac')
-        
-        if mac not in game_state['players']:
-            return
-        
-        if game_state['players'][mac]['answer'] is not None:
-            return  # Already answered
-        
-        # Record answer
-        answer = game_state['players'][mac]['clicks']
-        elapsed = (datetime.now() - game_state['players'][mac]['start_time']).total_seconds()
-        
-        game_state['players'][mac]['answer'] = answer
-        game_state['players'][mac]['time'] = round(elapsed, 1)
-        
-        # Check if winner
-        is_correct = answer == GAME_CONFIG['correct_answer']
-        is_winner = is_correct and game_state['winner'] is None
-        
-        if is_winner:
-            game_state['winner'] = mac
-        
-        # Broadcast answer
-        emit('player_answer', {
-            'mac': mac,
-            'name': game_state['players'][mac]['name'],
-            'ip': game_state['players'][mac]['ip'],
-            'answer': answer,
-            'time': game_state['players'][mac]['time'],
-            'is_correct': is_correct,
-            'is_winner': is_winner
-        }, broadcast=True)
-        
-        status = 'WINNER' if is_winner else ('correct' if is_correct else 'incorrect')
-        print(f'{game_state["players"][mac]["name"]}: Answer {answer} in {elapsed:.1f}s [{status}]')
-        
-    except Exception as e:
-        print(f'Error handling answer: {e}')
 
 
 @socketio.on('phase_change')
@@ -183,8 +139,77 @@ def handle_phase_change(data):
     phase = data.get('phase')
     if phase:
         game_state['phase'] = phase
+        
+        # If entering answering phase, record start time
+        if phase == 'answering':
+            game_state['answer_phase_start'] = datetime.now()
+            
+            # Start timer to auto-calculate answers after 5 seconds
+            def auto_end_answer_phase():
+                import time
+                time.sleep(GAME_CONFIG['answer_time_limit'])
+                with app.app_context():
+                    calculate_and_reveal_answers()
+            
+            timer_thread = threading.Thread(target=auto_end_answer_phase)
+            timer_thread.daemon = True
+            timer_thread.start()
+        
         emit('phase_changed', {'phase': phase}, broadcast=True)
         print(f'Phase changed to: {phase}')
+
+
+def calculate_and_reveal_answers():
+    """Calculate all players' answers and reveal results"""
+    try:
+        print('Calculating answers...')
+        
+        # Get all players who participated
+        participants = []
+        for mac, data in game_state['players'].items():
+            if data['clicks'] > 0 and data['last_click_time']:
+                # Calculate elapsed time from start to last click
+                elapsed = (data['last_click_time'] - data['first_click_time']).total_seconds()
+                participants.append((mac, data, elapsed))
+        
+        # Sort by elapsed time (faster is better)
+        participants.sort(key=lambda x: x[2])
+        
+        # Calculate answers and determine winner
+        for mac, player_data, elapsed in participants:
+            answer = player_data['clicks']
+            player_data['answer'] = answer
+            player_data['time'] = round(elapsed, 1)
+            
+            # Check if winner
+            is_correct = answer == GAME_CONFIG['correct_answer']
+            is_winner = is_correct and game_state['winner'] is None
+            
+            if is_winner:
+                game_state['winner'] = mac
+            
+            # Broadcast result for this player
+            socketio.emit('player_answer', {
+                'mac': mac,
+                'name': player_data['name'],
+                'ip': player_data['ip'],
+                'answer': answer,
+                'time': player_data['time'],
+                'is_correct': is_correct,
+                'is_winner': is_winner
+            }, broadcast=True, namespace='/')
+            
+            status = 'WINNER' if is_winner else ('correct' if is_correct else 'incorrect')
+            print(f'{player_data["name"]}: Answer {answer} in {elapsed:.1f}s [{status}]')
+        
+        # Mark phase as finished
+        game_state['phase'] = 'finished'
+        socketio.emit('phase_changed', {'phase': 'finished'}, broadcast=True, namespace='/')
+        
+        print('All answers revealed')
+        
+    except Exception as e:
+        print(f'Error calculating answers: {e}')
 
 
 @socketio.on('reset_game')
@@ -194,6 +219,7 @@ def handle_reset_game():
     game_state['phase'] = 'waiting'
     game_state['players'].clear()
     game_state['winner'] = None
+    game_state['answer_phase_start'] = None
     
     emit('game_reset', broadcast=True)
     print('Game reset')
