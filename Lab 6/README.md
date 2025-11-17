@@ -1,4 +1,50 @@
-# Distributed Goose Counting Game
+# Distributed Counting Game
+
+**NAMES OF COLLABORATORS**
+
+Maggie Liang(ml2927) Xueer Zhang(xz946) Xinwei Xie(xx2185)
+
+---
+
+**💡 Brainstorm 5 ideas for messaging between devices**
+1) Shared Message Board
+
+- Multiple devices in the same space can post short messages that are shown on every other device.
+ This allows everyone to share thoughts or updates at the same time without needing direct replies.
+
+2) Group Status Display
+
+- Each device can send its current status, such as “working,” “break,” or “done.”
+All devices display the group’s statuses together, so everyone can see what others are doing in the moment.
+
+3) Synchronized Light Signals
+
+- When one device changes its light color, all other devices change to the same color.
+This creates a shared mood or environment across the space without needing any response.
+
+4) Collective Timer
+
+- One device can start a timer, and all devices show the same countdown.
+Everyone in the room can keep time together without needing to interact individually.
+
+5) Group Sound Cue
+
+- Any device can send a signal that makes all devices play a short tone at the same time.
+This works as a gentle way to signal transitions such as “begin,” “pause,” or “end.”
+---
+
+**📸 Screenshot of grid + photo of Pi setup**
+
+https://github.com/user-attachments/assets/9430ed60-e22d-404a-9e72-f01f6ef819d6
+
+https://github.com/user-attachments/assets/17feb416-5044-4a50-8106-d620ce534241
+
+![7cb740ab2d2a78396c3e6b404f05435](https://github.com/user-attachments/assets/9dba8302-3326-4b44-a338-0cc8bba03b22)
+
+
+---
+
+## Part C: Make Your Own
 
 ## Project Description
 
@@ -368,102 +414,32 @@ python button_client.py
 
 ## User Testing
 
-### Test Session 1: Initial Gameplay
+**What happened:**  
+All participants counted the objects shown on the screen and pressed their buttons to submit answers.  
+- Participant 1 pressed 14 times(around 4+s).  
+- Participant 2 pressed 14 times and finished faster (around 3.9s). 
+- Participant 3 pressed 13 times and hesitated near the end.  
+- Participant 2’s answer was correct and faster, Winner.
 
-**Participants:** Alex and Jordan
+**What surprised them:**  
+- **Participant 2:** “Not knowing the other player’s progress made it intense.”  
+- **Participant 3:** “It was easy to lose count under pressure.”  
 
-**Setup:**
-- 2 Raspberry Pis with buttons
-- Laptop showing game on projector
-- Participants given no instructions initially
+**What they would change:**  
+- **Participant 2:** Suggested adding a short practice round first.  
+- **Participant 3:** Suggested showing a small indicator light to confirm each button press.
 
-**What happened:**
+### Testing 1
 
-**Round 1 (Learning):**
-- Read the instruction carefully but still don't know when to press the button
-- Countdown started - confusion about what to do
-- Jordan pressed button randomly during countdown
-- Game timed out
+https://github.com/user-attachments/assets/7646f039-6b00-4ae2-8e54-1c73d6dce203
 
-**Round 2 (With Instructions):**
-- Both counted more carefully during image display
-- Alex pressed exactly 14 times over the 5-second period
-- Jordan pressed 13 times, then one more, finishing at 4.7s
-- Alex won with correct answer (14) and faster completion time (last press at 3.8s)
+### User Testing 1
 
-**What surprised them:**
+https://github.com/user-attachments/assets/aa9c5ec4-bc55-48c8-9350-8526f325dfd6
 
-**Alex:**
-- "Not knowing if I'm ahead or behind made it nerve-wracking"
-- "The reveal at the end was dramatic - like waiting for test results"
+### User Testing 2
 
-**Jordan:**
-- "I kept second-guessing - did I press 13 or 14 times?"
-- "No way to change my answer once I pressed - had to commit"
-- "The physical button makes counting feel more real than keyboard"
-
-**What they would change:**
-
-**Alex's suggestions:**
-- Show one image example very briefly at the start of answering phase
-- Maybe a practice round first?
-- It's more like a switch game.
-
-**Jordan's suggestions:**
-- Different difficulty levels with more/fewer geese
-
-### Test Session 2: Multi-Player Competition
-
-**Participants:** 3 users (Sam, Casey, Xueer)
-
-**Setup:**
-- Each person with their own Pi and button
-- Game displayed on TV
-- Competitive atmosphere
-
-**What happened:**
-
-**Round 1:**
-- All three counted during image display
-- Visible tension during countdown - Sam was fidgeting
-- Casey started clicking immediately when answer phase began
-- Sam clicked methodically - 1, pause, 2, pause, etc.
-- Riley clicked quickly then stopped to think
-- Sam submitted first at 3.8s with 14 (CORRECT - WINNER)
-- Casey submitted at 4.2s with 16 (incorrect)
-- Riley didn't submit in time
-
-**Round 2:**
-- More strategic - everyone counted more carefully
-- Riley won this time with 14 at 2.9s
-- Sam had 13 (one short)
-- Casey had 14 but slower at 4.5s
-
-**What surprised them:**
-
-**Sam:**
-- "The reveal at the end was exciting - everyone's answer showed at once"
-
-**Casey:**
-- "I didn't realize speed mattered if you're wrong"
-- "Not seeing others made me focus on my own count"
-- "The 5-second limit feels short but is actually enough"
-
-**Riley:**
-- "I liked that it's not pure speed - accuracy matters more"
-- "The waiting period after the image is genius - forces memory"
-- "Network lag wasn't noticeable, felt instant"
-
-**What they would change:**
-
-**Sam's suggestions:**
-- Best of 5 rounds tournament mode
-
-**Casey's suggestions:**
-- Visual feedback on your own Pi (LED?)
-
-**Riley's suggestions:**
-- Different animals, not just geese
+https://github.com/user-attachments/assets/660b6aed-262f-4fb2-8c41-6d66e4e6a725
 
 
 ### Testing Insights
@@ -506,8 +482,7 @@ python button_client.py
 The MQTT-based architecture proved robust and scalable. Adding new Pis was simple - just run the client script. The pub/sub model meant players didn't need to know about each other directly, making the system flexible.
 
 **Technical Success:**
-- Zero message loss during testing
-- Latency consistently under 100ms
+- No message loss during testing
 - Handled 3 concurrent players easily
 - Could scale to 10+ with no code changes
 
@@ -519,15 +494,12 @@ Socket.IO enabled synchronized result display across all clients. After the 5-se
 - Hidden progress increased tension and focus
 - Simultaneous reveal created excitement
 - Synchronized countdown across all clients
-- Immediate winner announcement after reveal
-- No perceptible lag in final display
 
 **3. Physical Button Interaction**
 
 Using real I2C buttons instead of keyboard/mouse input made the experience significantly more engaging. The tactile feedback and the need to count accurately while pressing created meaningful physical interaction.
 
 **Engagement Success:**
-- Users preferred button over keyboard
 - Each press felt tangible and meaningful
 - Debouncing prevented false triggers
 - Button state detection was reliable
@@ -566,7 +538,7 @@ The multi-phase structure (view → wait → answer) created good pacing and cha
 
 **Issue Encountered:**
 - If Pi disconnected and reconnected, it got a new player number
-- MAC address was reliable but not user-friendly for display
+- IP address was reliable but not user-friendly for display
 - No way to assign human-readable names from Pi side
 
 **Solution:**
@@ -584,11 +556,10 @@ The multi-phase structure (view → wait → answer) created good pacing and cha
 
 **Event Detection:**
 
-The I2C button sensor reports state changes reliably. Reading the button at 50ms intervals (20Hz) was sufficient to catch all human presses while keeping CPU usage low.
+The I2C button sensor reports state changes reliably. 
 
 **What Worked:**
 - Simple state machine (pressed/released) was enough
-- Debouncing at 300ms eliminated all false triggers
 - Hold detection by timing between press and release was intuitive
 
 **What Was Tricky:**
@@ -648,9 +619,9 @@ def indicate_press():
 **2. Game Variations**
 
 **Difficulty Levels:**
-- Easy: 5-7 geese, 7 seconds to answer
+- Easy: 5-7 geese, 3 seconds to answer
 - Medium: 10-15 geese, 5 seconds (current)
-- Hard: 20+ geese, 3 seconds
+- Hard: 20+ geese, 7 seconds
 
 **Multiple Rounds:**
 Track scores across multiple rounds, crown overall winner.
@@ -659,3 +630,7 @@ Track scores across multiple rounds, crown overall winner.
 ### Lessons Learned
 
 From a game design perspective, the project demonstrated how simple mechanics can generate emergent complexity. The basic interaction - pressing a button to count - became strategically rich through the addition of time pressure and memory challenges. 
+
+---
+
+Resources: [MQTT Guide](https://www.hivemq.com/mqtt-essentials/) | [Paho Python](https://www.eclipse.org/paho/index.php?page=clients/python/docs/index.php) | [Flask-SocketIO](https://flask-socketio.readthedocs.io/)
