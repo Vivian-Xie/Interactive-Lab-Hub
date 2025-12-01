@@ -12,8 +12,8 @@ from flask_socketio import SocketIO
 MQTT_BROKER = 'farlab.infosci.cornell.edu'
 MQTT_PORT = 1883
 MQTT_TOPIC = 'IDD/pixelgrid/colors'
-MQTT_USERNAME = 'idd'
-MQTT_PASSWORD = 'device@theFarm'
+MQTT_USERNAME = 'countgame'
+MQTT_PASSWORD = 'countgame'
 
 mqtt_client = None
 

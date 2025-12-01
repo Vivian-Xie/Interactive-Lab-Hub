@@ -31,9 +31,9 @@ except ImportError:
 # MQTT Configuration
 MQTT_BROKER = 'farlab.infosci.cornell.edu'
 MQTT_PORT = 1883  # Changed to non-TLS port
-MQTT_TOPIC = 'IDD/pixelgrid/colors'
-MQTT_USERNAME = 'idd'
-MQTT_PASSWORD = 'device@theFarm'
+MQTT_TOPIC = 'IDD/game/count'
+MQTT_USERNAME = 'countgame'
+MQTT_PASSWORD = 'countgame'
 
 # Publishing interval (seconds)
 PUBLISH_INTERVAL = 0.1
