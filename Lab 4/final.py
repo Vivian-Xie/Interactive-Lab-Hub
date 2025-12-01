@@ -28,7 +28,7 @@ current_music_index = 0  # Start with first music file
 kit = ServoKit(channels=16)
 
 # Define multiple servos on channels 0, 2, and 4
-servos = [kit.servo[i] for i in [0, 2, 4]]
+servos = [kit.servo[i] for i in [0, 2, 4, 6]]
 for s in servos:
     s.set_pulse_width_range(500, 2500)
 
@@ -107,6 +107,8 @@ if BUTTON_AVAILABLE:
 
 
 # ---------------- Main Loop ----------------
+last_trigger_time = 0  # 记录上次触发的时间
+COOLDOWN_TIME = 10  # 冷却时间3秒
 try:
     while True:
         # --- Read distance sensor ---
@@ -123,8 +125,8 @@ try:
         print(f"Distance(mm): {distance} | Distance(ft): {distanceFeet:.2f} | Proximity: {proxValue}")
 
         # --- Servo Control ---
+        current_time = time.time()
         if proxValue > 560:
-             # Play sound
             try:
                 music_file = MUSIC_FILES[current_music_index]
                 pygame.mixer.music.load(music_file)
@@ -132,14 +134,26 @@ try:
                 print(f"Playing {music_file}")
             except Exception as e:
                 print(f"Error playing sound: {e}")
-            time.sleep(1)
-            # for s in servos:
+            
+            # 舵机开始转
             servos[0].angle = 180
             servos[1].angle = 0
+            servos[2].angle = 180
+            servos[3].angle = 0
+            print("Servos rotating...")
+            time.sleep(3)
+            # 记录触发时间
+            servos[0].angle = 90
+            servos[1].angle = 90
+            servos[2].angle = 90
+            servos[3].angle = 90
+            print("Servos stopped")
         else:
             # for s in servos:
             servos[0].angle = 90
             servos[1].angle = 90
+            servos[2].angle = 90
+            servos[3].angle = 90
 
         time.sleep(0.4)
 

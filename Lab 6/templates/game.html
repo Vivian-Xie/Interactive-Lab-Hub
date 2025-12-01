@@ -12,167 +12,112 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 40px 20px;
         }
 
         .container {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
             max-width: 900px;
-            width: 100%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border: 1px solid #ddd;
         }
 
         h1 {
-            color: #667eea;
             text-align: center;
             margin-bottom: 30px;
-            font-size: 2.5em;
+            font-size: 24px;
+            font-weight: normal;
         }
 
-        /* Rules Section */
         .rules {
-            background: #f7f9fc;
-            padding: 25px;
-            border-radius: 15px;
+            border: 1px solid #ddd;
+            padding: 20px;
             margin-bottom: 30px;
-            border-left: 5px solid #667eea;
         }
 
         .rules h2 {
-            color: #333;
+            font-size: 18px;
             margin-bottom: 15px;
+            font-weight: normal;
         }
 
         .rules ul {
             list-style: none;
-            padding-left: 0;
+            padding: 0;
         }
 
         .rules li {
-            padding: 10px 0;
-            color: #555;
-            font-size: 1.1em;
+            padding: 8px 0;
+            font-size: 14px;
+            line-height: 1.6;
         }
 
-        .rules li:before {
-            content: "✓ ";
-            color: #667eea;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-
-        /* Game Area */
         .game-area {
+            min-height: 400px;
             text-align: center;
-            min-height: 500px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
         }
 
         .image-container {
-            width: 100%;
-            max-width: 700px;
-            margin: 20px auto;
+            margin: 20px 0;
         }
 
         .image-container img {
-            width: 100%;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .countdown {
-            font-size: 6em;
-            font-weight: bold;
-            color: #667eea;
-            margin: 30px 0;
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
         }
 
         .message {
-            font-size: 1.8em;
-            color: #333;
+            font-size: 18px;
             margin: 20px 0;
-            font-weight: 500;
         }
 
         .sub-message {
-            font-size: 1.2em;
+            font-size: 14px;
             color: #666;
             margin: 10px 0;
         }
 
-        /* Loading Animation */
+        .countdown {
+            font-size: 72px;
+            margin: 30px 0;
+            font-weight: bold;
+        }
+
         .loading {
-            display: inline-block;
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
+            font-size: 14px;
+            color: #666;
+            margin: 20px 0;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Players Section */
         .players {
-            width: 100%;
             margin-top: 30px;
         }
 
         .player {
-            background: #f7f9fc;
-            padding: 20px;
-            margin: 15px 0;
-            border-radius: 10px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: all 0.3s ease;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        .player.show {
-            opacity: 1;
-            transform: translateY(0);
         }
 
         .player.answered {
-            background: #ffd93d;
-            transform: scale(1.02);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            background: #f9f9f9;
         }
 
         .player.winner {
-            background: #6bcf7f;
-            transform: scale(1.05);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            background: #e8e8e8;
+            font-weight: bold;
         }
 
         .player.timeout {
-            background: #ffb3b3;
-            opacity: 0.7;
+            background: #f5f5f5;
+            color: #999;
         }
 
         .player-info {
@@ -180,112 +125,78 @@
         }
 
         .player-name {
-            font-weight: bold;
-            color: #333;
-            font-size: 1.2em;
+            font-size: 14px;
+            margin-bottom: 5px;
         }
 
         .player-ip {
+            font-size: 12px;
             color: #666;
-            font-size: 0.9em;
-            margin-top: 5px;
+        }
+
+        .player-answer-section {
+            text-align: right;
         }
 
         .player-answer {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #667eea;
+            font-size: 16px;
+            margin-bottom: 5px;
         }
 
         .player-time {
-            color: #999;
-            font-size: 0.9em;
-            margin-top: 5px;
+            font-size: 12px;
+            color: #666;
         }
 
         .winner-badge {
-            background: gold;
-            color: #333;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            margin-left: 15px;
-            animation: wiggle 0.5s ease infinite;
+            display: inline-block;
+            border: 1px solid #333;
+            padding: 3px 10px;
+            margin-left: 10px;
+            font-size: 12px;
         }
 
-        @keyframes wiggle {
-            0%, 100% { transform: rotate(-3deg); }
-            50% { transform: rotate(3deg); }
-        }
-
-        /* Button */
-        .start-button {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 1.3em;
-            border-radius: 30px;
+        button {
+            background: white;
+            border: 1px solid #333;
+            padding: 10px 30px;
+            font-size: 14px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            margin: 20px 0;
         }
 
-        .start-button:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
-            box-shadow: 0 7px 20px rgba(102, 126, 234, 0.6);
+        button:hover {
+            background: #f5f5f5;
         }
 
-        .start-button:disabled {
-            background: #ccc;
+        button:disabled {
+            opacity: 0.5;
             cursor: not-allowed;
         }
 
         .hidden {
             display: none !important;
         }
-
-        /* Fade transitions */
-        .fade-out {
-            animation: fadeOut 0.5s ease forwards;
-        }
-
-        .fade-in {
-            animation: fadeIn 0.5s ease forwards;
-        }
-
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🦆 Goose Counting Game</h1>
+        <h1>Goose Counting Game</h1>
         
-        <!-- Rules Section -->
         <div class="rules" id="rules">
             <h2>Game Rules:</h2>
             <ul>
-                <li>The image will show for 3 seconds - count the geese quickly!</li>
+                <li>The image will show for 3 seconds - count the geese quickly</li>
                 <li>After the image disappears, wait for the 5-second countdown</li>
                 <li>When countdown finishes, you have 5 seconds to press your button</li>
-                <li>The fastest correct answer wins!</li>
-                <li>Ready? Click start!</li>
+                <li>The fastest correct answer wins</li>
+                <li>Ready? Click start</li>
             </ul>
-            <div style="text-align: center; margin-top: 20px;">
-                <button class="start-button" onclick="startGame()">Start Game</button>
+            <div style="text-align: center;">
+                <button onclick="startGame()">Start Game</button>
             </div>
         </div>
 
-        <!-- Game Area -->
         <div class="game-area hidden" id="gameArea">
             <div class="message" id="message"></div>
             <div class="sub-message" id="subMessage"></div>
@@ -299,35 +210,23 @@
     <script>
         let gameConfig = null;
 
-        // Load game configuration
         async function loadConfig() {
             const response = await fetch('/api/game-config');
             gameConfig = await response.json();
         }
 
-        // Utility: Wait function
         function wait(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
 
-        // Start the game
         async function startGame() {
-            // Hide rules
-            document.getElementById('rules').classList.add('fade-out');
-            await wait(500);
             document.getElementById('rules').classList.add('hidden');
+            document.getElementById('gameArea').classList.remove('hidden');
             
-            // Show game area
-            const gameArea = document.getElementById('gameArea');
-            gameArea.classList.remove('hidden');
-            gameArea.classList.add('fade-in');
-            
-            // Load config if not loaded
             if (!gameConfig) {
                 await loadConfig();
             }
             
-            // Start game sequence
             await showLoading('Preparing game...');
             await wait(1000);
             
@@ -335,60 +234,49 @@
             await wait(gameConfig.image_display_time * 1000);
             
             await hideImage();
-            await wait(800);
+            await wait(300);
             
             await showCountdownBeforeAnswer();
-            await wait(gameConfig.countdown_before_answer * 1000 + 500);
+            await wait(gameConfig.countdown_before_answer * 1000 + 100);
             
             await showAnswerPhase();
         }
 
-        // Show loading animation
         async function showLoading(text) {
             document.getElementById('message').textContent = text;
+            document.getElementById('loading').textContent = 'Loading...';
             document.getElementById('loading').classList.remove('hidden');
         }
 
-        // Hide loading animation
         function hideLoading() {
             document.getElementById('loading').classList.add('hidden');
         }
 
-        // Show the image
         async function showImage() {
             hideLoading();
             const message = document.getElementById('message');
             const subMessage = document.getElementById('subMessage');
             const imageContainer = document.getElementById('imageContainer');
             
-            message.textContent = 'Count the geese quickly!';
-            subMessage.textContent = `You have ${gameConfig.image_display_time} seconds...`;
+            message.textContent = 'Count the geese quickly';
+            subMessage.textContent = 'You have ' + gameConfig.image_display_time + ' seconds';
             
-            imageContainer.innerHTML = `
-                <img src="https://images.unsplash.com/photo-1568042511942-cebf7989d3f9?w=700&h=500&fit=crop" 
-                     alt="Geese flock" 
-                     onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22700%22 height=%22500%22><rect fill=%22%236b8e23%22 width=%22700%22 height=%22500%22/><text x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2236%22 font-weight=%22bold%22>14 GEESE</text></svg>'">
-            `;
+            imageContainer.innerHTML = '<img src="https://github.com/Vivian-Xie/Interactive-Lab-Hub/blob/Fall2025/Lab%206/imgs/geese.png?raw=true" alt="Geese">';
             imageContainer.classList.remove('hidden');
-            imageContainer.classList.add('fade-in');
         }
 
-        // Hide the image
         async function hideImage() {
             const imageContainer = document.getElementById('imageContainer');
-            imageContainer.classList.add('fade-out');
-            await wait(500);
             imageContainer.classList.add('hidden');
         }
 
-        // Show countdown before answering
         async function showCountdownBeforeAnswer() {
             const message = document.getElementById('message');
             const subMessage = document.getElementById('subMessage');
             const countdown = document.getElementById('countdown');
             
-            message.textContent = 'Get ready...';
-            subMessage.textContent = 'Countdown starting!';
+            message.textContent = 'Get ready';
+            subMessage.textContent = 'Countdown starting';
             
             countdown.classList.remove('hidden');
             
@@ -400,19 +288,17 @@
             countdown.classList.add('hidden');
         }
 
-        // Show answer phase with player responses
         async function showAnswerPhase() {
             const message = document.getElementById('message');
             const subMessage = document.getElementById('subMessage');
             
-            message.textContent = 'Press your button NOW!';
-            subMessage.textContent = `You have ${gameConfig.answer_time_limit} seconds`;
+            message.textContent = 'Press your button NOW';
+            subMessage.textContent = 'You have ' + gameConfig.answer_time_limit + ' seconds';
             
-            await wait(500);
+            await wait(100);
             await showPlayers();
         }
 
-        // Show players and their responses
         async function showPlayers() {
             const playersDiv = document.getElementById('players');
             playersDiv.classList.remove('hidden');
@@ -422,67 +308,66 @@
             gameConfig.players.forEach((player, index) => {
                 const playerDiv = document.createElement('div');
                 playerDiv.className = 'player';
-                playerDiv.id = `player-${player.id}`;
+                playerDiv.id = 'player-' + player.id;
                 playerDiv.innerHTML = `
                     <div class="player-info">
                         <div class="player-name">${player.name}</div>
                         <div class="player-ip">IP: ${player.ip}</div>
                     </div>
-                    <div>
+                    <div class="player-answer-section">
                         <div class="player-answer" id="answer-${player.id}">Waiting...</div>
                         <div class="player-time" id="time-${player.id}"></div>
                     </div>
                 `;
                 playersDiv.appendChild(playerDiv);
-                
-                // Stagger the appearance
-                setTimeout(() => {
-                    playerDiv.classList.add('show');
-                }, index * 200);
             });
             
             await wait(500);
             
-            // Simulate player responses in order
+            // Sort players by response time
             const sortedPlayers = [...gameConfig.players]
                 .filter(p => p.status === 'answered')
                 .sort((a, b) => a.response_time - b.response_time);
             
             let winnerFound = false;
             
+            // Show results directly without counting animation
             for (const player of sortedPlayers) {
-                await wait(player.response_time * 1000);
+                // Wait for player's response time
+                // await wait(player.response_time * 1000);
                 
-                const playerDiv = document.getElementById(`player-${player.id}`);
-                const answerDiv = document.getElementById(`answer-${player.id}`);
-                const timeDiv = document.getElementById(`time-${player.id}`);
+                // Show final answer immediately
+                const playerDiv = document.getElementById('player-' + player.id);
+                const answerDiv = document.getElementById('answer-' + player.id);
+                const timeDiv = document.getElementById('time-' + player.id);
                 
                 playerDiv.classList.add('answered');
-                answerDiv.textContent = `Answer: ${player.answer}`;
-                timeDiv.textContent = `Time: ${player.response_time}s`;
+                answerDiv.textContent = 'Answer: ' + player.answer;
+                timeDiv.textContent = 'Time: ' + player.response_time + 's';
                 
                 // Check if correct and first
                 if (player.answer === gameConfig.correct_answer && !winnerFound) {
-                    await wait(300);
+                    // await wait(300);
                     playerDiv.classList.remove('answered');
                     playerDiv.classList.add('winner');
-                    playerDiv.innerHTML += '<span class="winner-badge">🏆 WINNER!</span>';
+                    playerDiv.querySelector('.player-answer-section').innerHTML += 
+                        '<span class="winner-badge">WINNER</span>';
                     winnerFound = true;
                     
-                    document.getElementById('message').innerHTML = 
-                        `🎉 ${player.name} wins!`;
-                    document.getElementById('subMessage').innerHTML = 
-                        `Correct answer: ${gameConfig.correct_answer} geese | Time: ${player.response_time}s`;
+                    document.getElementById('message').textContent = 
+                        player.name + ' wins';
+                    document.getElementById('subMessage').textContent = 
+                        'Correct answer: ' + gameConfig.correct_answer + ' geese | Time: ' + player.response_time + 's';
                 }
             }
             
-            // Show timeout players
+            // Show timeout players after 5 seconds
             await wait((gameConfig.answer_time_limit + 0.5) * 1000);
             
             gameConfig.players.forEach(player => {
                 if (player.status === 'timeout') {
-                    const playerDiv = document.getElementById(`player-${player.id}`);
-                    const answerDiv = document.getElementById(`answer-${player.id}`);
+                    const playerDiv = document.getElementById('player-' + player.id);
+                    const answerDiv = document.getElementById('answer-' + player.id);
                     
                     playerDiv.classList.add('timeout');
                     answerDiv.textContent = 'No answer';
@@ -490,7 +375,6 @@
             });
         }
 
-        // Load config on page load
         loadConfig();
     </script>
 </body>
