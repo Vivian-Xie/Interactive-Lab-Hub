@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Goose Counting Game</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -177,9 +178,26 @@
         .hidden {
             display: none !important;
         }
+
+        .connection-status {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            font-size: 12px;
+        }
+
+        .connection-status.connected {
+            background: #e8ffe8;
+            border-color: #4caf50;
+        }
     </style>
 </head>
 <body>
+    <div class="connection-status" id="connectionStatus">Connecting...</div>
+
     <div class="container">
         <h1>Goose Counting Game</h1>
         
@@ -189,11 +207,13 @@
                 <li>The image will show for 3 seconds - count the geese quickly</li>
                 <li>After the image disappears, wait for the 5-second countdown</li>
                 <li>When countdown finishes, you have 5 seconds to press your button</li>
+                <li>Press button each time you count a goose</li>
+                <li>Hold button for 2 seconds to submit your answer</li>
                 <li>The fastest correct answer wins</li>
-                <li>Ready? Click start</li>
             </ul>
             <div style="text-align: center;">
-                <button onclick="startGame()">Start Game</button>
+                <button onclick="startGame()" id="startBtn">Start Game</button>
+                <button onclick="resetGame()" id="resetBtn">Reset Game</button>
             </div>
         </div>
 
@@ -208,24 +228,101 @@
     </div>
 
     <script>
-        let gameConfig = null;
+        // Socket.IO connection
+        const socket = io();
+        
+        let gameConfig = {
+            correct_answer: 14,
+            image_display_time: 3,
+            countdown_before_answer: 5,
+            answer_time_limit: 5
+        };
 
-        async function loadConfig() {
-            const response = await fetch('/api/game-config');
-            gameConfig = await response.json();
-        }
+        let players = {};
+        let gameStartTime = null;
 
+        // Connection status
+        socket.on('connect', () => {
+            console.log('Connected to server');
+            document.getElementById('connectionStatus').textContent = 'Connected';
+            document.getElementById('connectionStatus').classList.add('connected');
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Disconnected from server');
+            document.getElementById('connectionStatus').textContent = 'Disconnected';
+            document.getElementById('connectionStatus').classList.remove('connected');
+        });
+
+        // Game events
+        socket.on('game_state', (data) => {
+            console.log('Game state:', data);
+        });
+
+        socket.on('game_started', (data) => {
+            console.log('Game started');
+            gameConfig = data.config;
+        });
+
+        socket.on('button_press', (data) => {
+            console.log('Button press:', data);
+            
+            // Initialize player if new
+            if (!players[data.mac]) {
+                const playerNum = Object.keys(players).length + 1;
+                players[data.mac] = {
+                    name: `Player ${playerNum}`,
+                    ip: data.ip,
+                    clicks: 0,
+                    answer: null,
+                    time: null
+                };
+                addPlayerToDisplay(data.mac);
+            }
+            
+            // Increment clicks
+            players[data.mac].clicks++;
+            updatePlayerDisplay(data.mac);
+        });
+
+        socket.on('player_answer', (data) => {
+            console.log('Player answer:', data);
+            
+            if (players[data.mac]) {
+                players[data.mac].answer = data.answer;
+                players[data.mac].time = data.time;
+                updatePlayerDisplay(data.mac, data.is_winner);
+                
+                if (data.is_winner) {
+                    document.getElementById('message').textContent = `${data.name} wins!`;
+                    document.getElementById('subMessage').textContent = 
+                        `Correct answer: ${gameConfig.correct_answer} geese | Time: ${data.time}s`;
+                }
+            }
+        });
+
+        socket.on('phase_changed', (data) => {
+            console.log('Phase changed:', data.phase);
+        });
+
+        socket.on('game_reset', () => {
+            console.log('Game reset');
+            window.location.reload();
+        });
+
+        // Utility functions
         function wait(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
 
+        // Start game
         async function startGame() {
+            document.getElementById('startBtn').disabled = true;
             document.getElementById('rules').classList.add('hidden');
             document.getElementById('gameArea').classList.remove('hidden');
             
-            if (!gameConfig) {
-                await loadConfig();
-            }
+            // Tell server game started
+            socket.emit('start_game');
             
             await showLoading('Preparing game...');
             await wait(1000);
@@ -242,6 +339,11 @@
             await showAnswerPhase();
         }
 
+        // Reset game
+        function resetGame() {
+            socket.emit('reset_game');
+        }
+
         async function showLoading(text) {
             document.getElementById('message').textContent = text;
             document.getElementById('loading').textContent = 'Loading...';
@@ -254,31 +356,29 @@
 
         async function showImage() {
             hideLoading();
-            const message = document.getElementById('message');
-            const subMessage = document.getElementById('subMessage');
+            document.getElementById('message').textContent = 'Count the geese quickly';
+            document.getElementById('subMessage').textContent = 
+                'You have ' + gameConfig.image_display_time + ' seconds';
+            
             const imageContainer = document.getElementById('imageContainer');
-            
-            message.textContent = 'Count the geese quickly';
-            subMessage.textContent = 'You have ' + gameConfig.image_display_time + ' seconds';
-            
-            imageContainer.innerHTML = '<img src="https://github.com/Vivian-Xie/Interactive-Lab-Hub/blob/Fall2025/Lab%206/imgs/geese.png?raw=true" alt="Geese">';
+            imageContainer.innerHTML = '<img src="/static/imgs/geese.png" alt="Geese">';
             imageContainer.classList.remove('hidden');
+            
+            socket.emit('phase_change', {phase: 'image_display'});
         }
 
         async function hideImage() {
-            const imageContainer = document.getElementById('imageContainer');
-            imageContainer.classList.add('hidden');
+            document.getElementById('imageContainer').classList.add('hidden');
         }
 
         async function showCountdownBeforeAnswer() {
-            const message = document.getElementById('message');
-            const subMessage = document.getElementById('subMessage');
+            document.getElementById('message').textContent = 'Get ready';
+            document.getElementById('subMessage').textContent = 'Countdown starting';
+            
             const countdown = document.getElementById('countdown');
-            
-            message.textContent = 'Get ready';
-            subMessage.textContent = 'Countdown starting';
-            
             countdown.classList.remove('hidden');
+            
+            socket.emit('phase_change', {phase: 'countdown'});
             
             for (let i = gameConfig.countdown_before_answer; i > 0; i--) {
                 countdown.textContent = i;
@@ -289,93 +389,77 @@
         }
 
         async function showAnswerPhase() {
-            const message = document.getElementById('message');
-            const subMessage = document.getElementById('subMessage');
+            document.getElementById('message').textContent = 'Press your button NOW';
+            document.getElementById('subMessage').textContent = 
+                'You have ' + gameConfig.answer_time_limit + ' seconds';
             
-            message.textContent = 'Press your button NOW';
-            subMessage.textContent = 'You have ' + gameConfig.answer_time_limit + ' seconds';
+            document.getElementById('players').classList.remove('hidden');
             
-            await wait(100);
-            await showPlayers();
+            socket.emit('phase_change', {phase: 'answering'});
+            gameStartTime = Date.now();
+            
+            // Wait for answer time limit
+            await wait(gameConfig.answer_time_limit * 1000);
+            
+            socket.emit('phase_change', {phase: 'finished'});
+            
+            // Show timeout for players who didn't answer
+            for (const mac in players) {
+                if (players[mac].answer === null) {
+                    const playerDiv = document.getElementById('player-' + mac.replace(/:/g, ''));
+                    if (playerDiv) {
+                        playerDiv.classList.add('timeout');
+                        document.getElementById('answer-' + mac.replace(/:/g, '')).textContent = 'No answer';
+                    }
+                }
+            }
         }
 
-        async function showPlayers() {
+        function addPlayerToDisplay(mac) {
             const playersDiv = document.getElementById('players');
-            playersDiv.classList.remove('hidden');
-            playersDiv.innerHTML = '';
+            const cleanMac = mac.replace(/:/g, '');
             
-            // Create player elements
-            gameConfig.players.forEach((player, index) => {
-                const playerDiv = document.createElement('div');
-                playerDiv.className = 'player';
-                playerDiv.id = 'player-' + player.id;
-                playerDiv.innerHTML = `
-                    <div class="player-info">
-                        <div class="player-name">${player.name}</div>
-                        <div class="player-ip">IP: ${player.ip}</div>
-                    </div>
-                    <div class="player-answer-section">
-                        <div class="player-answer" id="answer-${player.id}">Waiting...</div>
-                        <div class="player-time" id="time-${player.id}"></div>
-                    </div>
-                `;
-                playersDiv.appendChild(playerDiv);
-            });
+            const playerDiv = document.createElement('div');
+            playerDiv.className = 'player';
+            playerDiv.id = 'player-' + cleanMac;
+            playerDiv.innerHTML = `
+                <div class="player-info">
+                    <div class="player-name">${players[mac].name}</div>
+                    <div class="player-ip">IP: ${players[mac].ip}</div>
+                </div>
+                <div class="player-answer-section">
+                    <div class="player-answer" id="answer-${cleanMac}">Clicks: 0</div>
+                    <div class="player-time" id="time-${cleanMac}"></div>
+                </div>
+            `;
+            playersDiv.appendChild(playerDiv);
+        }
+
+        function updatePlayerDisplay(mac, isWinner = false) {
+            const cleanMac = mac.replace(/:/g, '');
+            const player = players[mac];
             
-            await wait(500);
+            const answerDiv = document.getElementById('answer-' + cleanMac);
+            const timeDiv = document.getElementById('time-' + cleanMac);
+            const playerDiv = document.getElementById('player-' + cleanMac);
             
-            // Sort players by response time
-            const sortedPlayers = [...gameConfig.players]
-                .filter(p => p.status === 'answered')
-                .sort((a, b) => a.response_time - b.response_time);
+            if (!answerDiv) return;
             
-            let winnerFound = false;
-            
-            // Show results directly without counting animation
-            for (const player of sortedPlayers) {
-                // Wait for player's response time
-                // await wait(player.response_time * 1000);
-                
-                // Show final answer immediately
-                const playerDiv = document.getElementById('player-' + player.id);
-                const answerDiv = document.getElementById('answer-' + player.id);
-                const timeDiv = document.getElementById('time-' + player.id);
-                
+            if (player.answer !== null) {
                 playerDiv.classList.add('answered');
                 answerDiv.textContent = 'Answer: ' + player.answer;
-                timeDiv.textContent = 'Time: ' + player.response_time + 's';
+                timeDiv.textContent = 'Time: ' + player.time + 's';
                 
-                // Check if correct and first
-                if (player.answer === gameConfig.correct_answer && !winnerFound) {
-                    // await wait(300);
+                if (isWinner) {
                     playerDiv.classList.remove('answered');
                     playerDiv.classList.add('winner');
                     playerDiv.querySelector('.player-answer-section').innerHTML += 
                         '<span class="winner-badge">WINNER</span>';
-                    winnerFound = true;
-                    
-                    document.getElementById('message').textContent = 
-                        player.name + ' wins';
-                    document.getElementById('subMessage').textContent = 
-                        'Correct answer: ' + gameConfig.correct_answer + ' geese | Time: ' + player.response_time + 's';
                 }
+            } else {
+                answerDiv.textContent = 'Clicks: ' + player.clicks;
             }
-            
-            // Show timeout players after 5 seconds
-            await wait((gameConfig.answer_time_limit + 0.5) * 1000);
-            
-            gameConfig.players.forEach(player => {
-                if (player.status === 'timeout') {
-                    const playerDiv = document.getElementById('player-' + player.id);
-                    const answerDiv = document.getElementById('answer-' + player.id);
-                    
-                    playerDiv.classList.add('timeout');
-                    answerDiv.textContent = 'No answer';
-                }
-            });
         }
-
-        loadConfig();
     </script>
 </body>
 </html>
