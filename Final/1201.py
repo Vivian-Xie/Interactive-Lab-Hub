@@ -264,7 +264,7 @@ try:
         buttonB_just_pressed = buttonB_pressed and not last_buttonB_state
         
         # --- Check if coin inserted (proximity > 156) ---
-        if current_page == "insert_coin" and proxValue > 9000:
+        if current_page == "insert_coin" and proxValue > 10000:
             # Play coin sound effect
             try:
                 music_file = MUSIC_FILES[0]
@@ -342,7 +342,7 @@ try:
         last_buttonA_state = buttonA_pressed
         last_buttonB_state = buttonB_pressed
         
-        time.sleep(0.3)
+        time.sleep(0.1)
 
 except KeyboardInterrupt:
     print("\nProgram stopped by user. Resetting servos...")
