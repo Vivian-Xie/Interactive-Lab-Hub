@@ -4,6 +4,7 @@ import sys
 import random
 import qwiic
 import qwiic_proximity
+import qwiic_gpio
 from adafruit_servokit import ServoKit
 import pygame 
 import board
@@ -12,6 +13,19 @@ import digitalio
 from PIL import Image, ImageDraw, ImageFont
 import adafruit_rgb_display.st7789 as st7789
 from threading import Thread
+
+# ---------------- LED Setup ----------------
+myGPIO = qwiic_gpio.QwiicGPIO()
+if myGPIO.isConnected() == False:
+    print("The Qwiic GPIO isn't connected to the system.", file=sys.stderr)
+    sys.exit(1)
+myGPIO.begin()
+myGPIO.pinMode(2, myGPIO.GPIO_OUT)
+myGPIO.pinMode(3, myGPIO.GPIO_OUT)
+myGPIO.pinMode(1, myGPIO.GPIO_OUT)
+myGPIO.pinMode(0, myGPIO.GPIO_OUT)
+myGPIO.pinMode(4, myGPIO.GPIO_OUT)
+print("LED initialized\n")
 
 # ---------------- Audio Setup ----------------
 pygame.mixer.init(frequency=44100, channels=2, buffer=512)
@@ -178,6 +192,34 @@ def stop_music():
     pygame.mixer.music.stop()
     print("Music stopped")
 
+def blink_led_continuous():
+    """Continuously blink LED in sequence 2-3-1-0-4"""
+    pin_sequence = [2, 3, 1, 0, 4]
+    for pin in pin_sequence:
+        myGPIO.digitalWrite(pin, myGPIO.GPIO_HI)
+        time.sleep(0.08)
+        myGPIO.digitalWrite(pin, myGPIO.GPIO_LO)
+
+def blink_led_fast():
+    """Blink all LEDs together quickly"""
+    print("LED blinking...")
+    all_pins = [0, 1, 2, 3, 4]
+    
+    for i in range(5):  # Blink 5 times
+        for pin in all_pins:
+            myGPIO.digitalWrite(pin, myGPIO.GPIO_HI)
+        time.sleep(0.1)
+        for pin in all_pins:
+            myGPIO.digitalWrite(pin, myGPIO.GPIO_LO)
+        time.sleep(0.1)
+    
+    print("LED blink finished")
+    
+    # Make sure all LEDs are off at the end
+    for pin in [0, 1, 2, 3, 4]:
+        myGPIO.digitalWrite(pin, myGPIO.GPIO_LO)
+    
+    print("LED blink finished")
 def play_music_and_spin_servos(servo_list):
     """Play music and spin selected servos for 1 second"""
     # Play music
@@ -186,6 +228,7 @@ def play_music_and_spin_servos(servo_list):
         pygame.mixer.music.load(music_file)
         pygame.mixer.music.play()
         print(f"Playing {music_file}")
+        blink_led_fast() 
     except Exception as e:
         print(f"Error playing sound: {e}")
     
@@ -195,7 +238,7 @@ def play_music_and_spin_servos(servo_list):
     print(f"Servos {servo_list} rotating...")
     
     # Rotate for 1 second
-    time.sleep(1)
+    time.sleep(0.1)
     
     # Stop servos
     for servo_index in servo_list:
@@ -231,7 +274,7 @@ try:
             except Exception as e:
                 print(f"Error playing coin sound: {e}")
             
-            time.sleep(0.5)  # Wait for coin sound to finish
+            time.sleep(1.5)  # Wait for coin sound to finish
             
             # Go to ask question page and play mysterious music
             current_page = "ask_question"
@@ -242,6 +285,7 @@ try:
         # --- Handle ask_question page ---
         elif current_page == "ask_question":
             # Button B moves to home page and stops music
+            blink_led_continuous()
             if buttonB_just_pressed:
                 stop_music()
                 current_page = "home"
@@ -251,6 +295,7 @@ try:
         # --- Handle buttons based on current page ---
         elif current_page == "home":
             # Home page: A=random, B=go to options
+            blink_led_continuous()
             if buttonA_just_pressed:
                 selected_option = "random"
                 current_page = "selected"
@@ -269,11 +314,13 @@ try:
         
         elif current_page == "options":
             # Options page: A=opt1, B=opt2
+            blink_led_continuous()
             if buttonA_just_pressed:
                 selected_option = "opt1"
                 current_page = "selected"
                 draw_blank_page()
                 print("Selected: opt1")
+
                 # Play music and spin servos 0 and 1
                 play_music_and_spin_servos([0, 1])
                 # Return to insert coin
