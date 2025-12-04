@@ -264,7 +264,7 @@ try:
         buttonB_just_pressed = buttonB_pressed and not last_buttonB_state
         
         # --- Check if coin inserted (proximity > 156) ---
-        if current_page == "insert_coin" and proxValue > 156:
+        if current_page == "insert_coin" and proxValue > 9000:
             # Play coin sound effect
             try:
                 music_file = MUSIC_FILES[0]
