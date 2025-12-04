@@ -40,7 +40,7 @@ MUSIC_FILES = [
     "music/music5.WAV",
     "music/music6.WAV"
 ]
-OUTPUT_MUSIC = "music/output.MP3"
+OUTPUT_MUSIC = "music/myth.MP3"
 MYSTERIOUS_MUSIC = "music/myth2.MP3"
 current_music_index = 0
 
@@ -128,8 +128,8 @@ def draw_ask_question():
     draw.rectangle((0, 0, width, height), outline=0, fill=(0, 0, 0))
     
     # Title text
-    draw.text((20, 10), "Think of your", font=font, fill=(200, 150, 255))
-    draw.text((20, 35), "question...", font=font, fill=(200, 150, 255))
+    draw.text((20, 10), "Hold one question", font=font, fill=(200, 150, 255))
+    draw.text((20, 35), "in your mind...", font=font, fill=(200, 150, 255))
     
     # Box with ready button
     box_y = 70
@@ -147,16 +147,15 @@ def draw_home_page():
     box1_y = 10
     box1_height = 50
     draw.rectangle((10, box1_y, width-10, box1_y+box1_height), outline=(255,255,255), width=2)
-    draw.text((20, box1_y+10), "Random Surprise", font=font, fill=(255, 255, 255))
+    draw.text((20, box1_y+10), "Light", font=font, fill=(255, 255, 255))
     
     # Second box with "Pick one"
     box2_y = 70
     box2_height = 50
     draw.rectangle((10, box2_y, width-10, box2_y+box2_height), outline=(255,255,255), width=2)
-    draw.text((20, box2_y+10), "Decide your own", font=font, fill=(255, 255, 255))
+    draw.text((20, box2_y+10), "Shadow", font=font, fill=(255, 255, 255))
     
     disp.image(image, rotation)
-
 def draw_options_page():
     """Draw options page with opt1 and opt2"""
     draw.rectangle((0, 0, width, height), outline=0, fill=(0, 0, 0))
@@ -164,13 +163,13 @@ def draw_options_page():
     box1_y = 10
     box1_height = 50
     draw.rectangle((10, box1_y, width-10, box1_y+box1_height), outline=(255,255,255), width=2)
-    draw.text((20, box1_y+10), "Fate", font=font, fill=(255, 255, 255))
+    draw.text((20, box1_y+10), "Focus on Path", font=font, fill=(255, 255, 255))
     
     # Second box with "Option2"
     box2_y = 70
     box2_height = 50
     draw.rectangle((10, box2_y, width-10, box2_y+box2_height), outline=(255,255,255), width=2)
-    draw.text((20, box2_y+10), "Destiny", font=font, fill=(255, 255, 255))
+    draw.text((20, box2_y+10), "Open a Gate", font=font, fill=(255, 255, 255))
     
     disp.image(image, rotation)
 
@@ -288,7 +287,7 @@ try:
             # Button B moves to home page and stops music
             blink_led_continuous()
             if buttonB_just_pressed:
-                stop_music()
+                
                 current_page = "home"
                 draw_home_page()
                 print("Ready! Showing home page")
@@ -321,7 +320,7 @@ try:
                 current_page = "selected"
                 draw_blank_page()
                 print("Selected: opt1")
-
+                stop_music()
                 # Play music and spin servos 0 and 1
                 play_music_and_spin_servos([0, 1])
                 # Return to insert coin
@@ -333,6 +332,7 @@ try:
                 current_page = "selected"
                 draw_blank_page()
                 print("Selected: opt2")
+                stop_music()
                 # Play music and spin servos 2 and 3
                 play_music_and_spin_servos([2, 3])
                 # Return to insert coin
