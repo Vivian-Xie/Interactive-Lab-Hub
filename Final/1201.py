@@ -40,7 +40,8 @@ MUSIC_FILES = [
     "music/music5.WAV",
     "music/music6.WAV"
 ]
-MYSTERIOUS_MUSIC = "music/mysterious.mp3"
+OUTPUT_MUSIC = "music/output.MP3"
+MYSTERIOUS_MUSIC = "music/myth2.MP3"
 current_music_index = 0
 
 # ---------------- Servo Setup ----------------
@@ -224,7 +225,7 @@ def play_music_and_spin_servos(servo_list):
     """Play music and spin selected servos for 1 second"""
     # Play music
     try:
-        music_file = MUSIC_FILES[0]
+        music_file = OUTPUT_MUSIC
         pygame.mixer.music.load(music_file)
         pygame.mixer.music.play()
         print(f"Playing {music_file}")
