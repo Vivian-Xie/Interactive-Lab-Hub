@@ -43,46 +43,46 @@ The box functions as a hybrid of:
 
 ---
 
-## 🧩 Final Interaction Flow
+## 🧪 Testing Plan
 
-1. **Idle State**  
-   - MiiPiTFT displays:  
-     `Insert coin`
+- Test distance sensor accuracy for coin detection  
+- Test button response and screen interaction  
+- Calibrate servo rotation time for smooth card output  
+- Test LED timing and animation patterns  
+- Verify correct routing of cards to both exits  
+- Observe user understanding and emotional response  
 
-2. **Coin Detection**  
-   - User inserts a coin  
-   - Distance sensor detects the coin  
-   - Immediate sound effect confirms success  
-   - A mysterious background music starts playing
+---
 
-3. **Waiting Animation**  
-   - Five LEDs light up **one by one** in sequence  
-   - Indicates the system is waiting for user input
+## 🧰 Parts List
 
-4. **User Prompt**  
-   - Screen displays:  
-     `Hold one question in your mind...`  
-   - User presses the button corresponding to  
-     `← Yes, I'm ready.`
+### Electronics
+- [Raspberry Pi 5](https://www.raspberrypi.com/products/raspberry-pi-5/)
+- [MiiPiTFT Display](https://www.adafruit.com/product/4393)
+- [SparkFun Qwiic GPIO](https://www.sparkfun.com/sparkfun-qwiic-gpio.html)
+- [Distance Sensor (SparkFun VL53L1X, Qwiic)](https://www.sparkfun.com/sparkfun-distance-sensor-breakout-4-meter-vl53l1x-qwiic.html)
+- [360° Continuous Rotation Servo Motor](https://www.sparkfun.com/servo-generic-high-torque-continuous-rotation-standard-size.html)
+- [LEDs ×5 (5V)](https://www.ebay.com/itm/184656453852)
+- Bluetooth Speaker
 
-5. **Decision Screen**  
-   - Two options appear on screen:
-     - Option 1: Random card output  
-     - Option 2: Go to a precise choice page
+### Fabrication & Materials
+- Laser-cut wooden panels  
+- 3D-printed card dispenser box  
+- Gears (small + large)  
+- Rubber bands (for friction)  
+- Hot glue
 
-6. **Card Dispensing Logic**  
-   - **Option 1:**  
-     - Randomly chooses one of two card exits  
-   - **Option 2:**  
-     - Next screen appears  
-       - Choice A → Exit 1  
-       - Choice B → Exit 2  
+---
 
-7. **Final Output**  
-   - Card is dispensed  
-   - All LEDs turn on simultaneously  
-   - The card contains an answer to the user’s question  
-     (positive / negative / ambiguous)
+## 🔁 Fall-Back Plan
+
+If the full system failed, we planned the following fallback options:
+
+1. Dual card dispenser → Single card dispenser  
+2. Card dispenser → Random object dropping machine  
+3. Physical system → Screen-only digital version  
+
+Each fallback preserves the core idea of **randomized decision-making**.
 
 ---
 
@@ -108,7 +108,7 @@ The card exit was upgraded from **one slot to two slots**.
 
 ---
 
-## ⚙️ Card Dispensing Mechanism (Detailed)
+## ⚙️ Card Dispensing Mechanism
 
 ### Original Plan
 
@@ -172,37 +172,6 @@ This solution was used in the final version.
   <summary><strong>▶ Card Dispensing Testing Video with Box</strong></summary>
   <video src="https://github.com/user-attachments/assets/5735d8a8-f5b6-434b-a8f5-3b81f2f96412" controls></video>
 </details>
-
----
-
-## 🧪 Testing Plan
-
-- Test distance sensor accuracy for coin detection  
-- Test button response and screen interaction  
-- Calibrate servo rotation time for smooth card output  
-- Test LED timing and animation patterns  
-- Verify correct routing of cards to both exits  
-- Observe user understanding and emotional response  
-
----
-
-## 🧰 Parts List
-
-### Electronics
-- [Raspberry Pi 5](https://www.raspberrypi.com/products/raspberry-pi-5/)
-- [MiiPiTFT Display](https://www.adafruit.com/product/4393)
-- [SparkFun Qwiic GPIO](https://www.sparkfun.com/sparkfun-qwiic-gpio.html)
-- [Distance Sensor (SparkFun VL53L1X, Qwiic)](https://www.sparkfun.com/sparkfun-distance-sensor-breakout-4-meter-vl53l1x-qwiic.html)
-- [360° Continuous Rotation Servo Motor](https://www.sparkfun.com/servo-generic-high-torque-continuous-rotation-standard-size.html)
-- [LEDs ×5 (5V)](https://www.ebay.com/itm/184656453852)
-- Bluetooth Speaker
-
-### Fabrication & Materials
-- Laser-cut wooden panels  
-- 3D-printed card dispenser box  
-- Gears (small + large)  
-- Rubber bands (for friction)  
-- Hot glue  
 
 ---
 
@@ -324,6 +293,49 @@ All code is archived in this repository.
 
 ---
 
+## 🧩 Final Interaction Flow
+
+1. **Idle State**  
+   - MiiPiTFT displays:  
+     `Insert coin`
+
+2. **Coin Detection**  
+   - User inserts a coin  
+   - Distance sensor detects the coin  
+   - Immediate sound effect confirms success  
+   - A mysterious background music starts playing
+
+3. **Waiting Animation**  
+   - Five LEDs light up **one by one** in sequence  
+   - Indicates the system is waiting for user input
+
+4. **User Prompt**  
+   - Screen displays:  
+     `Hold one question in your mind...`  
+   - User presses the button corresponding to  
+     `← Yes, I'm ready.`
+
+5. **Decision Screen**  
+   - Two options appear on screen:
+     - Option 1: Random card output  
+     - Option 2: Go to a precise choice page
+
+6. **Card Dispensing Logic**  
+   - **Option 1:**  
+     - Randomly chooses one of two card exits  
+   - **Option 2:**  
+     - Next screen appears  
+       - Choice A → Exit 1  
+       - Choice B → Exit 2  
+
+7. **Final Output**  
+   - Card is dispensed  
+   - All LEDs turn on simultaneously  
+   - The card contains an answer to the user’s question  
+     (positive / negative / ambiguous)
+
+---
+
 ## 🎥 Demo Video
 
 A demo video shows:
@@ -338,18 +350,6 @@ A demo video shows:
 https://github.com/user-attachments/assets/6b0d8050-0e30-4d08-94c9-2cafd0cb4c8f
 
 https://github.com/user-attachments/assets/6383ccdf-b10e-4845-afb9-9b6c95effeb8
-
----
-
-## 🔁 Fall-Back Plan
-
-If the full system failed, we planned the following fallback options:
-
-1. Dual card dispenser → Single card dispenser  
-2. Card dispenser → Random object dropping machine  
-3. Physical system → Screen-only digital version  
-
-Each fallback preserves the core idea of **randomized decision-making**.
 
 ---
 
