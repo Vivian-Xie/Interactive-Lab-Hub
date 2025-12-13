@@ -195,12 +195,13 @@ This solution was used in the final version.
 ## 🧰 Parts List
 
 ### Electronics
-- Raspberry Pi 5  
-- Distance sensor  
-- 360° servo motor  
-- MiiPiTFT display  
-- LEDs ×5  
-- Speaker  
+- [Raspberry Pi 5](https://www.raspberrypi.com/products/raspberry-pi-5/)
+- [MiiPiTFT Display](https://www.adafruit.com/product/4393)
+- [SparkFun Qwiic GPIO](https://www.sparkfun.com/sparkfun-qwiic-gpio.html)
+- [Distance Sensor (SparkFun VL53L1X, Qwiic)](https://www.sparkfun.com/sparkfun-distance-sensor-breakout-4-meter-vl53l1x-qwiic.html)
+- [360° Continuous Rotation Servo Motor](https://www.sparkfun.com/servo-generic-high-torque-continuous-rotation-standard-size.html)
+- [LEDs ×5 (5V)](https://www.ebay.com/itm/184656453852)
+- Bluetooth Speaker
 
 ### Fabrication & Materials
 - Laser-cut wooden panels  
@@ -208,6 +209,108 @@ This solution was used in the final version.
 - Gears (small + large)  
 - Rubber bands (for friction)  
 - Hot glue  
+
+---
+
+## 🔌 Hardware Setup
+
+This section documents **how all hardware components are connected**, from the Raspberry Pi to sensors, LEDs, and actuators.  The goal is that the system can be **fully rebuilt from scratch** using this description alone.
+
+---
+
+### 🧠 Main Controller
+
+- **Raspberry Pi 5**  
+  Acts as the central controller for logic, UI, sensing, and actuation.  
+  It runs the Python scripts that manage:
+  - Interaction flow
+  - Sensor readings
+  - LED animations
+  - Servo motor timing
+  - Sound and screen output
+
+---
+
+### 🔗 I2C Expansion & GPIO Control
+
+- **SparkFun Qwiic GPIO**  
+  Used to expand GPIO access via the I2C bus.  
+  This board simplifies wiring and allows multiple devices (LEDs, sensors) to be chained cleanly using Qwiic cables.
+
+**Connection:**
+- Raspberry Pi 5 → Qwiic GPIO via **I2C (Qwiic cable)**
+
+---
+
+### 💡 LED Output (Visual Feedback)
+
+- **5V LEDs ×5**  
+  Used to visualize the waiting state after coin insertion.  
+  LEDs light up **one by one** while the user is thinking, and all turn on simultaneously when a card is dispensed.
+
+**Connection:**
+- LEDs connected to **Qwiic GPIO output pins**
+- Controlled through I2C commands from the Raspberry Pi
+
+---
+
+### 📏 Distance Sensor (Coin Detection)
+
+- **SparkFun Distance Sensor (VL53L1X, Qwiic)**  
+  Detects when a coin passes through the slot.  
+  This sensor is critical for triggering the interaction flow.
+
+**Connection:**
+- Qwiic GPIO (Qwiic cable) → Distance Sensor
+- Communication via **I2C**
+- Sensor readings are continuously polled by the Raspberry Pi
+
+---
+
+### ⚙️ Servo Motor (Card Dispensing)
+
+- **360° Continuous Rotation Servo Motor**  
+  Drives the gear-based card dispensing mechanism.  
+  The servo rotates for a calibrated duration to push one card out of the slot.
+
+**Connection:**
+- Servo signal pin → Raspberry Pi GPIO (PWM)
+- Servo power → external 5V supply (shared ground with Pi)
+- Servo timing (rotation duration) is controlled in software
+
+---
+
+### 🖥️ Display & User Input
+
+- **MiiPiTFT Display**  
+  Used to display instructions, prompts, and choices to the user.  
+  Buttons on the display are used for user input during the interaction flow.
+
+---
+
+### 🔊 Audio Output
+
+- **Bluetooth Speaker**  
+  Provides audio feedback including:
+  - Coin insertion confirmation sound
+  - Background mysterious music during waiting states
+
+**Connection:**
+- Paired wirelessly with the Raspberry Pi via Bluetooth
+- Audio triggered through Python scripts
+
+---
+
+<div align="center">
+  <!-- First row: 3 images -->
+  <img src="https://github.com/user-attachments/assets/5e95977c-5e9c-4b24-abac-a99802af8301" width="30%">
+  <img src="https://github.com/user-attachments/assets/b9654efc-748d-4f85-9ce3-8833cb4ce0b0" width="30%">
+  <img src="https://github.com/user-attachments/assets/ff5c8fc1-1eab-4f64-a140-088485b68128" width="30%">
+  <br><br>
+  <!-- Second row: 2 images -->
+  <img src="https://github.com/user-attachments/assets/c8ebedea-6111-490d-9636-6974ae682506" width="45%">
+  <img src="https://github.com/user-attachments/assets/6bc48a03-db70-4c88-9244-d45a43db37ce" width="45%">
+</div>
 
 ---
 
