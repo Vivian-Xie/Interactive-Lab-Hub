@@ -106,8 +106,6 @@ The card exit was upgraded from **one slot to two slots**.
   <img src="https://github.com/user-attachments/assets/c4cb1aab-8729-4244-a5b2-bf3798e4af8c" width="45%">
 </div>
 
-
-
 ---
 
 ## ⚙️ Card Dispensing Mechanism (Detailed)
@@ -174,10 +172,6 @@ This solution was used in the final version.
   <summary><strong>▶ Card Dispensing Testing Video with Box</strong></summary>
   <video src="https://github.com/user-attachments/assets/5735d8a8-f5b6-434b-a8f5-3b81f2f96412" controls></video>
 </details>
-
-
-
-
 
 ---
 
@@ -326,7 +320,7 @@ This section documents **how all hardware components are connected**, from the R
 
 All code is archived in this repository.
 
-> 🔗 **Code Archive:** *(insert GitHub link here)*
+> 🔗 **Code Archive:** *([Link to Code](https://github.com/m-lmq/Interactive-Lab-Hub/blob/Fall2025/Final/1201.py))*
 
 ---
 
@@ -339,7 +333,11 @@ A demo video shows:
 - LED animation
 - Card dispensing from both exits
 
-> 🎬 **Video Link:** *(insert link here)*
+> 🎬 **Video Link:**
+
+https://github.com/user-attachments/assets/6b0d8050-0e30-4d08-94c9-2cafd0cb4c8f
+
+https://github.com/user-attachments/assets/6383ccdf-b10e-4845-afb9-9b6c95effeb8
 
 ---
 
