@@ -5,7 +5,7 @@
 
 ## 📌 Project Overview
 
-**WhattoDo Box** is an interactive physical device designed to help users make small life decisions or break out of boredom through a ritualized, fate-like interaction. Users insert a coin, think of a question, make choices through buttons, and receive a randomly dispensed answer card — sometimes good, sometimes bad — reinforcing a sense of chance, destiny, and play.
+**WhattoDo Box** is an interactive physical device designed to help users make small life decisions or break out of boredom through a ritualized, fate-like interaction. Users insert a coin, think of a question, make choices through buttons, and receive a randomly dispensed answer card — sometimes good, sometimes bad.
 
 This project combines physical computing, mechanical design, UI on MiiPiTFT, sound & light feedback, and custom card-dispensing mechanisms into one cohesive interactive experience. The documentation is written so that if we woke up with amnesia, we could fully recreate the project from scratch.
 
@@ -82,7 +82,6 @@ The original plan used two servo motors where each servo controlled one card exi
 
 To better simulate a realistic automatic card dispenser, we designed and tested a custom 3D-printed card dispensing box. The card slot holds multiple cards stacked vertically with a hollow bottom. Rollers are installed underneath the cards and connect to a small gear, then large gear, then external knob. Rotating the knob spins the rollers and pushes cards outward. This design allows multiple cards per slot instead of one card at a time.
 
-![8fb04166adb96619447b3eb3d830a1df](https://github.com/user-attachments/assets/7ec1076d-2d5b-4522-9896-d623771b9e81)
 
 
 We replaced the manual knob with a 360° continuous servo motor attached directly to the gear. Card output is controlled by setting servo rotation duration, which was calibrated through multiple rounds of testing.
@@ -112,6 +111,16 @@ The surface of the 3D-printed rollers had too little friction, so cards slipped 
 ## 🔌 Hardware Setup
 
 This section documents how all hardware components are connected, from the Raspberry Pi to sensors, LEDs, and actuators. The goal is that the system can be fully rebuilt from scratch using this description alone.
+
+
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/5e95977c-5e9c-4b24-abac-a99802af8301" width="30%">
+  <img src="https://github.com/user-attachments/assets/5e95977c-5e9c-4b24-abac-a99802af8301" width="30%">
+  <img src="https://github.com/user-attachments/assets/ff5c8fc1-1eab-4f64-a140-088485b68128" width="30%">
+  <br><br>
+  <img src="https://github.com/user-attachments/assets/c8ebedea-6111-490d-9636-6974ae682506" width="45%">
+  <img src="https://github.com/user-attachments/assets/6bc48a03-db70-4c88-9244-d45a43db37ce" width="45%">
+</div>
 
 ###  Main Board
 
@@ -146,14 +155,6 @@ The MiiPiTFT Display is used to display instructions, prompts, and choices to th
 
 The Bluetooth Speaker provides audio feedback including coin insertion confirmation sound and background mysterious music during waiting states. It pairs wirelessly with the Raspberry Pi via Bluetooth, and audio is triggered through Python scripts.
 
-<div align="center">
-  <img src="https://github.com/user-attachments/assets/5e95977c-5e9c-4b24-abac-a99802af8301" width="30%">
-  <img src="https://github.com/user-attachments/assets/5e95977c-5e9c-4b24-abac-a99802af8301" width="30%">
-  <img src="https://github.com/user-attachments/assets/ff5c8fc1-1eab-4f64-a140-088485b68128" width="30%">
-  <br><br>
-  <img src="https://github.com/user-attachments/assets/c8ebedea-6111-490d-9636-6974ae682506" width="45%">
-  <img src="https://github.com/user-attachments/assets/6bc48a03-db70-4c88-9244-d45a43db37ce" width="45%">
-</div>
 
 ## 💻 Software Architecture
 
