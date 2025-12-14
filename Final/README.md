@@ -15,19 +15,45 @@ The WhattoDo Box reacts to a coin insertion and guides users through a step-by-s
 
 ## 🗓️ Project Timeline
 
-The project started on Nov 15 with the initial prototype using distance sensor and coin detection. On Nov 22, we integrated the MiiPiTFT screen UI. By Nov 28, sound and LED systems were working together. The paper dispensing mechanism was completed on Dec 1. User interaction testing and final build happened on Dec 3. Documentation and presentation were finished by Dec 8.
+| Date | Milestone |
+|---|---|
+| Nov 15 | Initial prototype: distance sensor & coin detection |
+| Nov 22 | Screen (MiiPiTFT) UI integration |
+| Nov 28 | Sound & LED system integration |
+| Dec 1 | Paper dispensing mechanism |
+| Dec 3 | User interaction testing， Final build |
+| Dec 8 | Documentation & presentation |
+
+---
 
 ## 🧪 Testing Plan
 
-We tested distance sensor accuracy for coin detection and button response with screen interaction. Servo rotation time was calibrated for smooth card output. LED timing and animation patterns were verified. We checked correct routing of cards to both exits and observed user understanding and emotional response.
+- Test distance sensor accuracy for coin detection  
+- Test button response and screen interaction  
+- Calibrate servo rotation time for smooth card output  
+- Test LED timing and animation patterns  
+- Verify correct routing of cards to both exits  
+- Observe user understanding and emotional response  
 
 ## 🧰 Parts List
 
 ### Electronics
-The main electronics include Raspberry Pi 5, MiiPiTFT Display, SparkFun Qwiic GPIO, Distance Sensor (SparkFun VL53L1X, Qwiic), 360° Continuous Rotation Servo Motor, five 5V LEDs, and a Bluetooth Speaker.
+- [Raspberry Pi 5](https://www.raspberrypi.com/products/raspberry-pi-5/)
+- [MiiPiTFT Display](https://www.adafruit.com/product/4393)
+- [SparkFun Qwiic GPIO](https://www.sparkfun.com/sparkfun-qwiic-gpio.html)
+- [Distance Sensor (SparkFun VL53L1X, Qwiic)](https://www.sparkfun.com/sparkfun-distance-sensor-breakout-4-meter-vl53l1x-qwiic.html)
+- [360° Continuous Rotation Servo Motor](https://www.sparkfun.com/servo-generic-high-torque-continuous-rotation-standard-size.html)
+- [LEDs ×5 (5V)](https://www.ebay.com/itm/184656453852)
+- Bluetooth Speaker
 
 ### Fabrication & Materials
-For fabrication, we used laser-cut wooden panels, 3D-printed card dispenser box, gears (small and large), rubber bands for friction, and hot glue.
+- Laser-cut wooden panels  
+- 3D-printed card dispenser box  
+- Gears (small + large)  
+- Rubber bands (for friction)  
+- Hot glue
+
+<img width="1512" height="982" alt="0f5efa3714d35000291449e85ad17c9e" src="https://github.com/user-attachments/assets/a3c9eee7-facd-4609-8a9e-f2447257fadd" />
 
 ## 🔁 Fall-Back Plan
 
@@ -53,6 +79,9 @@ The original plan used two servo motors where each servo controlled one card exi
 ### Final Mechanical Design (Implemented)
 
 To better simulate a realistic automatic card dispenser, we designed and tested a custom 3D-printed card dispensing box. The card slot holds multiple cards stacked vertically with a hollow bottom. Rollers are installed underneath the cards and connect to a small gear, then large gear, then external knob. Rotating the knob spins the rollers and pushes cards outward. This design allows multiple cards per slot instead of one card at a time.
+
+![8fb04166adb96619447b3eb3d830a1df](https://github.com/user-attachments/assets/7ec1076d-2d5b-4522-9896-d623771b9e81)
+
 
 We replaced the manual knob with a 360° continuous servo motor attached directly to the gear. Card output is controlled by setting servo rotation duration, which was calibrated through multiple rounds of testing.
 
@@ -82,13 +111,15 @@ The surface of the 3D-printed rollers had too little friction, so cards slipped 
 
 This section documents how all hardware components are connected, from the Raspberry Pi to sensors, LEDs, and actuators. The goal is that the system can be fully rebuilt from scratch using this description alone.
 
-### 🧠 Main Controller
+###  Main Board
 
 The Raspberry Pi 5 acts as the central controller for logic, UI, sensing, and actuation. It runs the Python scripts that manage interaction flow, sensor readings, LED animations, servo motor timing, and sound and screen output.
 
 ### 🔗 I2C Expansion & GPIO Control
 
 The SparkFun Qwiic GPIO is used to expand GPIO access via the I2C bus. This board simplifies wiring and allows multiple devices (LEDs, sensors) to be chained cleanly using Qwiic cables. It connects to the Raspberry Pi 5 via I2C using a Qwiic cable.
+
+![Uploading 8b09a65b12ef0fe96d9ca0f45a9964a7.jpg…](
 
 ### 💡 LED Output (Visual Feedback)
 
@@ -98,9 +129,14 @@ Five 5V LEDs are used to visualize the waiting state after coin insertion. LEDs 
 
 The SparkFun Distance Sensor (VL53L1X, Qwiic) detects when a coin passes through the slot. This sensor is critical for triggering the interaction flow. It connects from Qwiic GPIO to the Distance Sensor via Qwiic cable, communicating through I2C. Sensor readings are continuously polled by the Raspberry Pi.
 
+![9847d4baddc8055a0e30c1ef993b62c3](https://github.com/user-attachments/assets/81bc19d4-ab65-45c4-85a5-f12aeedef9d5)
+
+
 ### ⚙️ Servo Motor (Card Dispensing)
 
 The 360° Continuous Rotation Servo Motor drives the gear-based card dispensing mechanism. The servo rotates for a calibrated duration to push one card out of the slot. The servo signal pin connects to Raspberry Pi GPIO (PWM), servo power connects to external 5V supply with shared ground, and servo timing (rotation duration) is controlled in software.
+
+![55000f1e3384137e66ab5a281b5a7687](https://github.com/user-attachments/assets/63c3ff0e-0a84-4731-80b1-93c32517b222)
 
 ### 🖥️ Display & User Input
 
