@@ -1,5 +1,7 @@
 # 🎰 WhattoDo Box
 *A playful interactive decision-making machine*
+<img width="1094" height="626" alt="d532a2d7b5f439f9a2dd8b616ece5da9" src="https://github.com/user-attachments/assets/2e69ab45-ec20-4b2d-b509-dd5720314be2" />
+
 
 ## 📌 Project Overview
 
@@ -118,8 +120,6 @@ The Raspberry Pi 5 acts as the central controller for logic, UI, sensing, and ac
 ### 🔗 I2C Expansion & GPIO Control
 
 The SparkFun Qwiic GPIO is used to expand GPIO access via the I2C bus. This board simplifies wiring and allows multiple devices (LEDs, sensors) to be chained cleanly using Qwiic cables. It connects to the Raspberry Pi 5 via I2C using a Qwiic cable.
-
-![Uploading 8b09a65b12ef0fe96d9ca0f45a9964a7.jpg…](
 
 ### 💡 LED Output (Visual Feedback)
 
