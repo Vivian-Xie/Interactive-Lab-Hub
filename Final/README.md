@@ -1,4 +1,7 @@
 # 🎰 WhattoDo Box  
+
+Group Member: Xinwei Xie(xx374），Xueer Zhang(xz946), Maggie Liang(ml2927)
+
 *A playful interactive decision-making machine*
 
 ---
