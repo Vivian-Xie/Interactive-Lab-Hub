@@ -288,11 +288,17 @@ This section documents **how all hardware components are connected**, from the R
   - Servo motor  
 - MiiPiTFT used for UI display and Buttons
 - State-based interaction flow:
-  - Idle → Coin detected → Waiting → Choice → Dispense  
+  - Idle → Coin detected → Waiting → Choice → Dispense
+ 
+The code uses a state-based system to control the WhattoDo Box interaction flow. 
+
+The program starts in the "insert_coin" state and displays a welcome message. When the proximity sensor detects a coin, it plays a sound effect and moves to the "ask_question" state with mysterious background music. LEDs blink continuously during waiting states to show the system is active.
+
+Users interact through two buttons on the MiiPiTFT display. Each button selection triggers different servo motors to dispense cards from different exits while playing music and flashing all LEDs simultaneously.
 
 All code is archived in this repository.
 
-> 🔗 **Code Archive:** *([Link to Code](https://github.com/m-lmq/Interactive-Lab-Hub/blob/Fall2025/Final/1201.py))*
+> 🔗 **Code Archive:** *([Link to Code](https://github.com/Vivian-Xie/Interactive-Lab-Hub/blob/Fall2025/Final/1201.py))*
 
 ---
 
