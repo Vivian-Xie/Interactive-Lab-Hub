@@ -4,7 +4,8 @@ Group Member: Xinwei Xie(xx374），Xueer Zhang(xz946), Maggie Liang(ml2927)
 
 *A playful interactive decision-making machine*
 
-<img width="1094" height="626" alt="d532a2d7b5f439f9a2dd8b616ece5da9" src="https://github.com/user-attachments/assets/2e69ab45-ec20-4b2d-b509-dd5720314be2" />
+<img width="1688" height="968" alt="image" src="https://github.com/user-attachments/assets/170a21ef-63e8-4dc2-81f4-63a1fc611fba" />
+
 
 
 ## 📌 Project Overview
